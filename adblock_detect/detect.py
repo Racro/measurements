@@ -5,6 +5,7 @@ import json
 import sys
 import time
 import threading
+import pathlib
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
@@ -35,16 +36,17 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
 
 def find_all_iframes(driver):
     iframes = driver.find_elements(By.XPATH, value="//iframe")
+    print(driver.current_url)
     print(len(iframes))
     i = 0
     for iframe in iframes:
         driver.switch_to.frame(iframe)  
-        print(i)
+        # print(i)
         i = i+1
         time.sleep(2)
         text = driver.page_source
         # print(text)
-        print('-'*50)
+        # print('-'*50)
         text = text.lower()
         if "ad blocker" in text or "ad-blocker" in text:
             return 1
@@ -58,14 +60,12 @@ def detect(driver):
     if "ad blocker" in text or "ad-blocker" in text:
         return 1
     return find_all_iframes(driver)
-        
-def run(site, extn):
-    vdisplay = Display(visible=False, size=(1920, 1080))
-    vdisplay.start()
 
+def initialize_driver(extn):
     # Prepare Chrome
     options = Options()
-
+    # options.add_argument("--user-data-dir=/home/ritik/.config/google-chrome")
+    # options.add_argument(f'--profile-directory={extn}')
     # Install other addons
     extensions_path = pathlib.Path("/home/ritik/work/pes/measurements/cpu_load/docker/chrome/extensions/")
 
@@ -77,20 +77,47 @@ def run(site, extn):
 
     driver = webdriver.Chrome(options=options)
     driver.set_page_load_timeout(30)
-    # check_for_extn_installation(driver, "check")
     time.sleep(10)
+    return driver
+        
+def run(site_lst, extn, key, f, return_dict):
+    # vdisplay = Display(visible=False, size=(1920, 1080))
+    # vdisplay.start()
+    driver = initialize_driver(extn)
+    print(driver, site_lst)
 
-    driver.get(site)
-    
-    wait_until_loaded(driver, 30)
-    time.sleep(5)
+    for site in site_lst:
+        num_tries = 3 
+        ret_val = 0
 
-    ret_val = detect(driver)
+        while num_tries > 0:
+            # print(site)
+            # print(num_tries)
+            driver.get(site)
+            
+            wait_until_loaded(driver, 30)
+            time.sleep(3)
+
+            ret_val = detect(driver)
+            num_tries -= 1
+
+            if ret_val:
+                break
+
+        if ret_val:
+            f = open("blocking_urls.txt", "a+")
+            f.write(driver.current_url)
+            f.write('\n')
+            f.close()
+
+            return_dict[extn].append(key)
+            break
 
     driver.quit()
-    vdisplay.stop()
+    # vdisplay.stop()
+    # print(return_dict)
+# def start_detection(site_lst, extn, key, return_dict):
 
-    return ret_val
 
 # url1 = "http://businessinsider.com"
 # url2 = "http://geeksforgeeks.org/python-lists/"
@@ -98,15 +125,15 @@ def run(site, extn):
 # run("http://insider.com", 'adblock')
 # sys.exit(0)
 
-extn_lst = ['ublock', 'adblock', 'privacy-badger']
+# extn_lst = ['ublock', 'adblock', 'privacy-badger']
 
-threads = []
+# threads = []
 
-for extn in extn_lst:
-    threads.append(threading.Thread(target=run, args=(site, extn,)))
+# for extn in extn_lst:
+#     threads.append(threading.Thread(target=run, args=(site, extn,)))
 
-for t in threads:
-    t.start()
+# for t in threads:
+#     t.start()
 
-for t in threads:
-    t.join()
+# for t in threads:
+#     t.join()
