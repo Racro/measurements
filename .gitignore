@@ -1,0 +1,6 @@
+*.txt
+log*
+logs/
+data/
+*.png
+out

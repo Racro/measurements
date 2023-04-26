@@ -1,0 +1,15 @@
+{
+  "name": "puppeteer",
+  "version": "1.0.0",
+  "description": "iframe testing",
+  "main": "iframes.js",
+  "dependencies": {
+    "puppeteer": "^19.10.0",
+    "xvfb": "^0.4.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

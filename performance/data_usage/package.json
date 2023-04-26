@@ -1,0 +1,15 @@
+{
+  "name": "data_usage",
+  "version": "1.0.0",
+  "description": "calculates content-length of inner pages",
+  "main": "content.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^19.11.0",
+    "xvfb": "^0.4.0"
+  }
+}

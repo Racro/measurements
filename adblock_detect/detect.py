@@ -67,7 +67,7 @@ def initialize_driver(extn):
     # options.add_argument("--user-data-dir=/home/ritik/.config/google-chrome")
     # options.add_argument(f'--profile-directory={extn}')
     # Install other addons
-    extensions_path = pathlib.Path("/home/ritik/work/pes/measurements/cpu_load/docker/chrome/extensions/")
+    extensions_path = pathlib.Path("/home/ritik/work/pes/measurements/extensions/")
 
     matches = list(extensions_path.glob("{}*.crx".format(extn)))
     print(matches)
@@ -80,7 +80,7 @@ def initialize_driver(extn):
     time.sleep(10)
     return driver
         
-def run(site_lst, extn, key, f, return_dict):
+def run(site_lst, extn, key, return_dict):
     # vdisplay = Display(visible=False, size=(1920, 1080))
     # vdisplay.start()
     driver = initialize_driver(extn)
@@ -117,7 +117,7 @@ def run(site_lst, extn, key, f, return_dict):
     # vdisplay.stop()
     # print(return_dict)
 # def start_detection(site_lst, extn, key, return_dict):
-
+# run(["http://insider.com"], 'adblock', 'adblock', {'adblock': []})
 
 # url1 = "http://businessinsider.com"
 # url2 = "http://geeksforgeeks.org/python-lists/"
