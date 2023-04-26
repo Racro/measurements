@@ -67,7 +67,7 @@ def main(number_of_tries):
     options.binary_location = "/usr/bin/google-chrome-stable"
 
     # Install other addons
-    extensions_path = pathlib.Path("/home/seluser/measure/extensions")
+    extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
     fname = '/data/' + args.website.split('//')[1]
     extn = fname
     if args.extensions:
@@ -107,7 +107,9 @@ def main(number_of_tries):
         if number_of_tries == 0:
             sys.exit(1)
         else:
-            main(number_of_tries-1)
+            driver.quit()
+            vdisplay.stop()
+            return main(number_of_tries-1)
 
     if os.path.isfile(fname):
         f = open(fname, 'r')

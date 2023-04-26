@@ -38,7 +38,7 @@ RUN pip3 install -U -r /tmp/requirements.txt && \
 RUN useradd -ms /bin/bash seluser
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-ADD extensions/ \
+ADD ../../../../extensions/ \
     /home/seluser/measure/extensions
 
 ADD run.py \

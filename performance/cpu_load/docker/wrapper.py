@@ -81,35 +81,39 @@ def main():
     with open(args.domains_list_file, 'r') as f:
         domains = [line.strip() for line in f]
 
-    extensions_configurations = [
-        # No extensions
-        "",
-        # Extensions on their own
-        "adblock",
-        "privacy-badger",
-        "ublock",
-        # Combinations
-    ]
+    # extensions_configurations = [
+    #     # No extensions
+    #     "",
+    #     # Extensions on their own
+    #     "adblock",
+    #     "privacy-badger",
+    #     "ublock",
+    #     # Combinations
+    # ]
     
-    #extensions_configurations = [
-    #    # No extensions
-    #    "",
-    #    # Extensions on their own
-    #    "adblock_plus",
-    #    "decentraleyes",
-    #    "disconnect",
-    #    "ghostery_privacy_ad_blocker",
-    #    "https_everywhere",
-    #    "noscript_security_suite",
-    #    "privacy_badger",
-    #    "ublock_origin",
-    #    # Combinations
+    extensions_configurations = [
+       # No extensions
+       "",
+       # Extensions on their own
+       "adblock",
+       "decentraleyes",
+       "disconnect",
+       "ghostery",
+       "https",
+       "noscript",
+       "privacy-badger",
+       "ublock",
+       "scriptsafe",
+       "canvas-antifp",
+       "adguard"
+       # Combinations
     #    "decentraleyes,privacy_badger,ublock_origin"
-    #]
+    ]
 
 
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
-    cpus_list = ['0','1','2','3']
+    # cpus_list = ['0','1','2','3']
+    cpus_list = [str(cpu) for cpu in range(20)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
     print(domain_set)

@@ -1,3 +1,8 @@
-STDOUT: Total_data_used_by_site http://pinimg.com: 13.649395942687988 MBytes
+STDOUT: 
+STDERR: TimeoutError: Navigation timeout of 60000 ms exceeded
+    at LifecycleWatcher._LifecycleWatcher_createTimeoutPromise (/home/ritik/work/pes/measurements/performance/data_usage/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:162:12)
+    at async Frame.goto (/home/ritik/work/pes/measurements/performance/data_usage/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/performance/data_usage/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/performance/data_usage/content.js:80:13
+http://www.google.com.pr
 
-STDERR: 
