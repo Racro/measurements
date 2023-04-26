@@ -4,3 +4,5 @@ logs/
 data/
 *.png
 out
+node_modules/
+rough/
