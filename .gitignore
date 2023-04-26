@@ -1,8 +1,8 @@
-*.txt
+#*.txt
 log*
 logs/
-data/
-*.png
+#data/
+#.png
 out
 node_modules/
 rough/

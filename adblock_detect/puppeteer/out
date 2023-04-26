@@ -1,0 +1,1327 @@
+1223
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://baidu.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://wikipedia.org
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://bilibili.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://linkedin.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://yahoo.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://azure.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://qq.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://windowsupdate.com
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://windowsupdate.com
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://github.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://pinterest.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://doubleclick.net
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://zhihu.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://zoom.us
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://pricegrabber.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://intuit.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://163.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://vk.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://blogspot.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://google-analytics.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://mozilla.org
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://nih.gov
+
+STDERR: Error: net::ERR_EMPTY_RESPONSE at http://nih.gov
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://jd.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://europa.eu
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://icloud.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://macromedia.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://skype.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://canva.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://paypal.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://instacart.tools
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://instacart.tools
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://health.mil
+
+STDERR: Error: net::ERR_ABORTED at http://www.health.mil/Reference-Center/FOIA-Documents/2014/10/27/Accreditation-Reports-and-Documentation---DD-Form-1423-1-Contract-Data-Requirements-List
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://dropbox.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://digicert.com
+
+STDERR: Error: Display :101 is already in use and the "reuse" option is false.
+    at Xvfb._spawnProcess (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:163:15)
+    at Xvfb.<anonymous> (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:38:16)
+    at suppressedCallback (node:fs:273:5)
+    at FSReqCallback.oncomplete (node:fs:198:23)
+Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://imdb.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://omtrdc.net
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://omtrdc.net
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://msedge.net
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://force.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://apache.org
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://aliexpress.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://miit.gov.cn
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://miit.gov.cn
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: http://atg.se
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://lencr.org
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://cnn.com
+
+STDERR: Error: Display :100 is already in use and the "reuse" option is false.
+    at Xvfb._spawnProcess (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:163:15)
+    at Xvfb.<anonymous> (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:38:16)
+    at suppressedCallback (node:fs:273:5)
+    at FSReqCallback.oncomplete (node:fs:198:23)
+Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://dnsmadeeasy.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://sohu.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://forbes.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://indeed.com
+
+STDERR: ProtocolError: Protocol error (Page.navigate): Cannot navigate to invalid URL
+    at new Callback (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:61:35)
+    at CallbackRegistry.create (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:106:26)
+    at Connection._rawSend (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:216:26)
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:425:78)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://iqiyi.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://douban.com
+
+STDERR: Error: Display :100 is already in use and the "reuse" option is false.
+    at Xvfb._spawnProcess (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:163:15)
+    at Xvfb.<anonymous> (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:38:16)
+    at suppressedCallback (node:fs:273:5)
+    at FSReqCallback.oncomplete (node:fs:198:23)
+Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://meraki.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://baidu.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: Error: Display :100 is already in use and the "reuse" option is false.
+    at Xvfb._spawnProcess (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:163:15)
+    at Xvfb.<anonymous> (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:38:16)
+    at suppressedCallback (node:fs:273:5)
+    at FSReqCallback.oncomplete (node:fs:198:23)
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://qq.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://doubleclick.net
+
+STDERR: Error: net::ERR_ABORTED at http://doubleclick.net
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: http://windowsupdate.com
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://windowsupdate.com
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://reddit.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: Error: Display :100 is already in use and the "reuse" option is false.
+    at Xvfb._spawnProcess (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:163:15)
+    at Xvfb.<anonymous> (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:38:16)
+    at suppressedCallback (node:fs:273:5)
+    at FSReqCallback.oncomplete (node:fs:198:23)
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://vimeo.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://mail.ru
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://windows.net
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://163.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://vk.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://pricegrabber.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://google-analytics.com
+
+STDERR: Error: net::ERR_ABORTED at http://google-analytics.com
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: http://xvideos.com
+
+STDERR: Error: net::ERR_ABORTED at http://www.xvideos.com/video67265079/29981289/0/accidentally_fucked_when_she_was_stuck_in_the_couch_-_she_didn_t_know_who_it_was_-_russian_amateur_with_conversation
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://mozilla.org
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://pornhub.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://blogspot.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://nih.gov
+
+STDERR: Error: net::ERR_EMPTY_RESPONSE at http://nih.gov
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: http://paypal.com
+
+STDERR: Error: net::ERR_ABORTED at https://www.paypal.com/cgp/app-redirect?intent=download_mktg&src=dw_ppcom_homegta_mweb&action=redirect
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: http://macromedia.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://jd.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://skype.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://europa.eu
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://canva.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://instacart.tools
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://instacart.tools
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://sina.com.cn
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://dropbox.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://nytimes.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://health.mil
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://nic.ru
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://myfritz.net
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://opera.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://digicert.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://omtrdc.net
+
+STDERR: Error: net::ERR_ABORTED at http://omtrdc.net
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://aliexpress.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://webex.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://msedge.net
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://miit.gov.cn
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://miit.gov.cn
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: http://forbes.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://atg.se
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://dnsmadeeasy.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://cnn.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://sohu.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://indeed.com
+
+STDERR: Error: Display :100 is already in use and the "reuse" option is false.
+    at Xvfb._spawnProcess (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:163:15)
+    at Xvfb.<anonymous> (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/xvfb/index.js:38:16)
+    at suppressedCallback (node:fs:273:5)
+    at FSReqCallback.oncomplete (node:fs:198:23)
+ProtocolError: Protocol error (Page.navigate): Cannot navigate to invalid URL
+    at new Callback (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:61:35)
+    at CallbackRegistry.create (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:106:26)
+    at Connection._rawSend (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:216:26)
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:425:78)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: http://zemanta.com
+
+STDERR: Error: net::ERR_ABORTED at http://zemanta.com
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://iqiyi.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://douban.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://aliyun.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://baidu.com
+
+STDERR: Error: net::ERR_EMPTY_RESPONSE at http://baidu.com
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://facebook.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://microsoft.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://youtube.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://linkedin.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://wikipedia.org
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://bilibili.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://qq.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://yahoo.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: http://pg.com
+
+STDERR: Error: Protocol error (Page.navigate): Session closed. Most likely the page has been closed.
+    at CDPSessionImpl.send (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Connection.js:421:35)
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:207:47)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:185:13)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://windowsupdate.com
+
+STDERR: Error: net::ERR_NAME_NOT_RESOLVED at http://windowsupdate.com
+    at navigate (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:218:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:184:21)
+    at async CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:16)
+    at async /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:13
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: http://bing.com
+
+STDERR: Error: Navigation failed because browser has disconnected!
+    at new LifecycleWatcher (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/LifecycleWatcher.js:83:223)
+    at Frame.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Frame.js:183:25)
+    at CDPPage.goto (/home/ritik/work/pes/measurements/adblock_detect/puppeteer/node_modules/puppeteer-core/lib/cjs/puppeteer/common/Page.js:438:91)
+    at /home/ritik/work/pes/measurements/adblock_detect/puppeteer/iframes.js:39:24
+
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
+STDOUT: 
+STDERR: 
