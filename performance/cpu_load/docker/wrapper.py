@@ -10,6 +10,7 @@ import subprocess
 import time
 import uuid
 import threading
+import multiprocessing
 
 def divide_chunks(l, n):
     # looping till length l
@@ -17,7 +18,7 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 def run(log, browser, configurations, domains, cpu):
-    random.shuffle(domains)
+    # random.shuffle(domains)
     for domain in domains:
         # We always visit with the website without any extensions first to
         # warm up the upstream DNS cache.
@@ -45,7 +46,7 @@ def get_domain(log, browser, extension, domain, cpu):
                 "--cpuset-cpus", cpu,
                "--security-opt", "seccomp=seccomp.json",
                f"mpstat-{browser}",
-               "--extensions", extension, f"http://{domain}"]
+               "--extensions", extension, domain]
         # we can use "--shm-size=2g" instead of /dev/shm:/dev/shm
         
         run = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -78,8 +79,11 @@ def main():
     if args.browser not in ('firefox', 'chrome'):
         raise ValueError(f"Browser must be 'firefox' or 'chrome', not '{args.browser}'")
 
+    domains = []
     with open(args.domains_list_file, 'r') as f:
-        domains = [line.strip() for line in f]
+        inner_dict = json.load(f)
+        for key in inner_dict:
+            domains.append(inner_dict[key][0])
 
     # extensions_configurations = [
     #     # No extensions
@@ -113,12 +117,13 @@ def main():
 
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
     # cpus_list = ['0','1','2','3']
-    cpus_list = [str(cpu) for cpu in range(20)]
+    cpus_list = [str(cpu) for cpu in range(2)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
     print(domain_set)
     for i in range(len(cpus_list)):
-        thread_list.append(threading.Thread(target=run, args=(log, args.browser, extensions_configurations, domain_set[i], cpus_list[i],)))
+        # thread_list.append(threading.Thread(target=run, args=(log, args.browser, extensions_configurations, domain_set[i], cpus_list[i],)))
+        thread_list.append(multiprocessing.Process(target=run, args=(log, args.browser, extensions_configurations, domain_set[i], cpus_list[i],)))
     
     log.info("starting threads ....")
     for thread in thread_list:

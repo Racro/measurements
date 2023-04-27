@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import sys
 import time
-import threading
+# import threading
 import os
 from datetime import datetime
 
@@ -49,7 +49,7 @@ def main(number_of_tries):
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('website')
-    parser.add_argument('--timeout', type=int, default=30)
+    parser.add_argument('--timeout', type=int, default=60)
     parser.add_argument('--extensions')
     parser.add_argument('--extensions-wait', type=int, default=10)
     args = parser.parse_args()
@@ -62,9 +62,10 @@ def main(number_of_tries):
     options = Options()
     #options.headless = False
     options.add_argument("no-sandbox")
+    options.add_argument("--disable-gpu")
     options.add_argument("auto-open-devtools-for-tabs")
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
-    options.binary_location = "/usr/bin/google-chrome-stable"
+    options.binary_location = "/usr/bin/google-chrome"
 
     # Install other addons
     extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
@@ -103,7 +104,7 @@ def main(number_of_tries):
         domComplete, loadEnd  = webStats(driver)
         stat_data["webStats"] = [domComplete, loadEnd]
     except Exception as e:
-        print(e)
+        print(e, "SITE: ", args.website)
         if number_of_tries == 0:
             sys.exit(1)
         else:

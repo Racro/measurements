@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# running cmd: bash run.sh logs inner_list.json chrome
+
 set -e
 
 SELFPATH=$(dirname $(realpath "$0"))
@@ -17,7 +19,8 @@ popd > /dev/null
 # wrapper.py assumes that various files are in the same directory
 #pushd "${SELFPATH}/../docker" > /dev/null
 
-source ~/work/pes/pes/bin/activate
+#source ~/work/pes/pes/bin/activate
+source ~/pes/measure/bin/activate
 
 #while true; do
 UUID=$(uuidgen -t)
