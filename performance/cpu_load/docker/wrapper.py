@@ -18,7 +18,7 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 def run(log, browser, configurations, domains, cpu):
-    # random.shuffle(domains)
+    random.shuffle(domains)
     for domain in domains:
         # We always visit with the website without any extensions first to
         # warm up the upstream DNS cache.
@@ -42,11 +42,11 @@ def get_domain(log, browser, extension, domain, cpu):
     try:
         cmd = ["docker", "run", "--rm",
                 "-v", "/dev/shm:/dev/shm",
-                "-v", "/home/ritik/work/pes/measurements/cpu_load/docker/chrome/data:/data",
+                "-v", "./chrome/data:/data",
                 "--cpuset-cpus", cpu,
                "--security-opt", "seccomp=seccomp.json",
                f"mpstat-{browser}",
-               "--extensions", extension, domain]
+               "--extensions", extension, "--cpu", cpu, domain]
         # we can use "--shm-size=2g" instead of /dev/shm:/dev/shm
         
         run = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -80,10 +80,13 @@ def main():
         raise ValueError(f"Browser must be 'firefox' or 'chrome', not '{args.browser}'")
 
     domains = []
+    # domains = ['http://www.google.com']
     with open(args.domains_list_file, 'r') as f:
         inner_dict = json.load(f)
         for key in inner_dict:
             domains.append(inner_dict[key][0])
+            if len(domains) == 500:
+                break
 
     # extensions_configurations = [
     #     # No extensions
@@ -109,7 +112,8 @@ def main():
        "ublock",
        "scriptsafe",
        "canvas-antifp",
-       "adguard"
+       "adguard",
+    #    "user-agent"  
        # Combinations
     #    "decentraleyes,privacy_badger,ublock_origin"
     ]
@@ -117,7 +121,7 @@ def main():
 
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
     # cpus_list = ['0','1','2','3']
-    cpus_list = [str(cpu) for cpu in range(2)]
+    cpus_list = [str(cpu) for cpu in range(25)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
     print(domain_set)

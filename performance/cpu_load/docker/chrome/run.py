@@ -33,14 +33,14 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
         time.sleep(period)
     return False
 
-def webStats(driver):
+def webStats(webdriver):
     try:
-        navigationStart = driver.execute_script("return window.performance.timing.navigationStart")
-        # responseStart = driver.execute_script("return window.performance.timing.responseStart")
-        domComplete = driver.execute_script("return window.performance.timing.domComplete")
-        loadEnd = driver.execute_script("return window.performance.timing.loadEventEnd")
+        navigationStart = webdriver.execute_script("return window.performance.timing.navigationStart")
+        # responseStart = webdriver.execute_script("return window.performance.timing.responseStart")
+        domComplete = webdriver.execute_script("return window.performance.timing.domComplete")
+        loadEnd = webdriver.execute_script("return window.performance.timing.loadEventEnd")
     except Exception as e:
-        print(e, ":", driver.current_url)
+        print(e)
         return -1, -1
     
     return domComplete - navigationStart, loadEnd - navigationStart
@@ -52,16 +52,17 @@ def main(number_of_tries):
     parser.add_argument('--timeout', type=int, default=60)
     parser.add_argument('--extensions')
     parser.add_argument('--extensions-wait', type=int, default=10)
+    parser.add_argument('--cpu')
     args = parser.parse_args()
     
     # Start X
-    # vdisplay = Display(visible=False, size=(1920, 1080))
-    # vdisplay.start()
+    vdisplay = Display(visible=False, size=(1920, 1080))
+    vdisplay.start()
 
     # Prepare Chrome
     options = Options()
     #options.headless = False
-    options.add_argument("--headless=new")
+    # options.add_argument("--headless=new")
     options.add_argument("no-sandbox")
     options.add_argument("--disable-gpu")
     options.add_argument("auto-open-devtools-for-tabs")
@@ -78,24 +79,26 @@ def main(number_of_tries):
             if matches and len(matches) == 1:
                 options.add_extension(str(matches[0]))
                 extn = extension
-
+            else:
+                print(f"{args.extensions} - Extension not found")
+                sys.exit(1)
     # Launch Chrome and install our extension for getting HARs
     driver = webdriver.Chrome(options=options)
     driver.set_page_load_timeout(args.timeout)
 
     # Start perf timer
     #perf = perfevents.PerfEvents(args.timeout)
-    stat = stats.Stats(args.timeout, fname)
+    stat = stats.Stats(args.timeout+10, fname, args.cpu)
     # We need to wait for everything to open up properly
     time.sleep(args.extensions_wait)
 
     try:
         # Make a page load
         stat.start()
-        time.sleep(1) # to record 1 extra mpstat cycle
+        time.sleep(2) # to record 2 extra mpstat cycle
         # started = datetime.now()
         driver.get(args.website)
-        
+
         wait_until_loaded(driver, args.timeout)
 
         # Stop collecting performance data
@@ -104,6 +107,7 @@ def main(number_of_tries):
         # collect webstats
         domComplete, loadEnd  = webStats(driver)
         stat_data["webStats"] = [domComplete, loadEnd]
+
     except Exception as e:
         print(e, "SITE: ", args.website)
         if number_of_tries == 0:
@@ -135,7 +139,7 @@ def main(number_of_tries):
     f.close()
 
     driver.quit()
-    # vdisplay.stop()
+    vdisplay.stop()
 
 if __name__ == '__main__':
     main(3)

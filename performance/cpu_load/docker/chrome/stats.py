@@ -20,9 +20,10 @@ class PerfEventsCSVDialect(csv.Dialect):
     skipinitialspace = True
 
 class Stats(threading.Thread):
-    def __init__(self, timeout, filename):
+    def __init__(self, timeout, filename, cpu):
         self._timeout = timeout
         self._fname = filename
+        self._cpu = cpu
         self._json_file = '/tmp/' + hashlib.md5(str(random.random()).encode()).hexdigest() + ".json"
         self._open_file()
         threading.Thread.__init__(self)
@@ -32,37 +33,41 @@ class Stats(threading.Thread):
 
     def run(self):
         try:
-            cmd = ["mpstat", "1", f"{self._timeout + 1}",
+            cmd = ["mpstat", "-P", self._cpu, "1", f"{self._timeout + 1}",
                    "-o", "JSON"]
             self.process = subprocess.Popen(cmd, universal_newlines=True,
                                             stdout=self._f,
                                             stderr=subprocess.DEVNULL)
-            self.process.wait()
+            self.pid = self.process.pid
+            # self.process.wait()
         except subprocess.CalledProcessError as e:
             log.error(f"Error collecting performance events: {e}")
 
     def stop(self):
         try:
-            # sleep for 2 cycles for mpstat to cool down
-            time.sleep(2)
+            # sleep for 5 cycles for mpstat to cool down
+            time.sleep(5)
             # Grep process id of sleep
-            cmd = ["pgrep", "-P", f"{self.process.pid}"]
-            run = subprocess.run(cmd,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.DEVNULL)
-            pid_str = run.stdout.strip().decode('utf-8')
-            if pid_str == "":
-                pid = -1
-            else:
-                pid = int(pid_str)
+            # cmd = ["pgrep", "-P", f"{self.process.pid}"]
+            # run = subprocess.run(cmd,
+                                #  stdout=subprocess.PIPE,
+                                #  stderr=subprocess.DEVNULL)
+            # pid_str = run.stdout.strip().decode('utf-8')
+            # print(f"pid_str: {pid_str}")
+            # if self.pid == "":
+            #     pid = 0
+            # else:
+            #     pid = int(pid_str)
 
-            if pid:
-                os.kill(pid, signal.SIGTERM)
-                os.kill(pid, signal.SIGKILL)
-        except subprocess.CalledProcessError as e:
-            log.error(f"Error stopping performance event mpstat 1 timeout: {e}")
+            os.kill(self.pid, signal.SIGTERM)
+            os.kill(self.pid, signal.SIGKILL)
+        except Exception as e:
+            print(e)
+            print("timeout happened")
+        # except subprocess.CalledProcessError as e:
+        #     log.error(f"Error stopping performance event mpstat 1 timeout: {e}")
 
-        self.process.wait()
+        # self.process.wait()
         if self._f.closed <= 0:
             self._f.close()
         return self.parse()
