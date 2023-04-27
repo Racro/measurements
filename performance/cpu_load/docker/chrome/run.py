@@ -55,12 +55,13 @@ def main(number_of_tries):
     args = parser.parse_args()
     
     # Start X
-    vdisplay = Display(visible=False, size=(1920, 1080))
-    vdisplay.start()
+    # vdisplay = Display(visible=False, size=(1920, 1080))
+    # vdisplay.start()
 
     # Prepare Chrome
     options = Options()
     #options.headless = False
+    options.add_argument("--headless=new")
     options.add_argument("no-sandbox")
     options.add_argument("--disable-gpu")
     options.add_argument("auto-open-devtools-for-tabs")
@@ -109,7 +110,7 @@ def main(number_of_tries):
             sys.exit(1)
         else:
             driver.quit()
-            vdisplay.stop()
+            # vdisplay.stop()
             return main(number_of_tries-1)
 
     if os.path.isfile(fname):
@@ -134,7 +135,7 @@ def main(number_of_tries):
     f.close()
 
     driver.quit()
-    vdisplay.stop()
+    # vdisplay.stop()
 
 if __name__ == '__main__':
     main(3)

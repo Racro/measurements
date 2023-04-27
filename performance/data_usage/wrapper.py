@@ -52,7 +52,7 @@ def run(sites, extn, return_dict, l):
         stderr = process.stderr.decode('utf-8')
         print('STDOUT:', stdout) 
         print('STDERR:', stderr)
-        with open('log', 'w') as f:
+        with open('log', 'a+') as f:
             f.write(f'STDOUT: {stdout}\n') 
             f.write(f'STDERR: {stderr}\n')
         f.close() 
