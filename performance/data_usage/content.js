@@ -12,7 +12,7 @@ var args = process.argv; // node content.js site extn
         reuse: true,
         // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
     });
-    // xvfb.start((err)=>{if (err) console.error(err)})
+    xvfb.start((err)=>{if (err) console.error(err)})
     let p_args;
     if (args[3] === 'control'){
         p_args = [
@@ -22,7 +22,7 @@ var args = process.argv; // node content.js site extn
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
             // `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
-            // '--display='+xvfb._display
+            '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'
         ];
@@ -35,17 +35,18 @@ var args = process.argv; // node content.js site extn
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
             `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
-            // '--display='+xvfb._display
+            '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'
         ];
     }
     const browser = await puppeteer.launch({
-        // headless: false,
-        headless: "new",
+        headless: false,
+        // headless: "new",
         ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
-        executablePath: '/snap/bin/chromium' 
+        executablePath: '/usr/bin/google-chrome' 
+        // executablePath: '/snap/bin/chromium' 
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 960, height: 1080 });
@@ -95,5 +96,5 @@ var args = process.argv; // node content.js site extn
     }
 
     await browser.close();
-    // xvfb.stop();
+    xvfb.stop();
 })();

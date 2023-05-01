@@ -1,9 +1,11 @@
 from detect import *
 import multiprocessing
-# from tranco import Tranco
-# t = Tranco(cache=True, cache_dir='.tranco')
-# latest_list = t.list()
-# latest_list = latest_list.top(500)
+
+from tranco import Tranco
+t = Tranco(cache=True, cache_dir='.tranco')
+latest_list = t.list()
+latest_list = latest_list.top(100000)
+latest_list = latest_list[99000:] # skimming sites from 99k-100k
 
 from bs4 import BeautifulSoup
 import re 
@@ -54,7 +56,7 @@ def find_inner_pages(sites, updated_dict = {}):
                         if link.get("href")[:2] == '//':
                             continue 
                             # href_links.append("http:" + link.get("href"))
-                        elif re.search('\..+$', link.get("href")) or re.search(',', link.get("href")):
+                        elif re.search('\..{1,4}$', link.get("href")) or re.search(',', link.get("href")):
                             continue
                         elif link.get("href")[0] == '/': 
                             href_links.append("http://www." + site + link.get("href")) 
@@ -86,13 +88,14 @@ import json
 import sys
 import math 
 
-with open("../test_sites.txt", "r") as f:
-    sites = f.read().splitlines()
-f.close()
+# with open("../test_sites.txt", "r") as f:
+#     sites = f.read().splitlines()
+# f.close()
 
 # try_list = ["geeksforgeeks.org", "forbes.com", "insider.com"]
 # try_list = ["geeksforgeeks.org", "forbes.com", "insider.com"]
 # latest_list = try_list
+sites = latest_list
 
 extn_lst = ['adblock', 'ublock', 'privacy-badger']
 
@@ -102,7 +105,7 @@ if __name__ == "__main__":
     # with open("inner_pages.json", "r") as f:
     #     updated_dict = json.load(f)
     # f.close()
-    with open("inner_pages.json", "w") as f:
+    with open("inner_pages_99k.json", "w") as f:
         json.dump(updated_dict, f)
     f.close()
     sys.exit(0)

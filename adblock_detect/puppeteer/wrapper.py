@@ -26,8 +26,8 @@ import os
 # try_list = ["geeksforgeeks.org", "forbes.com", "insider.com"]
 # latest_list = try_list
 
-# extn_lst = ['adblock', 'ublock', 'privacy-badger']
-extn_lst = ['']
+extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
+# extn_lst = ['']
 SIZE = 5 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
@@ -59,30 +59,46 @@ def run(sites, extn, return_dict, l):
     stderr = process.stderr.decode('utf-8')
     print('STDOUT:', stdout) 
     print('STDERR:', stderr) 
-    
+
+    with open('log', 'a+') as f:
+        f.write(stdout)
+        f.write('\n')
+        f.write(stdout)
+        f.write('\n')
+        f.write("-"*50)
+        f.write('\n')
+    f.close()
+
     l.acquire()
     # result_dict[extn].append(fname)
     # if stderr == "":
     #     for site in sites:
     #         return_dict[fname].append(site)
-    if stderr != "":
-        return_dict[extn].append(fname)
+    # if stderr != "":
+    #     return_dict[extn].append(fname)
+    # l.release()
+    if 'adblocker_detected' in stdout:
+        return_dict[extn].append([stdout.split()[1], stdout.split()[3]])
     l.release()
-    # if 'adblocker_detected' in stdout:
-    #     return_dict[extn].append(stdout.split()[1])
 
 if __name__ == "__main__":
     try:
-        with open("../inner_pages.json", "r") as f:
+        with open("../inner_pages_99k.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
+        # with open("../failed_sites.txt", "r") as f:
+        #     failed_sites = f.read().splitlines()
+        #     for site in failed_sites:
+        #         updated_dict[site[11:]] = [site]
+        # f.close()
+
         # updated_dict = {
         #     'geeksforgeeks.org': ['http://geeksforgeeks.org', 'https://www.geeksforgeeks.org/node-js-fs-open-method/#'],
         #     'forbes.com': ['http://forbes.com', 'https://www.forbes.com/sites/rashishrivastava/2023/04/20/ive-never-hired-a-writer-better-than-chatgpt-how-ai-is-upending-the-freelance-world/?sh=67d6db3462be', 'https://www.forbes.com/sites/digital-assets/2023/04/13/forget-art-lets-trade-how-a-10-person-startup-came-to-dominate-nft-markets/?sh=4a773f9a2680'],
-        #     'hichina.com': ['http://hichina.com'],
-        #     'miit.gov.cn': ['http://miit.gov.cn']
-        #     # 'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
-        #     # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
+        #     'hichina.com': ['http://hichina.com']
+        # #     'miit.gov.cn': ['http://miit.gov.cn'],
+        # #     'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4']
+        # #     # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
         # }
         latest_list = list(updated_dict.keys())
         print(len(latest_list))
@@ -90,20 +106,12 @@ if __name__ == "__main__":
         manager = multiprocessing.Manager()
         return_dict = manager.dict()
         result_dict = {}
-        reachable_sites = manager.dict()
         for extn in extn_lst:       
             return_dict[extn] = manager.list()
             result_dict[extn] = []
-            for i in range(math.ceil(len(chunks_list)/SIZE)):
+            for i in range(len(chunks_list)):
                 jobs = []
                 for key in chunks_list[i]:
-                    reachable_sites[key] = manager.list()
-                    
-                    # print(key)
-                    # return_dict[extn][key] = 0
-                    # print(return_dict)
-                    # sys.exit(0)
-                    # for site in updated_dict[key]:
                     p = multiprocessing.Process(target=run, args=(updated_dict[key], extn, return_dict, multiprocessing.Lock(),))
                     jobs.append(p)
                 for job in jobs:
@@ -114,7 +122,7 @@ if __name__ == "__main__":
 
             for site in return_dict[extn]:
                 result_dict[extn].append(site)
-            # print(result_dict)
+            print(result_dict)
         # try: 
         #     for key in reachable_sites.keys():
         #         val = list(reachable_sites[key])
@@ -125,19 +133,19 @@ if __name__ == "__main__":
         #     # [key]:
         #     # result_dict[key].append(site)
         
-        f = open("not_reachable_sites.json", "w")
-        json.dump(result_dict, f)
-        f.close()
-
-        # f = open("adblock_detect.json", "w")
+        # f = open("not_reachable_sites.json", "w")
         # json.dump(result_dict, f)
         # f.close()
+
+        f = open("adblock_detect_99k.json", "w")
+        json.dump(result_dict, f)
+        f.close()
     except KeyboardInterrupt:
         print('Interrupted')
         
-        # f = open("adblock_detect.json", "w")
-        # json.dump(result_dict, f)
-        # f.close()
+        f = open("adblock_detect_99k.json", "w")
+        json.dump(result_dict, f)
+        f.close()
         
         try:
             sys.exit(130)

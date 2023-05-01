@@ -88,7 +88,7 @@ if __name__ == "__main__":
         #     # 'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
         #     # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
         # }
-        latest_list = list(updated_dict.keys())
+        latest_list = list(updated_dict.keys())[:5]
         print(len(latest_list))
         chunks_list = list(divide_chunks(latest_list, SIZE))
         manager = multiprocessing.Manager()
