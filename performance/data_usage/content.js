@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer')
 
 // const filePath = 'datausage.csv'
 const Xvfb = require('xvfb');
-
+const fakeUA  = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36';
 var args = process.argv; // node content.js site extn
 
 (async () => {
@@ -25,6 +25,7 @@ var args = process.argv; // node content.js site extn
             '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'
+	    // '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
         ];
     }
     else{
@@ -38,6 +39,7 @@ var args = process.argv; // node content.js site extn
             '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'
+	    // '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
         ];
     }
     const browser = await puppeteer.launch({
@@ -50,6 +52,7 @@ var args = process.argv; // node content.js site extn
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 960, height: 1080 });
+    await page.setUserAgent(fakeUA);
     await page.waitForTimeout(10000);
     var sites = args[2].split(',');
     

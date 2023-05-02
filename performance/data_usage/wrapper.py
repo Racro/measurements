@@ -21,9 +21,17 @@ import subprocess
 from threading import Timer
 import os
 
-extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
+extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
+       "decentraleyes",
+       "disconnect",
+       "ghostery",
+       "https",
+       "noscript",
+       "scriptsafe",
+       "canvas-antifp",
+       "adguard"]
 
-SIZE = 10 # number of browser windows that will open
+SIZE = 20 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
@@ -77,6 +85,12 @@ if __name__ == "__main__":
         with open("../../adblock_detect/inner_pages.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
+        with open("../../adblock_detect/failed_sites.txt", "r") as f:
+            failed_sites = f.read().splitlines()
+            for site in failed_sites:
+                updated_dict[site[11:]] = [site]
+        f.close()
+
         # updated_dict = {
         #     "google.com": ["http://www.google.com"]
         #     # ,
@@ -88,7 +102,7 @@ if __name__ == "__main__":
         #     # 'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
         #     # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
         # }
-        latest_list = list(updated_dict.keys())[:5]
+        latest_list = list(updated_dict.keys())
         print(len(latest_list))
         chunks_list = list(divide_chunks(latest_list, SIZE))
         manager = multiprocessing.Manager()

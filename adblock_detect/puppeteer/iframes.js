@@ -4,8 +4,7 @@
 
 const puppeteer = require('puppeteer');
 const Xvfb = require('xvfb');
-// const sites = ["geeksforgeeks.org", "forbes.com", "insider.com"];
-// var start_str = "http://";
+const fakeUA  = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0';
 
 var args = process.argv; // node iframes.js site extn
 
@@ -52,6 +51,7 @@ var args = process.argv; // node iframes.js site extn
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 960, height: 1080 });
+    await page.setUserAgent(fakeUA);
     await page.waitForTimeout(10000);
     var sites = args[2].split(',');
     // console.log(sites)
