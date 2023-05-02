@@ -85,8 +85,15 @@ def main():
         inner_dict = json.load(f)
         for key in inner_dict:
             domains.append(inner_dict[key][0])
-            if len(domains) == 500:
-                break
+            # if len(domains) == 500:
+            #     break
+    f.close()
+
+    with open("../../../adblock_detect/failed_sites.txt", "r") as f:
+        failed_sites = f.read().splitlines()
+        for site in failed_sites:
+            domains.append(site)
+    f.close()
 
     # extensions_configurations = [
     #     # No extensions

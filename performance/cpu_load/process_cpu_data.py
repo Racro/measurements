@@ -5,15 +5,24 @@ import os
 import json
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 # list of all files in /data folder
 # path = f"./docker/{args.browser}/data"
-path = f"./data"
+path = f"./docker/chrome/data/"
 dir_list = os.listdir(path)
-dir_list = dir_list[:6000]
+# dir_list = dir_list[:6000]
 
-extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
-
+# extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
+extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
+       "decentraleyes",
+       "disconnect",
+       "ghostery",
+       "https",
+       "noscript",
+       "scriptsafe",
+       "canvas-antifp",
+       "adguard"]
 # dir_list = ['google.com.ar', 'twitpic.com']
 
 data_dict = {
@@ -24,22 +33,32 @@ data_dict = {
 for extn in extn_lst:
     data_dict[extn] = []
 
+# data_dict = {'websites': [list_of_websites], 'extn_lst[i]': [list of [usr, sys, iowait, stats]]}
+
 faulty_sites = 0
-faulty_extn = {'adblock': 0, 'ublock': 0, 'privacy-badger': 0}
+faulty_extn = {}
+for extn in extn_lst[1:]:
+    faulty_extn[extn] = 0
+# 'adblock': 0, 'ublock': 0, 'privacy-badger': 0
 
 def check_for_keys(key_lst, lst):
     a = 0
+    global faulty_sites
     for i in lst:
         if i not in key_lst:
             a = 1
-            print(lst[-1], i)
+            if i[:5] == "/data":
+                faulty_sites += 1
+            else:
+                faulty_extn[i] += 1
+            # print(lst[-1], i)
     if a:
         return False
     else:
         return True
 
 for website in dir_list:
-    f = open('./data/'+website, 'r')
+    f = open(path+website, 'r')
     data = json.loads(f.read())
     f.close()
     data_dict['websites'].append(website)
@@ -59,7 +78,8 @@ for website in dir_list:
         usr_c = data["stats"][key]['usr']
         sys_c = data["stats"][key]['sys']
         iowait_c = data["stats"][key]['iowait']
-        data_dict['control'].append([usr_c, sys_c, iowait_c])
+        webStats_c = data["stats"][key]['webStats']
+        data_dict['control'].append([usr_c, sys_c, iowait_c, webStats_c])
     except KeyError as k:
         print(website, k, "- dropping website")
         faulty_sites += 1
@@ -72,12 +92,14 @@ for website in dir_list:
             usr = data["stats"][key]['usr']
             sys = data["stats"][key]['sys']
             iowait = data["stats"][key]['iowait']
-            data_dict[extn].append([usr, sys, iowait])
+            webStats = data["stats"][key]['webStats']
+            data_dict[extn].append([usr, sys, iowait, webStats])
         except KeyError as k:
             usr = usr_c
             sys = sys_c
             iowait = iowait_c
-            data_dict[extn].append([usr, sys, iowait])
+            webStats = webStats_c
+            data_dict[extn].append([usr, sys, iowait, webStats])
             faulty_extn[extn] += 1
             print(website, k)
             pass
@@ -85,23 +107,39 @@ for website in dir_list:
 # print(data_dict)
 # data_dict = {'websites':[], 'k1': [[[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]], [[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]]], 'k2': [[[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]], [[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]]], 'k3': [[[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]], [[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]]]}
 
+# import sys
+# print(faulty_sites)
+# print(faulty_extn)
+# sys.exit(0)
+
 max_plot = [{}, {}, {}] # for usr, sys, iowait
 avg_plot = [{}, {}, {}]
-for i in range(3):
+stat_plot = [{}, {}]
+
+for i in range(4):
     for k in data_dict:
         if k != 'websites':
-            max_plot[i][k] = []
-            avg_plot[i][k] = []
-
+            if (i == 3):
+                stat_plot[0][k] = []
+                stat_plot[1][k] = []
+            else:
+                max_plot[i][k] = []
+                avg_plot[i][k] = []
+            
 for i in range(len(data_dict['control'])):
     for k in data_dict:
-        for j in range(3):
+        for j in range(4):
             if k != 'websites':
-                #max
-                max_plot[j][k].append(max(data_dict[k][i][j]))  
+                if (j==3):
+                    stat_plot[0][k].append(data_dict[k][i][j][0])
+                    stat_plot[1][k].append(data_dict[k][i][j][1])
+                else:
+                    #max
+                    max_plot[j][k].append(max(data_dict[k][i][j]))  
 
-                #avg
-                avg_plot[j][k].append(sum(data_dict[k][i][j]) / len(data_dict[k][i][j])) # can do [:-1] so that last entry can be ignored (which would mostly be close to 0) bcoz I did run mpstat for 2 extra cycle 
+                    #avg
+                    avg_plot[j][k].append(sum(data_dict[k][i][j]) / len(data_dict[k][i][j])) # can do [:-1] so that last entry can be ignored (which would mostly be close to 0) bcoz I did run mpstat for 2 extra cycle 
+
 
 def sort(feature_dict):
     zipped = zip(feature_dict[extn_lst[0]], feature_dict[extn_lst[1]], feature_dict[extn_lst[2]], feature_dict[extn_lst[3]])    
@@ -110,6 +148,16 @@ def sort(feature_dict):
     for i in range(len(extn_lst)):
         feature_dict[extn_lst[i]] = list(unzipped[i])
     return feature_dict
+
+ctrl_stat = np.array(stat_plot[0]['control'])
+abp_stat = np.array(stat_plot[0]['adblock'])
+ub_stat = np.array(stat_plot[0]['ublock'])
+
+plt.plot(np.sort(abp_stat-ctrl_stat), label = 'abp')
+plt.legend()
+plt.show()
+sys.exit(0)
+
 
 # max_sort
 # print(max_plot[0]['control'])
