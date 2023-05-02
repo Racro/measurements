@@ -131,6 +131,10 @@ for i in range(len(data_dict['control'])):
         for j in range(4):
             if k != 'websites':
                 if (j==3):
+                    # # filter out -1 values from stat_plot
+                    # if data_dict[k][i][j][0] == -1 or data_dict[k][i][j][1] == -1:
+                    #     continue 
+
                     stat_plot[0][k].append(data_dict[k][i][j][0])
                     stat_plot[1][k].append(data_dict[k][i][j][1])
                 else:
@@ -149,13 +153,62 @@ def sort(feature_dict):
         feature_dict[extn_lst[i]] = list(unzipped[i])
     return feature_dict
 
-ctrl_stat = np.array(stat_plot[0]['control'])
-abp_stat = np.array(stat_plot[0]['adblock'])
-ub_stat = np.array(stat_plot[0]['ublock'])
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
 
-plt.plot(np.sort(abp_stat-ctrl_stat), label = 'abp')
-plt.legend()
-plt.show()
+def generate_stats_dict():
+
+    websites = np.array(data_dict['websites'])
+    ctrl_stat = np.array(stat_plot[1]['control'])
+    abp_stat = np.array(stat_plot[1]['adblock'])
+    ub_stat = np.array(stat_plot[1]['ublock'])
+    pb_stat = np.array(stat_plot[1]['privacy-badger'])
+
+    dele = {}
+    dele['ctrl'] = ctrl_stat
+    dele['abp'] = abp_stat
+    dele['ub'] = ub_stat
+    dele['pb'] = pb_stat
+
+    d = {}
+    d['ctrl'] = {}
+    d['abp'] = {}
+    d['ub'] = {}
+    d['pb'] = {}
+
+    # filter all -1 values from stat_plot
+    for i in d.keys():
+        if i == 'ctrl':
+            continue
+        dummy = ctrl_stat
+        index = np.where(dele[i] == -1)
+        np.delete(dele[i], index)
+        np.delete(dummy, index)
+
+        zipped = zip(dele[i] - dummy, websites)
+        sorted_zipped = sorted(zipped)
+        unzipped = list(zip(*sorted_zipped))
+        x = list(unzipped[1])
+        y = list(unzipped[0])
+        for j in range(len(x)):
+            d[i][x[j]] = y[j]
+    import json
+    with open('site_load_time.json', 'w') as f:
+        json.dump(d, f, cls=NpEncoder)
+    f.close()
+
+# print(np.sort(abp_stat-ctrl_stat))
+# plt.plot(np.sort(ub_stat-ctrl_stat), label = 'abp')
+# plt.axhline(np.mean(ub_stat-ctrl_stat), linestyle='dashed', color='g')
+# plt.legend()
+# plt.show()
 sys.exit(0)
 
 
