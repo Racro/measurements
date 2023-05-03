@@ -36,7 +36,7 @@ extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
        "canvas-antifp",
        "adguard"]
 # extn_lst = ['']
-SIZE = 5 # number of browser windows that will open
+SIZE = 15 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
@@ -91,7 +91,7 @@ def run(sites, extn, return_dict, l):
 
 if __name__ == "__main__":
     try:
-        with open("../inner_pages_99k.json", "r") as f:
+        with open("../inner_pages.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
         # with open("../failed_sites.txt", "r") as f:
@@ -145,13 +145,13 @@ if __name__ == "__main__":
         # json.dump(result_dict, f)
         # f.close()
 
-        f = open("adblock_detect_99k.json", "w")
+        f = open("adblock_detect.json", "w")
         json.dump(result_dict, f)
         f.close()
     except KeyboardInterrupt:
         print('Interrupted')
         
-        f = open("adblock_detect_99k.json", "w")
+        f = open("adblock_detect.json", "w")
         json.dump(result_dict, f)
         f.close()
         

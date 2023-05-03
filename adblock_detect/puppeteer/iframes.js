@@ -4,7 +4,7 @@
 
 const puppeteer = require('puppeteer');
 const Xvfb = require('xvfb');
-const fakeUA  = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0';
+const fakeUA  = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36';
 
 var args = process.argv; // node iframes.js site extn
 
