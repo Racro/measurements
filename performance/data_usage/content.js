@@ -35,7 +35,7 @@ var args = process.argv; // node content.js site extn
             "--no-sandbox",
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
-            `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
+            `--load-extension=./../../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'

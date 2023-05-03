@@ -36,7 +36,8 @@ var args = process.argv; // node iframes.js site extn
             "--no-sandbox",
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
-            `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
+            //`--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
+            `--load-extension=./../../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'
@@ -87,7 +88,7 @@ var args = process.argv; // node iframes.js site extn
             let pgsrc2 = arr[1].slice(0,30)
             let pgsrc = pgsrc1 + match + pgsrc2
 
-            await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
+            // await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
             console.log(`adblocker_detected: ${site} ${args[3]}  ${pgsrc}`);
             break;
         }
@@ -119,7 +120,7 @@ var args = process.argv; // node iframes.js site extn
                     let pgsrc = pgsrc1 + match + pgsrc2
                     
                     console.log(`adblocker_detected_in_frame: ${site} ${args[3]} ${pgsrc}`);
-                    await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
+                    // await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
                     detect = 1;
                     break;
                 }

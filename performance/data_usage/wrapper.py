@@ -21,7 +21,7 @@ import subprocess
 from threading import Timer
 import os
 
-extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
+extn_lst = ['adblock', 'control', 'ublock', 'privacy-badger',
        "decentraleyes",
        "disconnect",
        "ghostery",
@@ -31,7 +31,7 @@ extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
        "canvas-antifp",
        "adguard"]
 
-SIZE = 20 # number of browser windows that will open
+SIZE = 30 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
@@ -67,9 +67,9 @@ def run(sites, extn, return_dict, l):
         
         try:
             l.acquire()
-            print(fname)
+            # print(fname)
             if stderr == "":
-                return_dict[extn][fname].append(format(float(stdout.split()[2]), '.2f'))
+                return_dict[extn][fname].append(format(float(stdout.split()[2]), '.3f'))
             else:
                 return_dict[extn][fname].append(-1)
             l.release()
@@ -85,11 +85,11 @@ if __name__ == "__main__":
         with open("../../adblock_detect/inner_pages.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
-        with open("../../adblock_detect/failed_sites.txt", "r") as f:
-            failed_sites = f.read().splitlines()
-            for site in failed_sites:
-                updated_dict[site[11:]] = [site]
-        f.close()
+        #with open("../../adblock_detect/failed_sites.txt", "r") as f:
+        #    failed_sites = f.read().splitlines()
+        #    for site in failed_sites:
+        #        updated_dict[site[11:]] = [site]
+        #f.close()
 
         # updated_dict = {
         #     "google.com": ["http://www.google.com"]
@@ -129,11 +129,12 @@ if __name__ == "__main__":
                 for val in return_dict[extn][site]:
                     result_dict[extn][site].append(val)
 
-        f = open('data_usage.json', 'w')
-        json.dump(result_dict, f)
-        f.close()
+            f = open('data_usage.json', 'w')
+            json.dump(result_dict, f)
+            f.close()
 
-    except KeyboardInterrupt:
+    except Exception as e:
+        print(e)
         print('Interrupted')
 
         f = open('data_usage.json', 'w')
