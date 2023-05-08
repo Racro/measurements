@@ -53,8 +53,12 @@ def get_domain(log, browser, extension, domain, cpu):
     except subprocess.CalledProcessError as e:
         log.error(f"Error in container for '{domain}': {e.output}")
     
-    print('STDOUT:', run.stdout.decode('utf-8')) 
-    print('STDERR:', run.stderr.decode('utf-8')) 
+    stdout = run.stdout.decode('utf-8')
+    stderr = run.stderr.decode('utf-8')
+    print('STDOUT:', stdout) 
+    print('STDERR:', stderr)
+    log.info(stdout)
+    log.error(stderr)
     
     #try:
     #    har = run.stdout.decode('utf-8')
@@ -89,11 +93,11 @@ def main():
             #     break
     f.close()
 
-    with open("../../../adblock_detect/failed_sites.txt", "r") as f:
-        failed_sites = f.read().splitlines()
-        for site in failed_sites:
-            domains.append(site)
-    f.close()
+    # with open("../../../adblock_detect/failed_sites.txt", "r") as f:
+    #    failed_sites = f.read().splitlines()
+    #    for site in failed_sites:
+    #        domains.append(site)
+    # f.close()
 
     # extensions_configurations = [
     #     # No extensions
