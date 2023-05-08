@@ -15,7 +15,7 @@ const Xvfb = require('xvfb');
         args: ['--no-sandbox', 
         '--start-fullscreen',            
         '--display='+xvfb._display,
-        '--load-extension=/home/ritik/work/pes/extensions/privacy_extn/adblock'
+        '--load-extension=/home/ritik/work/pes/extensions/privacy_extn/ghostery'
         ]
         });
     const page = await browser.newPage();
@@ -27,11 +27,11 @@ const Xvfb = require('xvfb');
     const metrics = await page.metrics();
     console.log(metrics);
 
-    const performanceTiming = JSON.parse(
-        await page.evaluate(() => JSON.stringify(window.performance.timing.connectStart))
-    );
-    console.log('performanceTiming', performanceTiming)
-
+    // const performanceTiming = JSON.parse(
+    //     await page.evaluate(() => JSON.stringify(window.performance.timing.connectStart))
+    // );
+    // console.log('performanceTiming', performanceTiming)
+    await page.screenshot({path: 'test.png'});
     // await page.screenshot({path: 'result.png'});
     await browser.close()
     xvfb.stop();
