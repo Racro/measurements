@@ -1,11 +1,11 @@
 from detect import *
 import multiprocessing
 
-from tranco import Tranco
-t = Tranco(cache=True, cache_dir='.tranco')
-latest_list = t.list()
-latest_list = latest_list.top(100000)
-latest_list = latest_list[99000:] # skimming sites from 99k-100k
+# from tranco import Tranco
+# t = Tranco(cache=True, cache_dir='.tranco')
+# latest_list = t.list()
+# latest_list = latest_list.top(100000)
+# latest_list = latest_list[99000:] # skimming sites from 99k-100k
 
 from bs4 import BeautifulSoup
 import re 
@@ -88,26 +88,25 @@ import json
 import sys
 import math 
 
-# with open("../test_sites.txt", "r") as f:
-#     sites = f.read().splitlines()
-# f.close()
+with open("../test_sites_custom.txt", "r") as f:
+    sites = f.read().splitlines()
+f.close()
 
 # try_list = ["geeksforgeeks.org", "forbes.com", "insider.com"]
 # try_list = ["geeksforgeeks.org", "forbes.com", "insider.com"]
 # latest_list = try_list
-sites = latest_list
 
 extn_lst = ['adblock', 'ublock', 'privacy-badger']
 
 SIZE = 5 # number of browser windows that will open
 if __name__ == "__main__":
     updated_dict = find_inner_pages(sites)
-    # with open("inner_pages.json", "r") as f:
-    #     updated_dict = json.load(f)
-    # f.close()
-    with open("inner_pages_99k.json", "w") as f:
+    with open("inner_pages_custom.json", "w") as f:
         json.dump(updated_dict, f)
     f.close()
+    # with open("inner_pages_99k.json", "w") as f:
+    #     json.dump(updated_dict, f)
+    # f.close()
     sys.exit(0)
     latest_list = list(updated_dict.keys())
     print(len(latest_list))
