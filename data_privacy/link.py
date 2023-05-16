@@ -102,7 +102,7 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-chunks_list = list(divide_chunks(sites, 1000))
+chunks_list = list(divide_chunks(sites, 100000))
 threads = []
 lock = threading.Lock()
 print(chunks_list)
@@ -110,11 +110,18 @@ print(chunks_list)
 for i in chunks_list:
     p = threading.Thread(target=crawl, args=(i, lock,))
     threads.append(p)
-for t in threads:
-    t.start()
 
-for t in threads:
-    t.join()
+try:
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join()
+except KeyboardInterrupt as k:
+    import sys
+    print(f'Total count: {count}')
+    print(f'Total crawls: {total}')
+    sys.exit(1)
 
 print(f'Total count: {count}')
 print(f'Total crawls: {total}')
