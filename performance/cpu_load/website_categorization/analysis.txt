@@ -1,0 +1,52 @@
+--  ------  --------------------------  ------------------------------------
+ 1  -41065  www.dailymail.co.uk         News
+ 2  -25708  www.huffingtonpost.com      News
+ 3  -24454  www.uol.com.br              Sports
+ 4  -21868  www.newsweek.com            News
+ 5  -20710  www.tv247.us                Sports
+ 6  -19033  www.amazon.com.au           Business & Industrial
+ 7  -17435  www.foxnews.com             News
+ 8  -14286  www.qcostarica.com          News
+ 9  -13838  www.elvocero.com            News
+10  -13250  www.familytreemagazine.com  Hobbies-and-Leisure
+11  -13078  www.shershegoes.com         Online communities
+12  -12527  www.huffpost.com            News
+13  -12385  www.merriam-webster.com     Reference-Materials
+14  -12343  www.ailehekimiklinikasi.az  Error
+15  -12177  www.3dmgame.com             Games
+16  -12034  www.newsonlineng.com        News
+17  -11378  www.buzzfeed.com            Arts & Entertainment
+18  -10796  www.jlwranglerforums.com    Online communities
+19  -10526  www.thesun.co.uk            News
+20  -10411  www.speedtest.net           Computer
+21  -10167  www.marv.jp                 Arts-and-Entertainment
+22   -9929  www.crunchyroll.com         Arts-and-Entertainment
+23   -9880  www.elnuevodia.com.co       News
+24   -9640  www.britannica.com          Reference
+25   -9339  www.capitalone.com          Finance
+26   -9258  www.time.com                News
+27   -8020  www.mongodb.com             Computer
+28   -7928  www.ally.com                Computers & Electronics
+29   -7828  www.newyorker.com           News
+30   -7608  www.auburn-reporter.com     News
+31   -7530  www.china-scratch.com       News
+32   -7495  www.alta.ru                 Sports
+33   -6708  www.sfdr.co                 Business
+34   -6356  www.reuters.com             News
+35   -6307  www.verizon.com             Internet & Telecom
+36   -6300  www.marriott.com            Travel
+37   -6170  www.cnn.com                 News
+38   -6169  www.nba.com                 Sports
+39   -6167  www.webex.com               Computers-Electronics-and-Technology
+40   -6138  www.kvia.com                News
+41   -6126  www.mrdonn.org              Online Communities
+42   -5797  www.genius.com              Arts & Entertainment
+43   -5407  www.toolsbook.org           Online Communities
+44   -5345  www.dell.com                Computers & Electronics
+45   -5204  www.mirror.co.uk            News
+46   -5064  www.windows.com             Computers & Electronics
+47   -5026  www.aparat.com              Arts-and-Entertainment
+48   -4838  www.gamespot.com            Games
+49   -4748  www.twitch.tv               Arts & Entertainment
+50   -4655  www.usatoday.com            News
+--  ------  --------------------------  ------------------------------------

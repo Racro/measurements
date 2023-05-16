@@ -9,25 +9,24 @@ import sys
 
 # list of all files in /data folder
 # path = f"./docker/{args.browser}/data"
-path = f"./docker/chrome/data/"
+# path = f"./docker/chrome/data/"
+path = f"./data_1000/data/"
 dir_list = os.listdir(path)
 # dir_list = dir_list[:6000]
 
-# extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
-extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
-       "decentraleyes",
-       "disconnect",
-       "ghostery",
-       "https",
-       "noscript",
-       "scriptsafe",
-       "canvas-antifp",
-       "adguard"]
-# dir_list = ['google.com.ar', 'twitpic.com']
+extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
+# extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
+#        "decentraleyes",
+#        "disconnect",
+#        "ghostery",
+#        "https",
+#        "noscript",
+#        "scriptsafe",
+#        "canvas-antifp",
+#        "adguard"]
 
 data_dict = {
-    'websites': [],
-    'control': []
+    'websites': []
 }
 
 for extn in extn_lst:
@@ -59,9 +58,8 @@ def check_for_keys(key_lst, lst):
 
 for website in dir_list:
     f = open(path+website, 'r')
-    data = json.loads(f.read())
+    data = json.load(f)
     f.close()
-    data_dict['websites'].append(website)
 
     # control case
     key = '/data/'+website
@@ -72,7 +70,10 @@ for website in dir_list:
     check_val = check_for_keys(data['stats'].keys(), extns)
 
     if (check_val == False):
-        continue
+        print("----------------- check this -------------------")
+        print(website)
+        continue #revisit this. should only continue in ctrl case not found
+    data_dict['websites'].append(website)
 
     try:
         usr_c = data["stats"][key]['usr']
@@ -83,6 +84,7 @@ for website in dir_list:
     except KeyError as k:
         print(website, k, "- dropping website")
         faulty_sites += 1
+        data_dict['websites'] = data_dict['websites'][:-1]
         continue
 
     # extn case
@@ -90,16 +92,16 @@ for website in dir_list:
         key = extn
         try:
             usr = data["stats"][key]['usr']
-            sys = data["stats"][key]['sys']
+            syst = data["stats"][key]['sys']
             iowait = data["stats"][key]['iowait']
             webStats = data["stats"][key]['webStats']
-            data_dict[extn].append([usr, sys, iowait, webStats])
+            data_dict[extn].append([usr, syst, iowait, webStats])
         except KeyError as k:
             usr = usr_c
-            sys = sys_c
+            syst = sys_c
             iowait = iowait_c
             webStats = webStats_c
-            data_dict[extn].append([usr, sys, iowait, webStats])
+            data_dict[extn].append([usr, syst, iowait, webStats])
             faulty_extn[extn] += 1
             print(website, k)
             pass
@@ -163,8 +165,7 @@ class NpEncoder(json.JSONEncoder):
             return obj.tolist()
         return super(NpEncoder, self).default(obj)
 
-def generate_stats_dict():
-
+def generate_stats_dict(data_dict):
     websites = np.array(data_dict['websites'])
     ctrl_stat = np.array(stat_plot[1]['control'])
     abp_stat = np.array(stat_plot[1]['adblock'])
@@ -188,10 +189,14 @@ def generate_stats_dict():
         if i == 'ctrl':
             continue
         dummy = ctrl_stat
-        index = np.where(dele[i] == -1)
+        index = np.where(dele[i] == 2437)
+        print(index)
+        print(dele[i][index])
+        print(dummy[index])
+        print(websites[index])
         np.delete(dele[i], index)
         np.delete(dummy, index)
-
+        sys.exit(0)
         zipped = zip(dele[i] - dummy, websites)
         sorted_zipped = sorted(zipped)
         unzipped = list(zip(*sorted_zipped))
@@ -200,9 +205,10 @@ def generate_stats_dict():
         for j in range(len(x)):
             d[i][x[j]] = y[j]
     import json
-    with open('site_load_time.json', 'w') as f:
+    with open('website_categorization/site_load_time_1000.json', 'w') as f:
         json.dump(d, f, cls=NpEncoder)
     f.close()
+generate_stats_dict(data_dict)
 
 # print(np.sort(abp_stat-ctrl_stat))
 # plt.plot(np.sort(ub_stat-ctrl_stat), label = 'abp')
