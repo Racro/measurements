@@ -57,6 +57,10 @@ def run(sites, extn, return_dict, l):
         except subprocess.CalledProcessError as e:
             print(f'Error for site: {site} {extn}')
             return
+
+        except Exception as e:
+            print(e)
+            continue
         
         stdout = process.stdout.decode('utf-8')
         stderr = process.stderr.decode('utf-8')
@@ -68,8 +72,8 @@ def run(sites, extn, return_dict, l):
         f.close()
 
         if stderr == "":
-            frames.append(int(stdout.split()[2]))
-            docs.append(int(stdout.split()[3]))
+            frames.append(round(float(stdout.split()[2])))
+            docs.append(round(float(stdout.split()[3])))
             
     if frames == []:
         frames = [-1, -1, -1]
@@ -83,7 +87,6 @@ def run(sites, extn, return_dict, l):
         return_dict[extn][fname].extend([frames, docs])
         l.release()
     except Exception as e:
-        print(2222)
         print(e)
         l.release()
     # if 'adblocker_detected' in stdout:
@@ -91,25 +94,29 @@ def run(sites, extn, return_dict, l):
 
 if __name__ == "__main__":
     try:
-        with open("../../adblock_detect/inner_pages.json", "r") as f:
+        with open("../adblock_detect/inner_pages_custom.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
-        with open("../../adblock_detect/failed_sites.txt", "r") as f:
-            failed_sites = f.read().splitlines()
-            for site in failed_sites:
-                updated_dict[site[11:]] = [site]
-        f.close()
+        # with open("../../adblock_detect/failed_sites.txt", "r") as f:
+        #     failed_sites = f.read().splitlines()
+        #     for site in failed_sites:
+        #         updated_dict[site[11:]] = [site]
+        # f.close()
 
         # updated_dict = {
-        #     "google.com": ["http://www.google.com"]
+        #     # "google.com": ["http://www.google.com"]
         #     # ,
         #     # "youtube.com": ["http://www.youtube.com"]
-        #     # 'geeksforgeeks.org': ['http://geeksforgeeks.org', 'https://www.geeksforgeeks.org/node-js-fs-open-method/#']#,
-        #     # 'forbes.com': ['http://forbes.com', 'https://www.forbes.com/sites/rashishrivastava/2023/04/20/ive-never-hired-a-writer-better-than-chatgpt-how-ai-is-upending-the-freelance-world/?sh=67d6db3462be', 'https://www.forbes.com/sites/digital-assets/2023/04/13/forget-art-lets-trade-how-a-10-person-startup-came-to-dominate-nft-markets/?sh=4a773f9a2680']
+        #     # ,
+        #     'geeksforgeeks.org': ['http://geeksforgeeks.org', 'https://www.geeksforgeeks.org/node-js-fs-open-method/#']
+        #     ,
+        #     'forbes.com': ['http://forbes.com', 'https://www.forbes.com/sites/rashishrivastava/2023/04/20/ive-never-hired-a-writer-better-than-chatgpt-how-ai-is-upending-the-freelance-world/?sh=67d6db3462be', 'https://www.forbes.com/sites/digital-assets/2023/04/13/forget-art-lets-trade-how-a-10-person-startup-came-to-dominate-nft-markets/?sh=4a773f9a2680']
+        #     ,
         #     # 'hichina.com': ['http://hichina.com'],
         #     # 'miit.gov.cn': ['http://miit.gov.cn']
-        #     # 'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
-        #     # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
+        #     # ,
+        #     'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
+        #     'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
         # }
         latest_list = list(updated_dict.keys())
         print(len(latest_list))
@@ -129,7 +136,6 @@ if __name__ == "__main__":
                     jobs.append(p)
                 for job in jobs:
                     job.start()
-
                 for job in jobs:
                     job.join()
             
@@ -138,9 +144,9 @@ if __name__ == "__main__":
                 for val in return_dict[extn][site]:
                     result_dict[extn][site].append(val)
 
-        f = open('frames.json', 'w')
-        json.dump(result_dict, f)
-        f.close()
+            f = open('frames.json', 'w')
+            json.dump(result_dict, f)
+            f.close()
 
     except KeyboardInterrupt:
         print('Interrupted')
@@ -154,3 +160,9 @@ if __name__ == "__main__":
         except SystemExit:
             os._exit(130)
 
+    except Exception:
+        print('Interrupted')
+
+        f = open('frames.json', 'w')
+        json.dump(result_dict, f)
+        f.close()

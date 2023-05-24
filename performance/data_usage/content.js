@@ -6,6 +6,8 @@ const Xvfb = require('xvfb');
 const fakeUA  = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36';
 var args = process.argv; // node content.js site extn
 
+const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 (async () => {
     var xvfb = new Xvfb({
         silent: true,
@@ -35,6 +37,7 @@ var args = process.argv; // node content.js site extn
             "--no-sandbox",
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
+            `--disable-extensions-except=./../extensions/extn_src/${args[3]}`,
             `--load-extension=./../../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
             '--window-size=960, 1080',
@@ -45,41 +48,46 @@ var args = process.argv; // node content.js site extn
     const browser = await puppeteer.launch({
         headless: false,
         // headless: "new",
-        ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
+        // ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
         executablePath: '/usr/bin/google-chrome' 
         // executablePath: '/snap/bin/chromium' 
     });
-    const page = await browser.newPage();
-    await page.setViewport({ width: 960, height: 1080 });
-    await page.setUserAgent(fakeUA);
-    await page.waitForTimeout(10000);
-    var sites = args[2].split(',');
-    
-    let Bytes = 0;
-    // Set Request Interception to detect images, fonts, media, and others
-    page.setRequestInterception(true);
 
-    page.on('request', request => {
-        request.continue();
-    });
-
-    page.on('response', response => {
-        let headers = response.headers();
-        // console.log(headers['content-length'])
-        if ( typeof headers['content-length'] !== 'undefined' ){
-            const length = parseInt( headers['content-length'] );
-            // console.log(Bytes);
-            Bytes+= length;
-        }
-    });
+    await delay(10000);
 
     var totalBytes = 0; 
     var num_sites = 0;
     // Navigate to page
     // await page.goto('https://www.google.com', {waitUntil: 'networkidle0', timeout: 60000})
+    
+    var sites = args[2].split(',');
     for (let index=0; index<sites.length; index++){
         let site = sites[index];
+
+        var page = await browser.newPage();
+        // await page.setViewport({ width: 960, height: 1080 });
+        await page.setUserAgent(fakeUA);
+        // await page.waitForTimeout(10000);
+        
+        let Bytes = 0;
+        // Set Request Interception to detect images, fonts, media, and others
+        page.setRequestInterception(true);
+
+        page.on('request', request => {
+            request.continue();
+        });
+
+        page.on('response', response => {
+            let headers = response.headers();
+            // console.log(headers['content-length'])
+            if ( typeof headers['content-length'] !== 'undefined' ){
+                const length = parseInt( headers['content-length'] );
+                // console.log(Bytes);
+                Bytes+= length;
+            }
+        });
+
         try{
             await page.goto(site, { waitUntil: 'networkidle2', timeout: 60000 });
         } catch (error){

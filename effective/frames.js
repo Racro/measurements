@@ -3,10 +3,13 @@ const Xvfb = require('xvfb');
 const fakeUA  = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36';
 var args = process.argv; // node iframes.js site extn
 
+const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 (async () => {
     var xvfb = new Xvfb({
         silent: true,
-        xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
+        reuse: true,
+        // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
     });
     xvfb.start((err)=>{if (err) console.error(err)})
     let p_args;
@@ -31,6 +34,7 @@ var args = process.argv; // node iframes.js site extn
             "--no-sandbox",
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
+            `--disable-extensions-except=./../extensions/extn_src/${args[3]}`,
             `--load-extension=./../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
             '--window-size=960, 1080',
@@ -42,47 +46,52 @@ var args = process.argv; // node iframes.js site extn
     const browser = await puppeteer.launch({
         headless: false,
         // headless: "new",
-        ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
+        // ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
         executablePath: '/usr/bin/google-chrome' 
         // executablePath: '/snap/bin/chromium' 
     });
-    const page = await browser.newPage();
-    await page.setViewport({ width: 960, height: 1080 });
-    await page.setUserAgent(fakeUA);
-    await page.waitForTimeout(10000);
-    var sites = args[2].split(',');
-   
+    
+    await delay(10000);
+
     var num_sites = 0;
     var frames = 0;
     var docs = 0;
 
-    for (let index=0; index<sites.length; index++){
+    // var pages = []
+
+    var sites = args[2].split(',');
+
+    for (let index=0; index<sites.length; index++){ // sites.length
     // for (let index=0; index<1; index++){
+        var page = await browser.newPage();
+        // await page.setViewport({ width: 960, height: 1080 });
+        await page.setUserAgent(fakeUA);
         let site = sites[index];
+        
         try{
             await page.goto(site, { waitUntil: 'networkidle2', timeout: 60000 });
             await page.waitForTimeout(2000);
+            var metrics = await page.metrics();
+            frames += metrics[ 'Frames' ];
+            docs += metrics[ 'Documents' ];
+            num_sites += 1;
         } catch (error){
             console.error(error);
-            console.log(site);
+            console.error(site);
             continue;
             // break;
         }
-	
-	const metrics = await page.metrics();
-	frames += metrics[ 'Frames' ]
-	docs += metrics[ 'Documents' ]
-	num_sites += 1;
+        
     }
    
     if (num_sites != 0){
         console.log(`Total_frames_and_docs_for ${sites[0]}: ${frames/(num_sites)} ${docs/(num_sites)}`);
-    }
+    } 
 
-
-
-
+    // await page.screenshot({path: 'result.png'});
+    await browser.close()
+    await xvfb.stop();
 
     // const metrics = await page.metrics();
     // console.log(metrics);
@@ -101,9 +110,5 @@ var args = process.argv; // node iframes.js site extn
     //     JSHeapUsedSize: 30683564,
     //     JSHeapTotalSize: 55947264
     //   }
-      
 
-    // await page.screenshot({path: 'result.png'});
-    await browser.close()
-    xvfb.stop();
-})()
+})();
