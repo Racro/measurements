@@ -56,7 +56,7 @@
     "description": "appears as tab name in dashboard"
   },
   "supportPageName": {
-    "message": "Support",
+    "message": "സഹായം ",
     "description": "appears as tab name in dashboard"
   },
   "assetViewerPageName": {
@@ -128,7 +128,7 @@
     "description": "Tooltip used for the logger icon in the panel"
   },
   "popupTipReport": {
-    "message": "Report an issue on this website",
+    "message": "ഈ വെബ്‌സൈറ്റിൽ ഉള്ള പ്രശ്നങ്ങൾ അറിയിക്കുക ",
     "description": "Tooltip used for the 'chat' icon in the panel"
   },
   "popupTipNoPopups": {
@@ -275,13 +275,13 @@
     "message": "പതിപ്പ്",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: മൂന്നാം കക്ഷി സ്ക്രിപ്റ്റുകൾ ഉള്ള വരികൾ izeന്നിപ്പറയുക",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "script",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: മൂന്നാം കക്ഷി ഫ്രെയിമുകളുള്ള വരികൾക്ക് പ്രാധാന്യം നൽകുക",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "frame",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "ക്രിയേറ്റ് ചെയ്യുക",
@@ -1115,6 +1115,10 @@
     "message": "ഓഫ്",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Page blocked",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "താഴെ പറയുന്ന പേജ് ലോഡ് ചെയ്യുന്നത് യുബ്ലോക്ക് ഒറിജിന്‍ തടഞ്ഞിരിക്കുന്നു:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "ഈ വിന്‍ഡോ ക്ലോസ് ചെയ്യുക",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Don't warn me again about this site",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "{{hostname}}ലേക്ക് കര്‍ശന ബ്ലോക്കിംഗ് ഡിസേബിള്‍ ചെയ്യുക",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "സ്ഥിരമായി",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Proceed",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "ക്ലൌഡ് സ്റ്റോറേജിലേക്ക് എക്സ്പോര്‍ട്ട്‌ ചെയ്യുക",
@@ -1203,6 +1215,10 @@
     "message": "താൽക്കാലികമായി വലിയ മീഡിയ അനുവദിക്കുക",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "View source code…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "ഒരു കുറുക്കുവഴി ടൈപ്പുചെയ്യുക",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "ലോഡുചെയ്യാൻ ക്ലിക്കുചെയ്യുക",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Errors: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "This entry must be the last one",

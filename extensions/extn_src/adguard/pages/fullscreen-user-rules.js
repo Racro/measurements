@@ -319,14 +319,15 @@ const addMinDurationTime = (fn, minDurationMs) => {
 /* harmony export */   "Oi": () => (/* binding */ FULLSCREEN_USER_RULES_EDITOR),
 /* harmony export */   "Qp": () => (/* binding */ NOTIFIER_TYPES),
 /* harmony export */   "TJ": () => (/* binding */ NAVIGATION_TAGS),
+/* harmony export */   "VC": () => (/* binding */ CUSTOM_FILTERS_GROUP_DISPLAY_NUMBER),
 /* harmony export */   "XR": () => (/* binding */ TRUSTED_TAG),
 /* harmony export */   "XS": () => (/* binding */ WASTE_CHARACTERS),
 /* harmony export */   "du": () => (/* binding */ FILTERING_LOG),
 /* harmony export */   "gu": () => (/* binding */ ANTIBANNER_FILTERS_ID),
+/* harmony export */   "ih": () => (/* binding */ CUSTOM_FILTERS_START_ID),
 /* harmony export */   "nn": () => (/* binding */ SCROLLBAR_WIDTH),
 /* harmony export */   "oK": () => (/* binding */ MESSAGE_TYPES)
 /* harmony export */ });
-/* unused harmony exports CUSTOM_FILTERS_GROUP_DISPLAY_NUMBER, CUSTOM_FILTERS_START_ID */
 /**
  * Filter ids used in the code on the background page and filtering log page
  */
@@ -556,6 +557,25 @@ const i18n = {
  */
 
 const reactTranslator = _adguard_translate__WEBPACK_IMPORTED_MODULE_1__/* .translate.createReactTranslator */ .Iu.createReactTranslator(_i18n__WEBPACK_IMPORTED_MODULE_2__/* .i18n */ .a, react__WEBPACK_IMPORTED_MODULE_0__);
+
+/***/ }),
+
+/***/ 99875:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "O": () => (/* binding */ translator)
+/* harmony export */ });
+/* harmony import */ var _adguard_translate__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(58396);
+/* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(57122);
+
+
+/**
+ * Retrieves localised message by key, formats it and converts into string
+ */
+
+const translator = _adguard_translate__WEBPACK_IMPORTED_MODULE_0__/* .translate.createTranslator */ .Iu.createTranslator(_i18n__WEBPACK_IMPORTED_MODULE_1__/* .i18n */ .a);
 
 /***/ }),
 
@@ -996,8 +1016,8 @@ var ace = __webpack_require__(50350);
 // EXTERNAL MODULE: ./node_modules/lodash/debounce.js
 var debounce = __webpack_require__(79412);
 var debounce_default = /*#__PURE__*/__webpack_require__.n(debounce);
-// EXTERNAL MODULE: ./node_modules/@adguard/tsurlfilter/dist/es/simple-regex.js + 1 modules
-var simple_regex = __webpack_require__(82561);
+// EXTERNAL MODULE: ./node_modules/@adguard/tsurlfilter/dist/es/simple-regex.js
+var simple_regex = __webpack_require__(66167);
 // EXTERNAL MODULE: ./Extension/src/pages/common/components/UserRulesEditor/UserRulesEditorStore.js
 var UserRulesEditorStore = __webpack_require__(13135);
 // EXTERNAL MODULE: ./Extension/src/pages/common/components/Editor/index.js + 3 modules
@@ -1033,8 +1053,8 @@ var messenger = __webpack_require__(37916);
 var constants = __webpack_require__(84568);
 // EXTERNAL MODULE: ./Extension/src/pages/common/constants.js
 var common_constants = __webpack_require__(79735);
-// EXTERNAL MODULE: ./Extension/src/pages/helpers.js + 1 modules
-var helpers = __webpack_require__(62707);
+// EXTERNAL MODULE: ./Extension/src/pages/helpers.js
+var helpers = __webpack_require__(96746);
 // EXTERNAL MODULE: ./Extension/src/common/log.js
 var log = __webpack_require__(9224);
 // EXTERNAL MODULE: ./node_modules/classnames/index.js
@@ -2678,11 +2698,11 @@ const exportData = async type => {
 /* harmony export */   "eN": () => (/* binding */ DEFAULT_THIRD_PARTY_COOKIES_SELF_DESTRUCT_MIN),
 /* harmony export */   "l7": () => (/* binding */ HOW_TO_CREATE_RULES_URL),
 /* harmony export */   "o6": () => (/* binding */ WEBSITE_URL),
+/* harmony export */   "pR": () => (/* binding */ COMPARE_URL),
 /* harmony export */   "sn": () => (/* binding */ DISCUSS_URL),
 /* harmony export */   "uj": () => (/* binding */ DEFAULT_FIRST_PARTY_COOKIES_SELF_DESTRUCT_MIN),
 /* harmony export */   "wk": () => (/* binding */ BROWSER_ADDON_STORE_LINKS)
 /* harmony export */ });
-/* unused harmony export COMPARE_URL */
 /* eslint-disable max-len */
 const PRIVACY_URL = 'https://link.adtidy.org/forward.html?action=privacy&from=options_screen&app=browser_extension';
 const ACKNOWLEDGMENTS_URL = 'https://link.adtidy.org/forward.html?action=acknowledgments&from=options_screen&app=browser_extension';
@@ -2710,40 +2730,24 @@ const BROWSER_ADDON_STORE_LINKS = {
 
 /***/ }),
 
-/***/ 62707:
+/***/ 96746:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "ms": () => (/* binding */ containsIgnoreCase),
-  "vQ": () => (/* binding */ copyToClipboard),
-  "tE": () => (/* binding */ findChunks),
-  "$p": () => (/* binding */ handleFileUpload),
-  "fg": () => (/* binding */ hoursToMs),
-  "fQ": () => (/* binding */ isVerticalScroll),
-  "Ux": () => (/* binding */ measureTextWidth),
-  "n$": () => (/* binding */ passiveEventSupported),
-  "_v": () => (/* binding */ sleep),
-  "$8": () => (/* binding */ updateFilterDescription)
-});
-
-// UNUSED EXPORTS: getFilenameExtension, indexOfIgnoreCase
-
-// EXTERNAL MODULE: ./node_modules/@adguard/translate/dist/index.esm.js
-var index_esm = __webpack_require__(58396);
-// EXTERNAL MODULE: ./Extension/src/common/translators/i18n.js
-var i18n = __webpack_require__(57122);
-;// CONCATENATED MODULE: ./Extension/src/common/translators/translator.js
-
-
-/**
- * Retrieves localised message by key, formats it and converts into string
- */
-
-const translator = index_esm/* translate.createTranslator */.Iu.createTranslator(i18n/* i18n */.a);
-;// CONCATENATED MODULE: ./Extension/src/pages/helpers.js
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "$8": () => (/* binding */ updateFilterDescription),
+/* harmony export */   "$p": () => (/* binding */ handleFileUpload),
+/* harmony export */   "Ux": () => (/* binding */ measureTextWidth),
+/* harmony export */   "_v": () => (/* binding */ sleep),
+/* harmony export */   "fQ": () => (/* binding */ isVerticalScroll),
+/* harmony export */   "fg": () => (/* binding */ hoursToMs),
+/* harmony export */   "ms": () => (/* binding */ containsIgnoreCase),
+/* harmony export */   "n$": () => (/* binding */ passiveEventSupported),
+/* harmony export */   "tE": () => (/* binding */ findChunks),
+/* harmony export */   "vQ": () => (/* binding */ copyToClipboard)
+/* harmony export */ });
+/* unused harmony exports getFilenameExtension, indexOfIgnoreCase */
+/* harmony import */ var _common_translators_translator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(99875);
 
 const getFilenameExtension = filename => {
   if (!filename) {
@@ -2767,7 +2771,7 @@ const getFilenameExtension = filename => {
 
 const handleFileUpload = (file, requiredExtension) => new Promise((resolve, reject) => {
   if (getFilenameExtension(file.name) !== requiredExtension) {
-    reject(new Error(translator.getMessage('options_popup_import_settings_wrong_file_ext', {
+    reject(new Error(_common_translators_translator__WEBPACK_IMPORTED_MODULE_0__/* .translator.getMessage */ .O.getMessage('options_popup_import_settings_wrong_file_ext', {
       extension: requiredExtension
     })));
   }
@@ -2780,7 +2784,7 @@ const handleFileUpload = (file, requiredExtension) => new Promise((resolve, reje
   };
 
   reader.onerror = () => {
-    reject(new Error(translator.getMessage('options_popup_import_error_file_description')));
+    reject(new Error(_common_translators_translator__WEBPACK_IMPORTED_MODULE_0__/* .translator.getMessage */ .O.getMessage('options_popup_import_error_file_description')));
   };
 });
 const hoursToMs = hours => {
@@ -2916,8 +2920,8 @@ const isVerticalScroll = (() => {
 const updateFilterDescription = updatedFilters => {
   if (!updatedFilters) {
     return {
-      title: translator.getMessage('options_popup_update_title_error'),
-      description: translator.getMessage('options_popup_update_error')
+      title: _common_translators_translator__WEBPACK_IMPORTED_MODULE_0__/* .translator.getMessage */ .O.getMessage('options_popup_update_title_error'),
+      description: _common_translators_translator__WEBPACK_IMPORTED_MODULE_0__/* .translator.getMessage */ .O.getMessage('options_popup_update_error')
     };
   }
 
@@ -2925,11 +2929,11 @@ const updateFilterDescription = updatedFilters => {
   let description;
 
   if (updatedFilters.length === 0) {
-    description = `${filterNames} ${translator.getMessage('options_popup_update_not_found')}`;
+    description = `${filterNames} ${_common_translators_translator__WEBPACK_IMPORTED_MODULE_0__/* .translator.getMessage */ .O.getMessage('options_popup_update_not_found')}`;
   } else if (updatedFilters.length === 1) {
-    description = `${filterNames} ${translator.getMessage('options_popup_update_filter')}`;
+    description = `${filterNames} ${_common_translators_translator__WEBPACK_IMPORTED_MODULE_0__/* .translator.getMessage */ .O.getMessage('options_popup_update_filter')}`;
   } else if (updatedFilters.length > 1) {
-    description = `${filterNames} ${translator.getMessage('options_popup_update_filters')}`;
+    description = `${filterNames} ${_common_translators_translator__WEBPACK_IMPORTED_MODULE_0__/* .translator.getMessage */ .O.getMessage('options_popup_update_filters')}`;
   }
 
   return {
@@ -4814,17 +4818,20 @@ var validator = {
 
 /***/ }),
 
-/***/ 82561:
+/***/ 87922:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "H": () => (/* reexport */ SimpleRegex)
-});
-
-;// CONCATENATED MODULE: ./node_modules/@adguard/tsurlfilter/dist/es/simple-regex-ea3ddcd2.js
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "S": () => (/* binding */ SimpleRegex),
+/* harmony export */   "a": () => (/* binding */ stringArraysEquals),
+/* harmony export */   "b": () => (/* binding */ stringArraysHaveIntersection),
+/* harmony export */   "f": () => (/* binding */ fastHash),
+/* harmony export */   "h": () => (/* binding */ hasUnquotedSubstring),
+/* harmony export */   "i": () => (/* binding */ indexOfAny),
+/* harmony export */   "r": () => (/* binding */ replaceAll),
+/* harmony export */   "s": () => (/* binding */ splitByDelimiterWithEscapeCharacter)
+/* harmony export */ });
 /**
  * Splits the string by the delimiter, ignoring escaped delimiters.
  *
@@ -5314,7 +5321,17 @@ var SimpleRegex = /** @class */ (function () {
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@adguard/tsurlfilter/dist/es/simple-regex.js
+
+/***/ }),
+
+/***/ 66167:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "H": () => (/* reexport safe */ _simple_regex_ea3ddcd2_js__WEBPACK_IMPORTED_MODULE_0__.S)
+/* harmony export */ });
+/* harmony import */ var _simple_regex_ea3ddcd2_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(87922);
 
 
 

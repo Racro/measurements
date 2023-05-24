@@ -18,30 +18,30 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals log:false */
+import { extractHostFromURL, getBaseDomain } from "../lib/basedomain.js";
 
-var utils = require("utils");
-var constants = require("constants");
-var pbStorage = require("storage");
-
-var HeuristicBlocking = require("heuristicblocking");
-var FirefoxAndroid = require("firefoxandroid");
-var webrequest = require("webrequest");
-var widgetLoader = require("widgetloader");
-
-var Migrations = require("migrations").Migrations;
-var incognito = require("incognito");
+import { log } from "./bootstrap.js";
+import constants from "./constants.js";
+import FirefoxAndroid from "./firefoxandroid.js";
+import HeuristicBlocking from "./heuristicblocking.js";
+import incognito from "./incognito.js";
+import { Migrations } from "./migrations.js";
+import widgetLoader from "./socialwidgetloader.js";
+import BadgerPen from "./storage.js";
+import TabData from "./tabdata.js";
+import webrequest from "./webrequest.js";
+import utils from "./utils.js";
 
 /**
- * Privacy Badger initializer.
+ * Privacy Badger constructor.
+ *
+ * @param {Boolean} from_qunit don't intercept requests when run by unit tests
  */
-function Badger() {
+function Badger(from_qunit) {
   let self = this;
 
   self.isFirstRun = false;
   self.isUpdate = false;
-
-  self.webRTCAvailable = checkWebRtcBrowserSupport();
 
   self.widgetList = [];
   let widgetListPromise = widgetLoader.loadWidgetsFromFile(
@@ -50,22 +50,30 @@ function Badger() {
     self.widgetList = widgets;
   });
 
-  self.storage = new pbStorage.BadgerPen(async function (thisStorage) {
-    self.initializeSettings();
-    // Privacy Badger settings are now fully ready
+  self.storage = new BadgerPen(onStorageReady);
 
-    self.heuristicBlocking = new HeuristicBlocking.HeuristicBlocker(thisStorage);
+  // initialize all chrome.* API listeners on first turn of event loop
+  if (!from_qunit) {
+    incognito.startListeners();
+    webrequest.startListeners();
+    HeuristicBlocking.startListeners();
+    FirefoxAndroid.startListeners();
+    startBackgroundListeners();
+  }
 
-    // TODO there are async migrations
-    // TODO is this the right place for migrations?
-    self.runMigrations();
+  /**
+   * Callback that continues Privacy Badger initialization
+   * once Badger storage is ready.
+   */
+  async function onStorageReady() {
+    self.heuristicBlocking = new HeuristicBlocking.HeuristicBlocker(self.storage);
 
     self.setPrivacyOverrides();
 
     // kick off async initialization steps
-    let ylistPromise = self.initializeYellowlist().catch(console.error),
-      dntHashesPromise = self.initializeDnt().catch(console.error),
-      tabDataPromise = self.updateTabList().catch(console.error);
+    let ylistPromise = self.initYellowlist().catch(console.error),
+      dntHashesPromise = self.initDntPolicyHashes().catch(console.error),
+      tabDataPromise = self.tabData.initialize().catch(console.error);
 
     // async load known CNAME domain aliases (but don't wait on them)
     self.initializeCnames().catch(console.error);
@@ -102,131 +110,30 @@ function Badger() {
       self.blockPanopticlickDomains();
     }
 
-    // start the listeners
-    incognito.startListeners();
-    webrequest.startListeners();
-    HeuristicBlocking.startListeners();
-    FirefoxAndroid.startListeners();
-    startBackgroundListeners();
+    if (self.isUpdate) {
+      self.runMigrations();
+    }
 
     console.log("Privacy Badger is ready to rock!");
     console.log("Set DEBUG=1 to view console messages.");
     self.INITIALIZED = true;
 
-    // get the latest yellowlist from eff.org
-    self.updateYellowlist(err => {
-      if (err) {
-        console.error(err);
-      }
-    });
-    // set up periodic fetching of the yellowlist from eff.org
-    setInterval(self.updateYellowlist.bind(self), utils.oneDay());
-
-    // get the latest DNT policy hashes from eff.org
-    self.updateDntPolicyHashes(err => {
-      if (err) {
-        console.error(err);
-      }
-    });
-    // set up periodic fetching of hashes from eff.org
-    setInterval(self.updateDntPolicyHashes.bind(self), utils.oneDay() * 4);
-
-    let privateStore = self.getPrivateSettings();
-    if (self.isFirstRun) {
-      privateStore.setItem("firstRunTimerFinished", false);
-
-      // work around the welcome page getting closed by an extension restart
-      // such as in response to being granted Private Browsing permission
-      // from the post-install doorhanger on Firefox
-      setTimeout(function () {
-        privateStore.setItem("firstRunTimerFinished", true);
-      }, utils.oneMinute());
-
-      self.showFirstRunPage();
-
-    } else if (!privateStore.getItem("firstRunTimerFinished")) {
-      privateStore.setItem("firstRunTimerFinished", true);
-      self.showFirstRunPage();
+    if (!from_qunit) {
+      self.initYellowlistUpdates();
+      self.initDntPolicyUpdates();
     }
-  });
-
-  /**
-   * WebRTC availability check
-   */
-  function checkWebRtcBrowserSupport() {
-    if (!(chrome.privacy && chrome.privacy.network &&
-      chrome.privacy.network.webRTCIPHandlingPolicy)) {
-      return false;
-    }
-
-    var available = true;
-    var connection = null;
-
-    try {
-      var RTCPeerConnection = (
-        window.RTCPeerConnection || window.webkitRTCPeerConnection
-      );
-      if (RTCPeerConnection) {
-        connection = new RTCPeerConnection(null);
-      }
-    } catch (ex) {
-      available = false;
-    }
-
-    if (connection !== null && connection.close) {
-      connection.close();
-    }
-
-    return available;
   }
 
-}
+} /* end of Badger constructor */
 
 Badger.prototype = {
   INITIALIZED: false,
 
   /**
-   * Per-tab data that gets cleaned up on tab closing looks like:
-      tabData = {
-        <tab_id>: {
-          blockedFrameUrls: {
-            <parent_frame_id>: [
-              {String} blocked frame URL,
-              ...
-            ],
-            ...
-          },
-          fpData: {
-            <script_origin>: {
-              canvas: {
-                fingerprinting: {Boolean},
-                write: {Boolean}
-              }
-            },
-            ...
-          },
-          frames: {
-            <frame_id>: {
-              url: {String}
-              host: {String}
-              widgetReplacementReady: {Boolean}
-              widgetQueue: {Array} widget objects
-              warAccessTokens: {
-                <extension_resource_URL>: {String} access token
-                ...
-              }
-            },
-            ...
-          },
-          origins: {
-            <third_party_fqdn>: {String} action taken for this domain
-            ...
-          }
-        },
-        ...
-      }
+   * Mapping of tab IDs to tab-specific data
+   * such as frame URLs and found trackers
    */
-  tabData: {},
+  tabData: new TabData(),
 
   /**
    * Mapping of known CNAME domain aliases
@@ -323,16 +230,6 @@ Badger.prototype = {
         (self.getSettings().getItem("disableHyperlinkAuditing") ? false : null)
       );
     }
-
-    // when enabled, WebRTC IP handling policy is set to Mode 3
-    // https://tools.ietf.org/html/draft-ietf-rtcweb-ip-handling-01#page-5
-    if (badger.webRTCAvailable) {
-      _set_override(
-        "webRTCIPHandlingPolicy",
-        chrome.privacy.network.webRTCIPHandlingPolicy,
-        (self.getSettings().getItem("preventWebRTCIPLeak") ? 'default_public_interface_only' : null)
-      );
-    }
   },
 
   /**
@@ -342,7 +239,7 @@ Badger.prototype = {
   loadSeedData: function (cb) {
     let self = this;
 
-    utils.xhrRequest(constants.SEED_DATA_LOCAL_URL, function (err, response) {
+    utils.fetchResource(constants.SEED_DATA_LOCAL_URL, function (err, response) {
       if (err) {
         return cb(new Error("Failed to fetch seed data"));
       }
@@ -421,7 +318,27 @@ Badger.prototype = {
     });
   },
 
-  showFirstRunPage: function() {
+  initWelcomePage: function () {
+    let self = this,
+      privateStore = self.getPrivateSettings();
+
+    if (self.isFirstRun) {
+      // work around the welcome page getting closed by an extension restart
+      // such as in response to being granted Private Browsing permission
+      // from the post-install doorhanger on Firefox
+      setTimeout(function () {
+        privateStore.setItem("firstRunTimerFinished", true);
+      }, utils.oneMinute());
+
+      self.showWelcomePage();
+
+    } else if (!privateStore.getItem("firstRunTimerFinished")) {
+      privateStore.setItem("firstRunTimerFinished", true);
+      self.showWelcomePage();
+    }
+  },
+
+  showWelcomePage: function () {
     let settings = this.getSettings();
     if (settings.getItem("showIntroPage")) {
       chrome.tabs.create({
@@ -455,7 +372,7 @@ Badger.prototype = {
     // block the domains
     for (let domain of domains) {
       self.heuristicBlocking.blocklistOrigin(
-        window.getBaseDomain(domain), domain);
+        getBaseDomain(domain), domain);
     }
   },
 
@@ -486,73 +403,6 @@ Badger.prototype = {
     log("Finished saving action " + userAction + " for " + origin);
   },
 
-  /**
-   * Populate tabs object with currently open tabs when extension is updated or installed.
-   *
-   * @returns {Promise}
-   */
-  updateTabList: function () {
-    let self = this;
-
-    return new Promise(function (resolve) {
-      chrome.tabs.query({}, tabs => {
-        tabs.forEach(tab => {
-          // don't record on special browser pages
-          if (!utils.isRestrictedUrl(tab.url)) {
-            self.recordFrame(tab.id, 0, tab.url);
-          }
-        });
-        resolve();
-      });
-    });
-  },
-
-  /**
-   * Generate representation in internal data structure for frame
-   *
-   * @param {Integer} tabId ID of the tab
-   * @param {Integer} frameId ID of the frame
-   * @param {String} frameUrl The url of the frame
-   */
-  recordFrame: function(tabId, frameId, frameUrl) {
-    let self = this;
-
-    if (!utils.hasOwn(self.tabData, tabId)) {
-      self.tabData[tabId] = {
-        blockedFrameUrls: {},
-        frames: {},
-        origins: {}
-      };
-    }
-
-    self.tabData[tabId].frames[frameId] = {
-      url: frameUrl,
-      host: window.extractHostFromURL(frameUrl)
-    };
-  },
-
-  /**
-   * Read the frame data from memory
-   *
-   * @param {Integer} tab_id Tab ID to check for
-   * @param {Integer} [frame_id=0] Frame ID to check for.
-   *  Optional, defaults to frame 0 (the main document frame).
-   *
-   * @returns {?Object} Frame data object or null
-   */
-  getFrameData: function (tab_id, frame_id) {
-    let self = this;
-
-    frame_id = frame_id || 0;
-
-    if (utils.hasOwn(self.tabData, tab_id)) {
-      if (utils.hasOwn(self.tabData[tab_id].frames, frame_id)) {
-        return self.tabData[tab_id].frames[frame_id];
-      }
-    }
-    return null;
-  },
-
   initializeCnames: function () {
     return fetch(constants.CNAME_DOMAINS_LOCAL_URL)
       .then(response => response.json())
@@ -566,7 +416,7 @@ Badger.prototype = {
    *
    * @returns {Promise}
    */
-  initializeYellowlist: function () {
+  initYellowlist: function () {
     let self = this;
 
     return new Promise(function (resolve, reject) {
@@ -578,7 +428,7 @@ Badger.prototype = {
 
       // we don't have the yellowlist initialized yet
       // initialize from disk
-      utils.xhrRequest(constants.YELLOWLIST_LOCAL_URL, (error, response) => {
+      utils.fetchResource(constants.YELLOWLIST_LOCAL_URL, (error, response) => {
         if (error) {
           console.error(error);
           return reject(new Error("Failed to fetch local yellowlist"));
@@ -593,6 +443,31 @@ Badger.prototype = {
   },
 
   /**
+   * Checks if it's time to fetch the latest yellowlist from eff.org.
+   * If it isn't yet time, schedules the next update for when it is.
+   */
+  initYellowlistUpdates: function () {
+    let self = this,
+      next_update_time = self.getPrivateSettings().getItem('nextYellowlistUpdateTime'),
+      time_now = Date.now();
+
+    if (time_now < next_update_time) {
+      let msec_remaining = next_update_time - time_now;
+      log("Not yet time to update yellowlist; next update in %s mins",
+        Math.round(msec_remaining / 1000 / 60));
+      // schedule an update for when the extension remains running that long
+      setTimeout(self.updateYellowlist.bind(self), msec_remaining);
+      return;
+    }
+
+    self.updateYellowlist(err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  },
+
+  /**
    * Updates to the latest yellowlist from eff.org.
    * @param {Function} [callback] optional callback
    */
@@ -603,15 +478,16 @@ Badger.prototype = {
       callback = function () {};
     }
 
-    utils.xhrRequest(constants.YELLOWLIST_URL, function (err, response) {
+    // schedule the next update for long-running extension environments
+    setTimeout(self.updateYellowlist.bind(self), utils.oneDay());
+
+    utils.fetchResource(constants.YELLOWLIST_URL, function (err, response) {
       if (err) {
         console.error(
           "Problem fetching yellowlist at",
           constants.YELLOWLIST_URL,
-          err.status,
-          err.message
+          err
         );
-
         return callback(new Error("Failed to fetch remote yellowlist"));
       }
 
@@ -651,6 +527,9 @@ Badger.prototype = {
       self.storage.updateYellowlist(domains);
       log("Updated yellowlist from remote");
 
+      // refresh next update time to help avoid updating on every restart
+      self.getPrivateSettings().setItem('nextYellowlistUpdateTime', utils.oneDayFromNow());
+
       return callback(null);
     });
   },
@@ -660,7 +539,7 @@ Badger.prototype = {
    *
    * @returns {Promise}
    */
-  initializeDnt: function () {
+  initDntPolicyHashes: function () {
     let self = this;
 
     return new Promise(function (resolve, reject) {
@@ -672,7 +551,7 @@ Badger.prototype = {
 
       // we don't have DNT hashes initialized yet
       // initialize from disk
-      utils.xhrRequest(constants.DNT_POLICIES_LOCAL_URL, (error, response) => {
+      utils.fetchResource(constants.DNT_POLICIES_LOCAL_URL, (error, response) => {
         let hashes;
 
         if (error) {
@@ -697,6 +576,31 @@ Badger.prototype = {
   },
 
   /**
+   * Checks if it's time to get the latest EFF DNT policy hashes from eff.org.
+   * If it isn't yet time, schedules the next update for when it is.
+   */
+  initDntPolicyUpdates: function () {
+    let self = this,
+      next_update_time = self.getPrivateSettings().getItem('nextDntHashesUpdateTime'),
+      time_now = Date.now();
+
+    if (time_now < next_update_time) {
+      let msec_remaining = next_update_time - time_now;
+      log("Not yet time to update DNT hashes; next update in %s mins",
+        Math.round(msec_remaining / 1000 / 60));
+      // schedule an update for when the extension remains running that long
+      setTimeout(self.updateDntPolicyHashes.bind(self), msec_remaining);
+      return;
+    }
+
+    self.updateDntPolicyHashes(err => {
+      if (err) {
+        console.error(err);
+      }
+    });
+  },
+
+  /**
    * Fetch acceptable DNT policy hashes from the EFF server
    * @param {Function} [cb] optional callback
    */
@@ -707,6 +611,9 @@ Badger.prototype = {
       cb = function () {};
     }
 
+    // schedule the next update for long-running extension environments
+    setTimeout(self.updateDntPolicyHashes.bind(self), utils.oneDay() * 4);
+
     if (!self.isCheckingDNTPolicyEnabled()) {
       // user has disabled this, we can check when they re-enable
       setTimeout(function () {
@@ -714,10 +621,10 @@ Badger.prototype = {
       }, 0);
     }
 
-    utils.xhrRequest(constants.DNT_POLICIES_URL, function (err, response) {
+    utils.fetchResource(constants.DNT_POLICIES_URL, function (err, response) {
       if (err) {
         console.error("Problem fetching DNT policy hash list at",
-          constants.DNT_POLICIES_URL, err.status, err.message);
+          constants.DNT_POLICIES_URL, err);
         return cb(new Error("Failed to fetch remote DNT hashes"));
       }
 
@@ -731,6 +638,10 @@ Badger.prototype = {
 
       self.storage.updateDntHashes(hashes);
       log("Updated hashes from remote");
+
+      // refresh next update time to help avoid updating on every restart
+      self.getPrivateSettings().setItem('nextDntHashesUpdateTime', utils.nDaysFromNow(4));
+
       return cb(null);
     });
   },
@@ -785,24 +696,20 @@ Badger.prototype = {
    *
    * Rate-limited to at least one second apart.
    *
-   * @param {String} origin The host to check
-   * @param {Function} callback callback(successStatus)
+   * @param {String} origin the host to check
+   * @param {Function} callback the callback ({Boolean} success_status)
    */
   _checkPrivacyBadgerPolicy: utils.rateLimit(function (origin, callback) {
-    var successStatus = false;
-    var url = "https://" + origin + "/.well-known/dnt-policy.txt";
-    var dnt_hashes = this.storage.getStore('dnt_hashes');
+    const URL = "https://" + origin + "/.well-known/dnt-policy.txt";
+    const dntHashesStore = this.storage.getStore('dnt_hashes');
 
-    utils.xhrRequest(url,function(err,response) {
+    utils.fetchResource(URL, function (err, response) {
       if (err) {
-        callback(successStatus);
+        callback(false);
         return;
       }
       utils.sha1(response, function(hash) {
-        if (dnt_hashes.hasItem(hash)) {
-          successStatus = true;
-        }
-        callback(successStatus);
+        callback(dntHashesStore.hasItem(hash));
       });
     });
   }, constants.DNT_POLICY_CHECK_INTERVAL),
@@ -813,15 +720,14 @@ Badger.prototype = {
   defaultSettings: {
     checkForDNTPolicy: true,
     disabledSites: [],
-    disableFloc: true,
     disableGoogleNavErrorService: true,
     disableHyperlinkAuditing: true,
     disableNetworkPrediction: true,
+    disableTopics: true,
     hideBlockedElements: true,
     learnInIncognito: false,
     learnLocally: false,
-    migrationLevel: 0,
-    preventWebRTCIPLeak: false,
+    migrationLevel: Migrations.length,
     seenComic: false,
     sendDNTSignal: true,
     showCounter: true,
@@ -837,7 +743,7 @@ Badger.prototype = {
    * Initializes settings with defaults if needed,
    * detects whether Badger just got installed or upgraded
    */
-  initializeSettings: function () {
+  initSettings: function () {
     let self = this,
       settings = self.getSettings();
 
@@ -875,21 +781,40 @@ Badger.prototype = {
 
     // initialize any other private store (not-for-export) settings
     let privateDefaultSettings = {
+      blockThreshold: constants.TRACKING_THRESHOLD,
       firstRunTimerFinished: true,
+      nextDntHashesUpdateTime: 0,
+      nextYellowlistUpdateTime: 0,
       showLearningPrompt: false,
+      shownBreakageNotes: [],
     };
     for (let key of Object.keys(privateDefaultSettings)) {
       if (!privateStore.hasItem(key)) {
         privateStore.setItem(key, privateDefaultSettings[key]);
       }
     }
+    if (self.isFirstRun) {
+      privateStore.setItem("firstRunTimerFinished", false);
+    }
     badger.initDeprecations();
 
+    // remove obsolete settings
     if (self.isUpdate) {
-      // remove obsolete settings
-      if (settings.hasItem("showTrackingDomains")) {
-        settings.deleteItem("showTrackingDomains");
-      }
+      [
+        "disableFloc",
+        "preventWebRTCIPLeak",
+        "showTrackingDomains",
+        "webRTCIPProtection",
+      ].forEach(item => {
+        if (settings.hasItem(item)) { settings.deleteItem(item); }
+      });
+
+      [
+        "legacyWebRtcProtectionUser",
+        "showWebRtcDeprecation",
+      ].forEach(item => {
+        if (privateStore.hasItem(item)) { privateStore.deleteItem(item); }
+      });
     }
   },
 
@@ -898,67 +823,17 @@ Badger.prototype = {
    *
    * Called on Badger startup and user data import.
    */
-  initDeprecations: function () {
+  initDeprecations: function () {},
+
+  runMigrations: function () {
     let self = this,
-      privateStore = self.getPrivateSettings();
+      settings = self.getSettings(),
+      migrationLevel = settings.getItem('migrationLevel');
 
-    if (!privateStore.hasItem("legacyWebRtcProtectionUser")) {
-      // initialize "legacy WebRTC IP leak protection user" flag
-      privateStore.setItem("legacyWebRtcProtectionUser",
-        self.getSettings().getItem("preventWebRTCIPLeak"));
-
-    } else if (!privateStore.getItem("legacyWebRtcProtectionUser")) {
-      // set legacy flag to true if the IP protection gets enabled
-      // for whatever reason (testing, user data import)
-      if (self.getSettings().getItem("preventWebRTCIPLeak")) {
-        privateStore.setItem("legacyWebRtcProtectionUser", true);
-      }
-    }
-
-    if (!privateStore.hasItem("showWebRtcDeprecation")) {
-      // will show WebRTC protection deprecation message
-      // iff showWebRtcDeprecation exists and is set to true
-      if (privateStore.getItem("legacyWebRtcProtectionUser")) {
-        privateStore.setItem("showWebRtcDeprecation", true);
-      }
-    }
-  },
-
-  runMigrations: function() {
-    var self = this;
-    var settings = self.getSettings();
-    var migrationLevel = settings.getItem('migrationLevel');
-    // TODO do not remove any migration methods
-    // TODO w/o refactoring migrationLevel handling to work differently
-    var migrations = [
-      Migrations.changePrivacySettings,
-      Migrations.migrateAbpToStorage,
-      Migrations.migrateBlockedSubdomainsToCookieblock,
-      Migrations.migrateLegacyFirefoxData,
-      Migrations.migrateDntRecheckTimes,
-      // Need to run this migration again for everyone to #1181
-      Migrations.migrateDntRecheckTimes2,
-      Migrations.forgetMistakenlyBlockedDomains,
-      Migrations.unblockIncorrectlyBlockedDomains,
-      Migrations.forgetBlockedDNTDomains,
-      Migrations.reapplyYellowlist,
-      Migrations.forgetNontrackingDomains,
-      Migrations.forgetMistakenlyBlockedDomains,
-      Migrations.resetWebRTCIPHandlingPolicy,
-      Migrations.enableShowNonTrackingDomains,
-      Migrations.forgetFirstPartySnitches,
-      Migrations.forgetCloudflare,
-      Migrations.forgetConsensu,
-      Migrations.resetWebRTCIPHandlingPolicy2,
-      Migrations.resetWebRtcIpHandlingPolicy3,
-      Migrations.forgetOpenDNS,
-    ];
-
-    for (var i = migrationLevel; i < migrations.length; i++) {
-      migrations[i].call(Migrations, self);
+    for (let i = migrationLevel; i < Migrations.length; i++) {
+      Migrations[i].call(self);
       settings.setItem('migrationLevel', i+1);
     }
-
   },
 
   /**
@@ -967,11 +842,11 @@ Badger.prototype = {
    * @returns {Integer} tracking domains count
    */
   getTrackerCount: function (tab_id) {
-    let origins = this.tabData[tab_id].origins,
+    let trackers = this.tabData.getTrackers(tab_id),
       count = 0;
 
-    for (let domain in origins) {
-      let action = origins[domain];
+    for (let domain in trackers) {
+      let action = trackers[domain];
       if (
         action == constants.BLOCK ||
         action == constants.COOKIEBLOCK ||
@@ -1007,9 +882,7 @@ Badger.prototype = {
         return;
       }
 
-      let special_page = !utils.hasOwn(self.tabData, tab_id);
-
-      if (self.criticalError || (!special_page && badger.getPrivateSettings().getItem("showWebRtcDeprecation"))) {
+      if (self.criticalError) {
         chrome.browserAction.setBadgeBackgroundColor({tabId: tab_id, color: "#cc0000"});
         chrome.browserAction.setBadgeText({tabId: tab_id, text: "!"});
         return;
@@ -1019,9 +892,9 @@ Badger.prototype = {
       // - the counter is disabled
       // - we don't have tabData for whatever reason (special browser pages)
       // - Privacy Badger is disabled on the page
-      if (special_page ||
+      if (!self.tabData.has(tab_id) ||
         !self.getSettings().getItem("showCounter") ||
-        !self.isPrivacyBadgerEnabled(self.getFrameData(tab_id).host)
+        !self.isPrivacyBadgerEnabled(self.tabData.getFrameData(tab_id).host)
       ) {
         chrome.browserAction.setBadgeText({tabId: tab_id, text: ""});
         return;
@@ -1054,32 +927,23 @@ Badger.prototype = {
   },
 
   /**
-   * Check if privacy badger is enabled, take an origin and
-   * check against the disabledSites list
+   * Returns whether Privacy Badger is enabled on a given hostname.
    *
-   * @param {String} origin the origin to check
-   * @returns {Boolean} true if enabled
+   * @param {String} host the FQDN to check
+   *
+   * @returns {Boolean}
    */
-  isPrivacyBadgerEnabled: function(origin) {
-    var settings = this.getSettings();
-    var disabledSites = settings.getItem("disabledSites");
-    if (disabledSites && disabledSites.length > 0) {
-      for (var i = 0; i < disabledSites.length; i++) {
-        var site = disabledSites[i];
+  isPrivacyBadgerEnabled: function (host) {
+    let sitePatterns = this.getSettings().getItem("disabledSites") || [];
 
-        if (site.startsWith("*")) {
-          var wildcard = site.slice(1); // remove "*"
-
-          if (origin.endsWith(wildcard)) {
-            return false;
-          }
-        }
-
-        if (disabledSites[i] === origin) {
-          return false;
-        }
+    for (let pattern of sitePatterns) {
+      if (pattern.startsWith("*") && host.endsWith(pattern.slice(1))) {
+        return false;
+      } else if (pattern === host) {
+        return false;
       }
     }
+
     return true;
   },
 
@@ -1095,31 +959,47 @@ Badger.prototype = {
     );
   },
 
-  isDNTSignalEnabled: function() {
-    return this.getSettings().getItem("sendDNTSignal");
+  /**
+   * Returns whether we should send DNT/GPC signals on a given website.
+   *
+   * @param {String} site_host the FQDN of the website
+   *
+   * @returns {Boolean}
+   */
+  isDntSignalEnabled: function (site_host) {
+    if (!this.getSettings().getItem("sendDNTSignal")) {
+      return false;
+    }
+    // temp. exception list for sites
+    // where sending DNT/GPC signals causes major breakages
+    // TODO indicate when this happens in the UI somehow
+    const gpcDisabledWebsites = {
+      'www.costco.com': true,
+    };
+    return !utils.hasOwn(gpcDisabledWebsites, site_host);
   },
 
   isCheckingDNTPolicyEnabled: function() {
     return this.getSettings().getItem("checkForDNTPolicy");
   },
 
-  isFlocOverwriteEnabled: function() {
-    if (document.interestCohort) {
-      return this.getSettings().getItem("disableFloc");
+  isTopicsOverwriteEnabled: function () {
+    if (document.browsingTopics) {
+      return this.getSettings().getItem("disableTopics");
     }
     return false;
   },
 
   /**
-   * Add an origin to the disabled sites list
+   * Adds a domain to the list of disabled sites.
    *
-   * @param {String} origin The origin to disable the PB for
+   * @param {String} domain The site domain to disable PB for
    */
-  disablePrivacyBadgerForOrigin: function(origin) {
-    var settings = this.getSettings();
-    var disabledSites = settings.getItem('disabledSites');
-    if (disabledSites.indexOf(origin) < 0) {
-      disabledSites.push(origin);
+  disableOnSite: function (domain) {
+    let settings = this.getSettings();
+    let disabledSites = settings.getItem('disabledSites');
+    if (disabledSites.indexOf(domain) < 0) {
+      disabledSites.push(domain);
       settings.setItem("disabledSites", disabledSites);
     }
   },
@@ -1134,14 +1014,14 @@ Badger.prototype = {
   },
 
   /**
-   * Remove an origin from the disabledSites list
+   * Removes a domain from the list of disabled sites.
    *
-   * @param {String} origin The origin to disable the PB for
+   * @param {String} domain The site domain to re-enable PB on
    */
-  enablePrivacyBadgerForOrigin: function(origin) {
-    var settings = this.getSettings();
-    var disabledSites = settings.getItem("disabledSites");
-    var idx = disabledSites.indexOf(origin);
+  reenableOnSite: function (domain) {
+    let settings = this.getSettings();
+    let disabledSites = settings.getItem("disabledSites");
+    let idx = disabledSites.indexOf(domain);
     if (idx >= 0) {
       disabledSites.splice(idx, 1);
       settings.setItem("disabledSites", disabledSites);
@@ -1190,8 +1070,8 @@ Badger.prototype = {
   },
 
   /**
-   * Save third party origins to tabData[tab_id] object for
-   * use in the popup and, if needed, call updateBadge.
+   * Records third party FQDNs to tabData for use in the popup,
+   * and if necessary updates the badge.
    *
    * @param {Integer} tab_id the tab we are on
    * @param {String} fqdn the third party origin to add
@@ -1205,15 +1085,15 @@ Badger.prototype = {
         action == constants.USER_BLOCK ||
         action == constants.USER_COOKIEBLOCK
       ),
-      origins = self.tabData[tab_id].origins,
-      previously_blocked = utils.hasOwn(origins, fqdn) && (
-        origins[fqdn] == constants.BLOCK ||
-        origins[fqdn] == constants.COOKIEBLOCK ||
-        origins[fqdn] == constants.USER_BLOCK ||
-        origins[fqdn] == constants.USER_COOKIEBLOCK
+      trackers = self.tabData.getTrackers(tab_id),
+      previously_blocked = utils.hasOwn(trackers, fqdn) && (
+        trackers[fqdn] == constants.BLOCK ||
+        trackers[fqdn] == constants.COOKIEBLOCK ||
+        trackers[fqdn] == constants.USER_BLOCK ||
+        trackers[fqdn] == constants.USER_COOKIEBLOCK
       );
 
-    origins[fqdn] = action;
+    self.tabData.logTracker(tab_id, fqdn, action);
 
     // no need to update badge if not a (cookie)blocked domain,
     // or if we have already seen it as a (cookie)blocked domain
@@ -1241,7 +1121,7 @@ Badger.prototype = {
 
     // TODO grab hostname from tabData instead
     if (!utils.isRestrictedUrl(tab_url) &&
-        self.isPrivacyBadgerEnabled(window.extractHostFromURL(tab_url))) {
+        self.isPrivacyBadgerEnabled(extractHostFromURL(tab_url))) {
       iconFilename = {
         19: chrome.runtime.getURL("icons/badger-19.png"),
         38: chrome.runtime.getURL("icons/badger-38.png")
@@ -1285,11 +1165,11 @@ Badger.prototype = {
 
     // The order of these keys is also the order in which they should be imported.
     // It's important that snitch_map be imported before action_map (#1972)
-    ["snitch_map", "action_map", "settings_map"].forEach(function (key) {
+    for (let key of ["snitch_map", "action_map", "settings_map", "tracking_map", "fp_scripts"]) {
       if (utils.hasOwn(data, key)) {
         self.storage.getStore(key).merge(data[key]);
       }
-    });
+    }
   }
 
 };
@@ -1298,7 +1178,7 @@ Badger.prototype = {
 
 function startBackgroundListeners() {
   chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-    if (changeInfo.status == "loading" && tab.url) {
+    if (badger.INITIALIZED && changeInfo.status == "loading" && tab.url) {
       badger.updateIcon(tab.id, tab.url);
       badger.updateBadge(tabId);
     }
@@ -1306,14 +1186,18 @@ function startBackgroundListeners() {
 
   // Update icon if a tab is replaced or loaded from cache
   chrome.tabs.onReplaced.addListener(function(addedTabId/*, removedTabId*/) {
-    chrome.tabs.get(addedTabId, function(tab) {
-      badger.updateIcon(tab.id, tab.url);
-    });
+    if (badger.INITIALIZED) {
+      chrome.tabs.get(addedTabId, function(tab) {
+        badger.updateIcon(tab.id, tab.url);
+      });
+    }
   });
 
   chrome.tabs.onActivated.addListener(function (activeInfo) {
-    badger.updateBadge(activeInfo.tabId);
+    if (badger.INITIALIZED) {
+      badger.updateBadge(activeInfo.tabId);
+    }
   });
 }
 
-var badger = window.badger = new Badger();
+let badger = window.badger = new Badger(document.location.pathname == "/tests/index.html");

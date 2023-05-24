@@ -24,6 +24,7 @@
 /******************************************************************************/
 
 import µb from './background.js';
+import { i18n$ } from './i18n.js';
 
 /******************************************************************************/
 
@@ -36,6 +37,14 @@ if ( vAPI.contextMenu === undefined ) {
         update: function() {}
     };
 }
+
+/******************************************************************************/
+
+const BLOCK_ELEMENT_BIT          = 0b00001;
+const BLOCK_RESOURCE_BIT         = 0b00010;
+const TEMP_ALLOW_LARGE_MEDIA_BIT = 0b00100;
+const SUBSCRIBE_TO_LIST_BIT      = 0b01000;
+const VIEW_SOURCE_BIT            = 0b10000;
 
 /******************************************************************************/
 
@@ -111,6 +120,18 @@ const onTemporarilyAllowLargeMediaElements = function(details, tab) {
 
 /******************************************************************************/
 
+const onViewSource = function(details, tab) {
+    if ( tab === undefined ) { return; }
+    const url = details.linkUrl || details.frameUrl || details.pageUrl || '';
+    if ( /^https?:\/\//.test(url) === false ) { return; }
+    µb.openNewTab({
+        url: `code-viewer.html?url=${self.encodeURIComponent(url)}`,
+        select: true,
+    });
+};
+
+/******************************************************************************/
+
 const onEntryClicked = function(details, tab) {
     if ( details.menuItemId === 'uBlock0-blockElement' ) {
         return onBlockElement(details, tab);
@@ -127,6 +148,9 @@ const onEntryClicked = function(details, tab) {
     if ( details.menuItemId === 'uBlock0-temporarilyAllowLargeMediaElements' ) {
         return onTemporarilyAllowLargeMediaElements(details, tab);
     }
+    if ( details.menuItemId === 'uBlock0-viewSource' ) {
+        return onViewSource(details, tab);
+    }
 };
 
 /******************************************************************************/
@@ -134,30 +158,40 @@ const onEntryClicked = function(details, tab) {
 const menuEntries = {
     blockElement: {
         id: 'uBlock0-blockElement',
-        title: vAPI.i18n('pickerContextMenuEntry'),
+        title: i18n$('pickerContextMenuEntry'),
         contexts: [ 'all' ],
+        documentUrlPatterns: [ 'http://*/*', 'https://*/*' ],
     },
     blockElementInFrame: {
         id: 'uBlock0-blockElementInFrame',
-        title: vAPI.i18n('contextMenuBlockElementInFrame'),
+        title: i18n$('contextMenuBlockElementInFrame'),
         contexts: [ 'frame' ],
+        documentUrlPatterns: [ 'http://*/*', 'https://*/*' ],
     },
     blockResource: {
         id: 'uBlock0-blockResource',
-        title: vAPI.i18n('pickerContextMenuEntry'),
+        title: i18n$('pickerContextMenuEntry'),
         contexts: [ 'audio', 'frame', 'image', 'video' ],
+        documentUrlPatterns: [ 'http://*/*', 'https://*/*' ],
     },
     subscribeToList: {
         id: 'uBlock0-subscribeToList',
-        title: vAPI.i18n('contextMenuSubscribeToList'),
+        title: i18n$('contextMenuSubscribeToList'),
         contexts: [ 'link' ],
         targetUrlPatterns: [ 'abp:*', 'https://subscribe.adblockplus.org/*' ],
     },
     temporarilyAllowLargeMediaElements: {
         id: 'uBlock0-temporarilyAllowLargeMediaElements',
-        title: vAPI.i18n('contextMenuTemporarilyAllowLargeMediaElements'),
+        title: i18n$('contextMenuTemporarilyAllowLargeMediaElements'),
         contexts: [ 'all' ],
-    }
+        documentUrlPatterns: [ 'http://*/*', 'https://*/*' ],
+    },
+    viewSource: {
+        id: 'uBlock0-viewSource',
+        title: i18n$('contextMenuViewSource'),
+        contexts: [ 'page', 'frame', 'link' ],
+        documentUrlPatterns: [ 'http://*/*', 'https://*/*' ],
+    },
 };
 
 /******************************************************************************/
@@ -170,31 +204,37 @@ const update = function(tabId = undefined) {
         const pageStore = µb.pageStoreFromTabId(tabId);
         if ( pageStore && pageStore.getNetFilteringSwitch() ) {
             if ( pageStore.shouldApplySpecificCosmeticFilters(0) ) {
-                newBits |= 0b0001;
+                newBits |= BLOCK_ELEMENT_BIT;
             } else {
-                newBits |= 0b0010;
+                newBits |= BLOCK_RESOURCE_BIT;
             }
             if ( pageStore.largeMediaCount !== 0 ) {
-                newBits |= 0b0100;
+                newBits |= TEMP_ALLOW_LARGE_MEDIA_BIT;
             }
         }
-        newBits |= 0b1000;
+        newBits |= SUBSCRIBE_TO_LIST_BIT;
+    }
+    if ( µb.hiddenSettings.filterAuthorMode ) {
+        newBits |= VIEW_SOURCE_BIT;
     }
     if ( newBits === currentBits ) { return; }
     currentBits = newBits;
     const usedEntries = [];
-    if ( newBits & 0b0001 ) {
+    if ( (newBits & BLOCK_ELEMENT_BIT) !== 0 ) {
         usedEntries.push(menuEntries.blockElement);
         usedEntries.push(menuEntries.blockElementInFrame);
     }
-    if ( newBits & 0b0010 ) {
+    if ( (newBits & BLOCK_RESOURCE_BIT) !== 0 ) {
         usedEntries.push(menuEntries.blockResource);
     }
-    if ( newBits & 0b0100 ) {
+    if ( (newBits & TEMP_ALLOW_LARGE_MEDIA_BIT) !== 0 ) {
         usedEntries.push(menuEntries.temporarilyAllowLargeMediaElements);
     }
-    if ( newBits & 0b1000 ) {
+    if ( (newBits & SUBSCRIBE_TO_LIST_BIT) !== 0 ) {
         usedEntries.push(menuEntries.subscribeToList);
+    }
+    if ( (newBits & VIEW_SOURCE_BIT) !== 0 ) {
+        usedEntries.push(menuEntries.viewSource);
     }
     vAPI.contextMenu.setEntries(usedEntries, onEntryClicked);
 };

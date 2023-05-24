@@ -1,7 +1,7 @@
 {
 "update_url": "https://clients2.google.com/service/update2/crx",
 
-    "version": "4.1.39",
+    "version": "4.1.55",
     "manifest_version": 2,
     "name": "__MSG_name__",
     "short_name": "__MSG_short_name__",
@@ -55,7 +55,8 @@
                 "pages/thankyou.js"
             ],
             "matches": [
-                "*://*.adguard.com/*/thankyou.html*"
+                "*://*.adguard.com/*/thankyou.html*",
+                "*://*.adguard.app/*/thankyou.html*"
             ],
             "run_at": "document_start"
         }
@@ -80,5 +81,5 @@
     "optional_permissions": [
         "privacy"
     ],
-    "content_security_policy": "script-src 'self' 'sha256-Bm6SGASuSJ/y5W6tMmcnxeShdKrQ2QtIV2mH1Oh8qho='; object-src 'self'"
+    "content_security_policy": "script-src 'self' 'sha256-/LXEqDmVMWdyPFjNsOl0yp3A6W+5pEv8yN6hmCLoAiE='; object-src 'self'"
 }

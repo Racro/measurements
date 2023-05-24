@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "قائمة فلاتر ضد التحايل ABP"
   },
-  "common_feature_cookies_title": {
-    "message": "حجب تحذيرات ملفات تعريف الارتباط"
+  "common_feature_annoyances_title": {
+    "message": "حجب المزيد من عوامل التشتيت"
   },
   "common_feature_malware_title": {
     "message": "منع البرامج الضارة"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "حجب"
+  },
+  "composer_block_reload": {
+    "message": "الحجب وإعادة تحميل الصفحة"
   },
   "composer_cancel": {
     "message": "إلغاء"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "بيتا"
   },
   "options_builtin_filterList_add": {
     "message": "إضافة قوائم عوامل تصفية مدمجة"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "مساهمة"
   },
+  "options_free_filters_header": {
+    "message": "ميزات مجانية"
+  },
   "options_general_description": {
     "message": "حدد المحتويات التي يظهرها Adblock Plus ويخفيها على مواقع الويب."
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "إعدادات"
   },
+  "options_premium_manage": {
+    "message": "إدارة اشتراكي"
+  },
+  "options_premium_upgrade_description": {
+    "message": "يمكنك تخصيص تجربتك وتحسينها في حجب الإعلانات! ⁦<a0>⁩معرفة المزيد⁦</a0>⁩"
+  },
   "options_privacy_header": {
     "message": "الخصوصية والأمان"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "قيّمنا"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "بإضافة عامل التصفية هذا، فإنك تتنازل عن حقك في إعلامك بملفات تعريف الارتباط وفي تعديل إعدادات ملفات تعريف الارتباط على مواقع الويب الفردية. لذا، يُرجى ملاحظة أنّ بعض مواقع الويب قد تتعقبك بشكل افتراضي. ويمكن الحصول على مزيدٍ من المعلومات هنا: ⁦<a0>⁩https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "يمكنك حجب مقاطع الفيديو العائمة وعناصر النشرات الإخبارية المنبثقة وطلبات الاستطلاعات وإشعارات المواقع."
   },
-  "options_recommended_filters_header": {
-    "message": "عوامل التصفية الموصى بها"
+  "options_recommended_notifications_description": {
+    "message": "يمكنك منع مواقع الويب من مطالبتك بالسماح بالإشعارات المنبثقة التي يمكنها تعقب نشاطك على الإنترنت."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "امنع مواقع الويب من مطالبتك بالسماح بالإشعارات المنبثقة التي يمكنها تعقب نشاطك على الإنترنت."
+  "options_recommended_privacy_description": {
+    "message": "يمكنك حماية خصوصيتك من الكيانات المعروفة التي قد تتعقب نشاطك على الإنترنت عبر مواقع الويب التي تزورها."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "تمتع بحماية خصوصيتك من الكيانات المعروفة التي قد تتعقب نشاطك على الإنترنت عبر مواقع الويب التي تزورها."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "تسمح أيقونات وسائل التواصل الاجتماعي الموجودة على مواقع الويب التي تزورها لشبكات التواصل الاجتماعي بإنشاء ملف تعريف لك اعتمادًا على عاداتك في التصفح، حتى عندما لا تنقر فوقها. ويمكن أن يؤدي إخفاء تلك الأيقونات إلى حماية ملف التعريف الخاص بك."
+  "options_recommended_social_description": {
+    "message": "يمكنك منع شبكات التواصل الاجتماعي من إنشاء ملف تعريف لك بناء على عاداتك في التصفح."
   },
   "options_report_bug": {
     "message": "هل وجدت خطأ برمجيًا؟ <a>أرسل لنا تقريرًا بالخطأ البرمجي</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "حسناً، فهمت"
   },
+  "options_upgrade_button": {
+    "message": "ترقية"
+  },
   "devtools_header_state_allowlisted": {
     "message": "المسموح بها"
   },
@@ -577,6 +592,9 @@
       }
     }
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "مُحدد CSS قصير جدًا. يُرجى استخدام مُحدد أطول أو تحديد مجال واحد على الأقل لعامل تصفية إخفاء العناصر هذا."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "لم يتم تحديد مجال نشط. يُرجى تحديد مجال واحد على الأقل لعامل تصفية إخفاء العناصر المُوسَّع هذا."
   },
@@ -592,6 +610,9 @@
   "filter_invalid_regexp": {
     "message": "التعبير القياسي غير صالح (لا يتقيّد بناء الجملة بالمعيار)."
   },
+  "filter_slow": {
+    "message": "عامل التصفية بطيء. يُرجى التحقق من طول النمط والتأكد من أنه لا يحتوي على تعبير عادي."
+  },
   "filter_snippet_nodomain": {
     "message": "لم يتم تحديد مجال نشط. يُرجى تحديد مجال واحد على الأقل لعامل تصفية القصاصات البرمجية هذا."
   },
@@ -603,6 +624,9 @@
         "example": "foo"
       }
     }
+  },
+  "filter_url_not_specific_enough": {
+    "message": "نمط عنوان URL قصير جدًا. يُرجى استخدام نمط أطول أو تحديد مجال واحد على الأقل لعامل التصفية هذا."
   },
   "line": {
     "message": "السطر $number$: $message$",
@@ -616,6 +640,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "تم بلوغ الحد الأقصى لعدد عوامل التصفية. يرجى إزالة عوامل تصفية أخرى من نفس النوع قبل إضافة عوامل تصفية جديدة."
   },
   "unexpected_filter_list_header": {
     "message": "رؤوس قوائم عوامل التصفية معتمدة فقط في قوائم عوامل التصفية القابلة للتنزيل."
@@ -851,6 +878,9 @@
   "footer_social_description": {
     "message": "ابقَ على اتصال معنا!"
   },
+  "idle_header": {
+    "message": "لا يوجد شيء لحجبه في هذه الصفحة!"
+  },
   "options_refresh": {
     "message": "تحديث"
   },
@@ -862,6 +892,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "إيقاف عرض الإشعارات"
+  },
+  "premium_upgrade": {
+    "message": "ترقية"
   },
   "refresh_this_page": {
     "message": "تحديث هذه الصفحة"

@@ -18,11 +18,9 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals URI:false */
+import { extractHostFromURL, isThirdParty, getBaseDomain, URI } from "../lib/basedomain.js";
 
-require.scopes.utils = (function () {
-
-let mdfp = require("multiDomainFP");
+import mdfp from "./multiDomainFirstParties.js";
 
 // TODO replace with Object.hasOwn() eventually
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn
@@ -31,68 +29,25 @@ function hasOwn(obj, prop) {
 }
 
 /**
- * Generic interface to make an XHR request
+ * Generic interface to make requests.
  *
- * @param {String} url The url to get
- * @param {Function} callback The callback to call after request has finished
- * @param {String} method GET/POST
- * @param {Object} opts XMLHttpRequest options
+ * @param {String} url the URL to get
+ * @param {Function} callback the callback ({String?} error, {String?} response body text)
  */
-function xhrRequest(url, callback, method, opts) {
-  if (!method) {
-    method = "GET";
-  }
-  if (!opts) {
-    opts = {};
-  }
-
-  let xhr = new XMLHttpRequest();
-
-  for (let key in opts) {
-    if (hasOwn(opts, key)) {
-      xhr[key] = opts[key];
+function fetchResource(url, callback) {
+  fetch(url).then(response => {
+    if (!response.ok) {
+      throw new Error("Non-2xx response status: " + response.status);
     }
-  }
+    return response.text();
 
-  xhr.onload = function () {
-    if (xhr.status == 200) {
-      callback(null, xhr.response);
-    } else {
-      let error = {
-        status: xhr.status,
-        message: xhr.response,
-        object: xhr
-      };
-      callback(error, error.message);
-    }
-  };
+  }).then(data => {
+    // success
+    callback(null, data);
 
-  // triggered by network problems
-  xhr.onerror = function () {
-    callback({ status: 0, message: "", object: xhr }, "");
-  };
-
-  xhr.open(method, url, true);
-  xhr.send();
-}
-
-/**
- * Converts binary data to base64-encoded text suitable for use in data URIs.
- *
- * Adapted from https://stackoverflow.com/a/9458996.
- *
- * @param {ArrayBuffer} buffer binary data
- *
- * @returns {String} base64-encoded text
- */
-function arrayBufferToBase64(buffer) {
-  var binary = '';
-  var bytes = new Uint8Array(buffer);
-  var len = bytes.byteLength;
-  for (var i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
+  }).catch(error => {
+    callback(error, null);
+  });
 }
 
 /**
@@ -109,7 +64,7 @@ function explodeSubdomains(fqdn, all) {
   if (all) {
     baseDomain = fqdn.split('.').pop();
   } else {
-    baseDomain = window.getBaseDomain(fqdn);
+    baseDomain = getBaseDomain(fqdn);
   }
   var baseLen = baseDomain.split('.').length;
   var parts = fqdn.split('.');
@@ -443,10 +398,10 @@ function getHostFromDomainInput(input) {
  * @return {Boolean} true if the domains are third party
  */
 function isThirdPartyDomain(domain1, domain2) {
-  if (window.isThirdParty(domain1, domain2)) {
+  if (isThirdParty(domain1, domain2)) {
     return !mdfp.isMultiDomainFirstParty(
-      window.getBaseDomain(domain1),
-      window.getBaseDomain(domain2)
+      getBaseDomain(domain1),
+      getBaseDomain(domain2)
     );
   }
   return false;
@@ -471,7 +426,7 @@ let firstPartyProtectionsEnabled = (function () {
       if (contentScriptObj.js[0].includes("/firstparties/")) {
         let extractedUrls = [];
         for (let match of contentScriptObj.matches) {
-          extractedUrls.push(window.extractHostFromURL(match));
+          extractedUrls.push(extractHostFromURL(match));
         }
         firstParties.push(extractedUrls);
       }
@@ -530,15 +485,6 @@ function concatUniq(arr1, arr2) {
   return arr1.concat(arr2.filter(x => !arr1.includes(x)));
 }
 
-function invert(obj) {
-  let result = {};
-  let keys = Object.keys(obj);
-  for (let i = 0, length = keys.length; i < length; i++) {
-    result[obj[keys[i]]] = keys[i];
-  }
-  return result;
-}
-
 /**
  * Array.prototype.filter() for objects.
  *
@@ -555,19 +501,17 @@ function filter(obj, cb) {
   return memo;
 }
 
-/************************************** exports */
-let exports = {
-  arrayBufferToBase64,
+let utils = {
   concatUniq,
   debounce,
   difference,
   estimateMaxEntropy,
   explodeSubdomains,
+  fetchResource,
   filter,
   firstPartyProtectionsEnabled,
   getHostFromDomainInput,
   hasOwn,
-  invert,
   isRestrictedUrl,
   isThirdPartyDomain,
   nDaysFromNow,
@@ -580,21 +524,18 @@ let exports = {
   random,
   rateLimit,
   sha1,
-  xhrRequest,
 };
 
-exports.isObject = function (obj) {
+utils.isObject = function (obj) {
   let type = typeof obj;
   return type === 'function' || type === 'object' && !!obj;
 };
 
 // isFunction(), isString(), etc.
 for (let name of ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Error', 'Symbol', 'Map', 'WeakMap', 'Set', 'WeakSet']) {
-  exports['is' + name] = function (x) {
+  utils['is' + name] = function (x) {
     return toString.call(x) === '[object ' + name + ']';
   };
 }
 
-return exports;
-/************************************** exports */
-})(); //require scopes
+export default utils;

@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "Liste de filtres anticontournement ABP"
   },
-  "common_feature_cookies_title": {
-    "message": "Bloquer les avertissements de cookies"
+  "common_feature_annoyances_title": {
+    "message": "Bloquez davantage de sources de distraction"
   },
   "common_feature_malware_title": {
     "message": "Bloquer les logiciels malveillants"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Bloquer"
+  },
+  "composer_block_reload": {
+    "message": "Bloquer et recharger la page"
   },
   "composer_cancel": {
     "message": "Annuler"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Bêta"
   },
   "options_builtin_filterList_add": {
     "message": "Ajouter des listes de filtres intégrés"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "PARTICIPER"
   },
+  "options_free_filters_header": {
+    "message": "Fonctionnalités gratuites"
+  },
   "options_general_description": {
     "message": "Déterminez les éléments qu’Adblock Plus affiche et masque sur les sites web"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Paramètres"
   },
+  "options_premium_manage": {
+    "message": "Gérer mon abonnement"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Personnalisez et améliorez votre expérience de blocage de publicités ! <a0>En savoir plus</a0>"
+  },
   "options_privacy_header": {
     "message": "CONFIDENTIALITÉ & SÉCURITÉ"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Évaluez-nous"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "En ajoutant ce filtre, vous renoncez à votre droit d’être informé(e) des cookies et de modifier les paramètres des cookies des sites Web individuellement. Veuillez noter que certains sites Web peuvent vous suivre par défaut. Plus d’informations sur : <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Bloquez les vidéos flottantes, les popups de newsletter, les demandes d’enquête et les notifications de site."
   },
-  "options_recommended_filters_header": {
-    "message": "Filtres recommandés"
+  "options_recommended_notifications_description": {
+    "message": "Empêchez les sites internet de vous demander d’autoriser les notifications push susceptibles de suivre vos activités en ligne."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Empêchez les sites Web de vous demander d'autoriser les notifications push susceptibles de suivre votre activité en ligne."
+  "options_recommended_privacy_description": {
+    "message": "Protégez votre vie privée des entités connues susceptibles de suivre vos activités en ligne sur les sites internet que vous consultez."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Protégez votre vie privée des entités connues susceptibles de suivre votre activité en ligne sur les sites Web que vous visitez."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "Les icônes de réseaux sociaux sur les sites Web que vous visitez leur permettent de créer un profil de vous en fonction de vos habitudes de navigation, même si vous ne cliquez pas dessus. En masquant ces icônes, vous pouvez protéger votre profil."
+  "options_recommended_social_description": {
+    "message": "Empêchez les réseaux sociaux de créer un profil de vous basé sur vos habitudes de navigation."
   },
   "options_report_bug": {
     "message": "Vous avez trouvé un bogue ? <a>Envoyez-nous un rapport de bogue</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "Ok, j'ai compris"
   },
+  "options_upgrade_button": {
+    "message": "Mise à jour"
+  },
   "devtools_action_block": {
     "message": "Bloquer un élément"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Type"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "Le sélecteur CSS est trop court. Veuillez utiliser un sélecteur plus long ou spécifier au moins un domaine pour le filtre de masquage de cet élément."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Aucun domaine actif spécifié. Veuillez spécifier au moins un domaine pour ce filtre de masquage d’éléments étendu."
   },
@@ -638,7 +656,7 @@
     "message": "Expression régulière invalide (la syntaxe n’est pas conforme à la norme)."
   },
   "filter_slow": {
-    "message": "Pour disposer d’un filtrage rapide, merci de vérifier la longueur du modèle et s’assurer qu’il ne contient pas une expression régulière."
+    "message": "Filtre lent. Veuillez vérifier la longueur du motif et assurez-vous qu’il ne contient pas une expression régulière."
   },
   "filter_snippet_nodomain": {
     "message": "Aucun domaine actif spécifié. Veuillez spécifier au moins un domaine pour ce filtre partiel."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "Le motif de l’URL est trop court. Veuillez utiliser un motif plus long ou spécifier au moins un domaine pour ce filtre."
+  },
   "line": {
     "message": "Ligne $number$: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Nombre maximal de filtres atteint. Veuillez supprimer d'autres filtres du même type avant d'en ajouter de nouveaux."
   },
   "unexpected_filter_list_header": {
     "message": "Les en-têtes de liste de filtres sont uniquement pris en charge dans les listes de filtres téléchargeables."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "Restez connecté avec nous !"
   },
+  "idle_header": {
+    "message": "Il n'y a rien à bloquer sur cette page !"
+  },
   "options_refresh": {
     "message": "Actualiser"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Cesser d'afficher les notifications"
+  },
+  "premium_upgrade": {
+    "message": "Mise à jour"
   },
   "refresh_this_page": {
     "message": "Rafraîchir cette page"

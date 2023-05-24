@@ -2798,2166 +2798,1205 @@ var __webpack_exports__ = {};
 "use strict";
 
 ;// CONCATENATED MODULE: ./node_modules/@adguard/tsurlfilter/dist/TSUrlFilterContentScript.js
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function (obj) {
-      return typeof obj;
-    };
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
   } else {
-    _typeof = function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
+    obj[key] = value;
   }
-  return _typeof(obj);
+  return obj;
 }
-function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-}
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-}
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
-}
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
-}
-function _iterableToArrayLimit(arr, i) {
-  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _e = undefined;
-  try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-  return _arr;
-}
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-  return arr2;
-}
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-var utils = {};
-utils.MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-utils.nodeTextContentGetter = function () {
-  var nativeNode = window.Node || Node;
-  return Object.getOwnPropertyDescriptor(nativeNode.prototype, 'textContent').get;
-}();
-utils.isSafariBrowser = function () {
-  return navigator.vendor === 'Apple Computer, Inc.';
-}();
-utils.pseudoArgToRegex = function (regexSrc, flag) {
-  flag = flag || 'i';
-  regexSrc = regexSrc.trim().replace(/\\(["\\])/g, '$1');
-  return new RegExp(regexSrc, flag);
+const NODE = {
+  SELECTOR_LIST: 'SelectorList',
+  SELECTOR: 'Selector',
+  REGULAR_SELECTOR: 'RegularSelector',
+  EXTENDED_SELECTOR: 'ExtendedSelector',
+  ABSOLUTE_PSEUDO_CLASS: 'AbsolutePseudoClass',
+  RELATIVE_PSEUDO_CLASS: 'RelativePseudoClass'
 };
-utils.toRegExp = function (str) {
-  if (str[0] === '/' && str[str.length - 1] === '/') {
-    return new RegExp(str.slice(1, -1));
+class AnySelectorNode {
+  constructor(type) {
+    _defineProperty(this, "children", []);
+    this.type = type;
   }
-  var escaped = str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(escaped);
+  addChild(child) {
+    this.children.push(child);
+  }
+}
+class RegularSelectorNode extends AnySelectorNode {
+  constructor(value) {
+    super(NODE.REGULAR_SELECTOR);
+    this.value = value;
+  }
+}
+class RelativePseudoClassNode extends AnySelectorNode {
+  constructor(name) {
+    super(NODE.RELATIVE_PSEUDO_CLASS);
+    this.name = name;
+  }
+}
+class AbsolutePseudoClassNode extends AnySelectorNode {
+  constructor(name) {
+    super(NODE.ABSOLUTE_PSEUDO_CLASS);
+    _defineProperty(this, "value", '');
+    this.name = name;
+  }
+}
+const LEFT_SQUARE_BRACKET = '[';
+const RIGHT_SQUARE_BRACKET = ']';
+const LEFT_PARENTHESIS = '(';
+const RIGHT_PARENTHESIS = ')';
+const LEFT_CURLY_BRACKET = '{';
+const RIGHT_CURLY_BRACKET = '}';
+const BRACKET = {
+  SQUARE: {
+    LEFT: LEFT_SQUARE_BRACKET,
+    RIGHT: RIGHT_SQUARE_BRACKET
+  },
+  PARENTHESES: {
+    LEFT: LEFT_PARENTHESIS,
+    RIGHT: RIGHT_PARENTHESIS
+  },
+  CURLY: {
+    LEFT: LEFT_CURLY_BRACKET,
+    RIGHT: RIGHT_CURLY_BRACKET
+  }
 };
-utils.startsWith = function (str, prefix) {
-  return !!str && str.indexOf(prefix) === 0;
+const SLASH = '/';
+const BACKSLASH = '\\';
+const SPACE = ' ';
+const COMMA = ',';
+const DOT = '.';
+const SEMICOLON = ';';
+const COLON = ':';
+const SINGLE_QUOTE = '\'';
+const DOUBLE_QUOTE = '"';
+const CARET = '^';
+const DOLLAR_SIGN = '$';
+const EQUAL_SIGN = '=';
+const TAB = '\t';
+const CARRIAGE_RETURN = '\r';
+const LINE_FEED = '\n';
+const FORM_FEED = '\f';
+const WHITE_SPACE_CHARACTERS = [SPACE, TAB, CARRIAGE_RETURN, LINE_FEED, FORM_FEED];
+const ASTERISK = '*';
+const ID_MARKER = '#';
+const CLASS_MARKER = DOT;
+const DESCENDANT_COMBINATOR = SPACE;
+const CHILD_COMBINATOR = '>';
+const NEXT_SIBLING_COMBINATOR = '+';
+const SUBSEQUENT_SIBLING_COMBINATOR = '~';
+const COMBINATORS = [DESCENDANT_COMBINATOR, CHILD_COMBINATOR, NEXT_SIBLING_COMBINATOR, SUBSEQUENT_SIBLING_COMBINATOR];
+const SUPPORTED_SELECTOR_MARKS = [LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, LEFT_CURLY_BRACKET, RIGHT_CURLY_BRACKET, SLASH, BACKSLASH, SEMICOLON, COLON, COMMA, SINGLE_QUOTE, DOUBLE_QUOTE, CARET, DOLLAR_SIGN, ASTERISK, ID_MARKER, CLASS_MARKER, DESCENDANT_COMBINATOR, CHILD_COMBINATOR, NEXT_SIBLING_COMBINATOR, SUBSEQUENT_SIBLING_COMBINATOR, TAB, CARRIAGE_RETURN, LINE_FEED, FORM_FEED];
+const SUPPORTED_STYLE_DECLARATION_MARKS = [
+COLON,
+SEMICOLON,
+SINGLE_QUOTE, DOUBLE_QUOTE,
+BACKSLASH,
+SPACE, TAB, CARRIAGE_RETURN, LINE_FEED, FORM_FEED];
+const CONTAINS_PSEUDO = 'contains';
+const HAS_TEXT_PSEUDO = 'has-text';
+const ABP_CONTAINS_PSEUDO = '-abp-contains';
+const MATCHES_CSS_PSEUDO = 'matches-css';
+const MATCHES_CSS_BEFORE_PSEUDO = 'matches-css-before';
+const MATCHES_CSS_AFTER_PSEUDO = 'matches-css-after';
+const MATCHES_ATTR_PSEUDO_CLASS_MARKER = 'matches-attr';
+const MATCHES_PROPERTY_PSEUDO_CLASS_MARKER = 'matches-property';
+const XPATH_PSEUDO_CLASS_MARKER = 'xpath';
+const NTH_ANCESTOR_PSEUDO_CLASS_MARKER = 'nth-ancestor';
+const CONTAINS_PSEUDO_NAMES = [CONTAINS_PSEUDO, HAS_TEXT_PSEUDO, ABP_CONTAINS_PSEUDO];
+const UPWARD_PSEUDO_CLASS_MARKER = 'upward';
+const REMOVE_PSEUDO_MARKER = 'remove';
+const HAS_PSEUDO_CLASS_MARKER = 'has';
+const ABP_HAS_PSEUDO_CLASS_MARKER = '-abp-has';
+const HAS_PSEUDO_CLASS_MARKERS = [HAS_PSEUDO_CLASS_MARKER, ABP_HAS_PSEUDO_CLASS_MARKER];
+const IS_PSEUDO_CLASS_MARKER = 'is';
+const NOT_PSEUDO_CLASS_MARKER = 'not';
+const ABSOLUTE_PSEUDO_CLASSES = [CONTAINS_PSEUDO, HAS_TEXT_PSEUDO, ABP_CONTAINS_PSEUDO, MATCHES_CSS_PSEUDO, MATCHES_CSS_BEFORE_PSEUDO, MATCHES_CSS_AFTER_PSEUDO, MATCHES_ATTR_PSEUDO_CLASS_MARKER, MATCHES_PROPERTY_PSEUDO_CLASS_MARKER, XPATH_PSEUDO_CLASS_MARKER, NTH_ANCESTOR_PSEUDO_CLASS_MARKER, UPWARD_PSEUDO_CLASS_MARKER];
+const RELATIVE_PSEUDO_CLASSES = [...HAS_PSEUDO_CLASS_MARKERS, IS_PSEUDO_CLASS_MARKER, NOT_PSEUDO_CLASS_MARKER];
+const SUPPORTED_PSEUDO_CLASSES = [...ABSOLUTE_PSEUDO_CLASSES, ...RELATIVE_PSEUDO_CLASSES];
+const OPTIMIZATION_PSEUDO_CLASSES = [NOT_PSEUDO_CLASS_MARKER, IS_PSEUDO_CLASS_MARKER];
+const SCOPE_CSS_PSEUDO_CLASS = ':scope';
+const REGULAR_PSEUDO_ELEMENTS = {
+  AFTER: 'after',
+  BACKDROP: 'backdrop',
+  BEFORE: 'before',
+  CUE: 'cue',
+  CUE_REGION: 'cue-region',
+  FIRST_LETTER: 'first-letter',
+  FIRST_LINE: 'first-line',
+  FILE_SELECTION_BUTTON: 'file-selector-button',
+  GRAMMAR_ERROR: 'grammar-error',
+  MARKER: 'marker',
+  PART: 'part',
+  PLACEHOLDER: 'placeholder',
+  SELECTION: 'selection',
+  SLOTTED: 'slotted',
+  SPELLING_ERROR: 'spelling-error',
+  TARGET_TEXT: 'target-text'
 };
-utils.endsWith = function (str, postfix) {
-  if (!str || !postfix) {
-    return false;
-  }
-  if (str.endsWith) {
-    return str.endsWith(postfix);
-  }
-  var t = String(postfix);
-  var index = str.lastIndexOf(t);
-  return index >= 0 && index === str.length - t.length;
+const AT_RULE_MARKER = '@';
+const CONTENT_CSS_PROPERTY = 'content';
+const PSEUDO_PROPERTY_POSITIVE_VALUE = 'true';
+const DEBUG_PSEUDO_PROPERTY_GLOBAL_VALUE = 'global';
+const NO_SELECTOR_ERROR_PREFIX = 'Selector should be defined';
+const STYLE_ERROR_PREFIX = {
+  NO_STYLE: 'No style declaration found',
+  NO_SELECTOR: `${NO_SELECTOR_ERROR_PREFIX} before style declaration in stylesheet`,
+  INVALID_STYLE: 'Invalid style declaration',
+  UNCLOSED_STYLE: 'Unclosed style declaration',
+  NO_PROPERTY: 'Missing style property in declaration',
+  NO_VALUE: 'Missing style value in declaration',
+  NO_STYLE_OR_REMOVE: 'Style should be declared or :remove() pseudo-class should used',
+  NO_COMMENT: 'Comments are not supported'
 };
-utils.createURLRegex = function () {
-  var regexConfiguration = {
-    maskStartUrl: '||',
-    maskPipe: '|',
-    maskSeparator: '^',
-    maskAnySymbol: '*',
-    regexAnySymbol: '.*',
-    regexSeparator: '([^ a-zA-Z0-9.%_-]|$)',
-    regexStartUrl: '^(http|https|ws|wss)://([a-z0-9-_.]+\\.)?',
-    regexStartString: '^',
-    regexEndString: '$'
-  };
-  var specials = ['.', '+', '?', '$', '{', '}', '(', ')', '[', ']', '\\', '/'];
-  var specialsRegex = new RegExp("[".concat(specials.join('\\'), "]"), 'g');
-  var escapeRegExp = function escapeRegExp(str) {
-    return str.replace(specialsRegex, '\\$&');
-  };
-  var replaceAll = function replaceAll(str, find, replace) {
-    if (!str) {
-      return str;
-    }
-    return str.split(find).join(replace);
-  };
-  var createRegexText = function createRegexText(str) {
-    var regex = escapeRegExp(str);
-    if (utils.startsWith(regex, regexConfiguration.maskStartUrl)) {
-      regex = regex.substring(0, regexConfiguration.maskStartUrl.length) + replaceAll(regex.substring(regexConfiguration.maskStartUrl.length, regex.length - 1), '\|', '\\|') + regex.substring(regex.length - 1);
-    } else if (utils.startsWith(regex, regexConfiguration.maskPipe)) {
-      regex = regex.substring(0, regexConfiguration.maskPipe.length) + replaceAll(regex.substring(regexConfiguration.maskPipe.length, regex.length - 1), '\|', '\\|') + regex.substring(regex.length - 1);
-    } else {
-      regex = replaceAll(regex.substring(0, regex.length - 1), '\|', '\\|') + regex.substring(regex.length - 1);
-    }
-    regex = replaceAll(regex, regexConfiguration.maskAnySymbol, regexConfiguration.regexAnySymbol);
-    regex = replaceAll(regex, regexConfiguration.maskSeparator, regexConfiguration.regexSeparator);
-    if (utils.startsWith(regex, regexConfiguration.maskStartUrl)) {
-      regex = regexConfiguration.regexStartUrl + regex.substring(regexConfiguration.maskStartUrl.length);
-    } else if (utils.startsWith(regex, regexConfiguration.maskPipe)) {
-      regex = regexConfiguration.regexStartString + regex.substring(regexConfiguration.maskPipe.length);
-    }
-    if (utils.endsWith(regex, regexConfiguration.maskPipe)) {
-      regex = regex.substring(0, regex.length - 1) + regexConfiguration.regexEndString;
-    }
-    return new RegExp(regex, 'i');
-  };
-  return createRegexText;
-}();
-utils.createLocation = function (href) {
-  var anchor = document.createElement('a');
-  anchor.href = href;
-  if (anchor.host === '') {
-    anchor.href = anchor.href;
-  }
-  return anchor;
+const NO_AT_RULE_ERROR_PREFIX = 'At-rules are not supported';
+const REMOVE_ERROR_PREFIX = {
+  INVALID_REMOVE: 'Invalid :remove() pseudo-class in selector',
+  NO_TARGET_SELECTOR: `${NO_SELECTOR_ERROR_PREFIX} before :remove() pseudo-class`,
+  MULTIPLE_USAGE: 'Pseudo-class :remove() appears more than once in selector',
+  INVALID_POSITION: 'Pseudo-class :remove() should be at the end of selector'
 };
-utils.isSameOrigin = function (urlA, locationB, domainB) {
-  var locationA = utils.createLocation(urlA);
-  if (locationA.protocol === 'javascript:' || locationA.href === 'about:blank') {
-    return true;
-  }
-  if (locationA.protocol === 'data:' || locationA.protocol === 'file:') {
-    return false;
-  }
-  return locationA.hostname === domainB && locationA.port === locationB.port && locationA.protocol === locationB.protocol;
+const MATCHING_ELEMENT_ERROR_PREFIX = 'Error while matching element';
+const MAX_STYLE_PROTECTION_COUNT = 50;
+const REGEXP_VALID_OLD_SYNTAX = /\[-(?:ext)-([a-z-_]+)=(["'])((?:(?=(\\?))\4.)*?)\2\]/g;
+const INVALID_OLD_SYNTAX_MARKER = '[-ext-';
+const evaluateMatch = (match, name, quoteChar, rawValue) => {
+  const re = new RegExp(`([^\\\\]|^)\\\\${quoteChar}`, 'g');
+  const value = rawValue.replace(re, `$1${quoteChar}`);
+  return `:${name}(${value})`;
 };
-utils.AsyncWrapper = function () {
-  var supported = typeof window.requestAnimationFrame !== 'undefined';
-  var rAF = supported ? requestAnimationFrame : setTimeout;
-  var cAF = supported ? cancelAnimationFrame : clearTimeout;
-  var perf = supported ? performance : Date;
-  function AsyncWrapper(callback, throttle) {
-    this.callback = callback;
-    this.throttle = throttle;
-    this.wrappedCallback = this.wrappedCallback.bind(this);
-    if (this.wrappedAsapCallback) {
-      this.wrappedAsapCallback = this.wrappedAsapCallback.bind(this);
-    }
+const SCOPE_MARKER_REGEXP = /\(:scope >/g;
+const SCOPE_REPLACER = '(>';
+const MATCHES_CSS_PSEUDO_ELEMENT_REGEXP = /(:matches-css)-(before|after)\(/g;
+const convertMatchesCss = (match, extendedPseudoClass, regularPseudoElement) => {
+  return `${extendedPseudoClass}${BRACKET.PARENTHESES.LEFT}${regularPseudoElement}${COMMA}`;
+};
+const normalize = selector => {
+  const normalizedSelector = selector.replace(REGEXP_VALID_OLD_SYNTAX, evaluateMatch).replace(SCOPE_MARKER_REGEXP, SCOPE_REPLACER).replace(MATCHES_CSS_PSEUDO_ELEMENT_REGEXP, convertMatchesCss);
+  if (normalizedSelector.includes(INVALID_OLD_SYNTAX_MARKER)) {
+    throw new Error(`Invalid extended-css old syntax selector: '${selector}'`);
   }
-  AsyncWrapper.prototype.wrappedCallback = function (ts) {
-    this.lastRun = isNumber(ts) ? ts : perf.now();
-    delete this.rAFid;
-    delete this.timerId;
-    delete this.asapScheduled;
-    this.callback();
-  };
-  AsyncWrapper.prototype.hasPendingCallback = function () {
-    return isNumber(this.rAFid) || isNumber(this.timerId);
-  };
-  AsyncWrapper.prototype.run = function () {
-    if (this.hasPendingCallback()) {
+  return normalizedSelector;
+};
+const convert = rawSelector => {
+  const trimmedSelector = rawSelector.trim();
+  return normalize(trimmedSelector);
+};
+const TOKEN_TYPE = {
+  MARK: 'mark',
+  WORD: 'word'
+};
+const tokenize = (input, supportedMarks) => {
+  let wordBuffer = '';
+  const tokens = [];
+  const selectorSymbols = input.split('');
+  selectorSymbols.forEach(symbol => {
+    if (supportedMarks.includes(symbol)) {
+      if (wordBuffer.length > 0) {
+        tokens.push({
+          type: TOKEN_TYPE.WORD,
+          value: wordBuffer
+        });
+        wordBuffer = '';
+      }
+      tokens.push({
+        type: TOKEN_TYPE.MARK,
+        value: symbol
+      });
       return;
     }
-    if (typeof this.lastRun !== 'undefined') {
-      var elapsed = perf.now() - this.lastRun;
-      if (elapsed < this.throttle) {
-        this.timerId = setTimeout(this.wrappedCallback, this.throttle - elapsed);
-        return;
-      }
-    }
-    this.rAFid = rAF(this.wrappedCallback);
-  };
-  AsyncWrapper.prototype.runAsap = function () {
-    if (this.asapScheduled) {
-      return;
-    }
-    this.asapScheduled = true;
-    cAF(this.rAFid);
-    clearTimeout(this.timerId);
-    if (utils.MutationObserver) {
-      if (!this.mo) {
-        this.mo = new utils.MutationObserver(this.wrappedCallback);
-        this.node = document.createTextNode(1);
-        this.mo.observe(this.node, {
-          characterData: true
-        });
-      }
-      this.node.nodeValue = -this.node.nodeValue;
-    } else {
-      setTimeout(this.wrappedCallback);
-    }
-  };
-  AsyncWrapper.prototype.runImmediately = function () {
-    if (this.hasPendingCallback()) {
-      cAF(this.rAFid);
-      clearTimeout(this.timerId);
-      delete this.rAFid;
-      delete this.timerId;
-      this.wrappedCallback();
-    }
-  };
-  AsyncWrapper.now = function () {
-    return perf.now();
-  };
-  return AsyncWrapper;
-}();
-utils.defineProperty = Object.defineProperty;
-utils.WeakMap = typeof WeakMap !== 'undefined' ? WeakMap : function () {
-  var counter = Date.now() % 1e9;
-  var WeakMap = function WeakMap() {
-    this.name = "__st".concat(Math.random() * 1e9 >>> 0).concat(counter++, "__");
-  };
-  WeakMap.prototype = {
-    set: function set(key, value) {
-      var entry = key[this.name];
-      if (entry && entry[0] === key) {
-        entry[1] = value;
-      } else {
-        utils.defineProperty(key, this.name, {
-          value: [key, value],
-          writable: true
-        });
-      }
-      return this;
-    },
-    get: function get(key) {
-      var entry = key[this.name];
-      return entry && entry[0] === key ? entry[1] : undefined;
-    },
-    delete: function _delete(key) {
-      var entry = key[this.name];
-      if (!entry) {
-        return false;
-      }
-      var hasValue = entry[0] === key;
-      delete entry[0];
-      delete entry[1];
-      return hasValue;
-    },
-    has: function has(key) {
-      var entry = key[this.name];
-      if (!entry) {
-        return false;
-      }
-      return entry[0] === key;
-    }
-  };
-  return WeakMap;
-}();
-utils.Set = typeof Set !== 'undefined' ? Set : function () {
-  var counter = Date.now() % 1e9;
-  var Set = function Set(items) {
-    this.name = "__st".concat(Math.random() * 1e9 >>> 0).concat(counter++, "__");
-    this.keys = [];
-    if (items && items.length) {
-      var iItems = items.length;
-      while (iItems--) {
-        this.add(items[iItems]);
-      }
-    }
-  };
-  Set.prototype = {
-    add: function add(key) {
-      if (!isNumber(key[this.name])) {
-        var index = this.keys.push(key) - 1;
-        utils.defineProperty(key, this.name, {
-          value: index,
-          writable: true
-        });
-      }
-    },
-    delete: function _delete(key) {
-      if (isNumber(key[this.name])) {
-        var index = key[this.name];
-        delete this.keys[index];
-        key[this.name] = undefined;
-      }
-    },
-    has: function has(key) {
-      return isNumber(key[this.name]);
-    },
-    clear: function clear() {
-      this.keys.forEach(function (key) {
-        key[this.name] = undefined;
-      });
-      this.keys.length = 0;
-    },
-    forEach: function forEach(cb) {
-      var that = this;
-      this.keys.forEach(function (value) {
-        cb(value, value, that);
-      });
-    }
-  };
-  utils.defineProperty(Set.prototype, 'size', {
-    get: function get() {
-      return this.keys.reduce(function (acc) {
-        return acc + 1;
-      }, 0);
-    }
+    wordBuffer += symbol;
   });
-  return Set;
-}();
-utils.matchesPropertyName = function () {
-  var props = ['matches', 'matchesSelector', 'mozMatchesSelector', 'msMatchesSelector', 'oMatchesSelector', 'webkitMatchesSelector'];
-  for (var i = 0; i < 6; i++) {
-    if (Element.prototype.hasOwnProperty(props[i])) {
-      return props[i];
+  if (wordBuffer.length > 0) {
+    tokens.push({
+      type: TOKEN_TYPE.WORD,
+      value: wordBuffer
+    });
+  }
+  return tokens;
+};
+const tokenizeSelector = rawSelector => {
+  const selector = convert(rawSelector);
+  return tokenize(selector, SUPPORTED_SELECTOR_MARKS);
+};
+const tokenizeAttribute = attribute => {
+  return tokenize(attribute, [...SUPPORTED_SELECTOR_MARKS, EQUAL_SIGN]);
+};
+const flatten = input => {
+  const stack = [];
+  input.forEach(el => stack.push(el));
+  const res = [];
+  while (stack.length) {
+    const next = stack.pop();
+    if (!next) {
+      throw new Error('Unable to make array flat');
+    }
+    if (Array.isArray(next)) {
+      next.forEach(el => stack.push(el));
+    } else {
+      res.push(next);
     }
   }
-}();
-utils.Stats = function () {
-  this.array = [];
-  this.length = 0;
-  var zeroDescriptor = {
-    value: 0,
-    writable: true
+  return res.reverse();
+};
+const getFirst = array => {
+  return array[0];
+};
+const getLast = array => {
+  return array[array.length - 1];
+};
+const getPrevToLast = array => {
+  return array[array.length - 2];
+};
+const getItemByIndex = (array, index, errorMessage) => {
+  const indexChild = array[index];
+  if (!indexChild) {
+    throw new Error(errorMessage || `No array item found by index ${index}`);
+  }
+  return indexChild;
+};
+const NO_REGULAR_SELECTOR_ERROR = 'At least one of Selector node children should be RegularSelector';
+const isSelectorListNode = astNode => {
+  return (astNode === null || astNode === void 0 ? void 0 : astNode.type) === NODE.SELECTOR_LIST;
+};
+const isSelectorNode = astNode => {
+  return (astNode === null || astNode === void 0 ? void 0 : astNode.type) === NODE.SELECTOR;
+};
+const isRegularSelectorNode = astNode => {
+  return (astNode === null || astNode === void 0 ? void 0 : astNode.type) === NODE.REGULAR_SELECTOR;
+};
+const isExtendedSelectorNode = astNode => {
+  return astNode.type === NODE.EXTENDED_SELECTOR;
+};
+const isAbsolutePseudoClassNode = astNode => {
+  return (astNode === null || astNode === void 0 ? void 0 : astNode.type) === NODE.ABSOLUTE_PSEUDO_CLASS;
+};
+const isRelativePseudoClassNode = astNode => {
+  return (astNode === null || astNode === void 0 ? void 0 : astNode.type) === NODE.RELATIVE_PSEUDO_CLASS;
+};
+const getNodeName = astNode => {
+  if (astNode === null) {
+    throw new Error('Ast node should be defined');
+  }
+  if (!isAbsolutePseudoClassNode(astNode) && !isRelativePseudoClassNode(astNode)) {
+    throw new Error('Only AbsolutePseudoClass or RelativePseudoClass ast node can have a name');
+  }
+  if (!astNode.name) {
+    throw new Error('Extended pseudo-class should have a name');
+  }
+  return astNode.name;
+};
+const getNodeValue = (astNode, errorMessage) => {
+  if (astNode === null) {
+    throw new Error('Ast node should be defined');
+  }
+  if (!isRegularSelectorNode(astNode) && !isAbsolutePseudoClassNode(astNode)) {
+    throw new Error('Only RegularSelector ot AbsolutePseudoClass ast node can have a value');
+  }
+  if (!astNode.value) {
+    throw new Error(errorMessage || 'Ast RegularSelector ot AbsolutePseudoClass node should have a value');
+  }
+  return astNode.value;
+};
+const getRegularSelectorNodes = children => {
+  return children.filter(isRegularSelectorNode);
+};
+const getFirstRegularChild = (children, errorMessage) => {
+  const regularSelectorNodes = getRegularSelectorNodes(children);
+  const firstRegularSelectorNode = getFirst(regularSelectorNodes);
+  if (!firstRegularSelectorNode) {
+    throw new Error(errorMessage || NO_REGULAR_SELECTOR_ERROR);
+  }
+  return firstRegularSelectorNode;
+};
+const getLastRegularChild = children => {
+  const regularSelectorNodes = getRegularSelectorNodes(children);
+  const lastRegularSelectorNode = getLast(regularSelectorNodes);
+  if (!lastRegularSelectorNode) {
+    throw new Error(NO_REGULAR_SELECTOR_ERROR);
+  }
+  return lastRegularSelectorNode;
+};
+const getNodeOnlyChild = (node, errorMessage) => {
+  if (node.children.length !== 1) {
+    throw new Error(errorMessage);
+  }
+  const onlyChild = getFirst(node.children);
+  if (!onlyChild) {
+    throw new Error(errorMessage);
+  }
+  return onlyChild;
+};
+const getPseudoClassNode = extendedSelectorNode => {
+  return getNodeOnlyChild(extendedSelectorNode, 'Extended selector should be specified');
+};
+const getRelativeSelectorListNode = pseudoClassNode => {
+  if (!isRelativePseudoClassNode(pseudoClassNode)) {
+    throw new Error('Only RelativePseudoClass node can have relative SelectorList node as child');
+  }
+  return getNodeOnlyChild(pseudoClassNode, `Missing arg for :${getNodeName(pseudoClassNode)}() pseudo-class`);
+};
+const ATTRIBUTE_CASE_INSENSITIVE_FLAG = 'i';
+const POSSIBLE_MARKS_BEFORE_REGEXP = {
+  COMMON: [
+  BRACKET.PARENTHESES.LEFT,
+  SINGLE_QUOTE,
+  DOUBLE_QUOTE,
+  EQUAL_SIGN,
+  DOT,
+  COLON,
+  SPACE],
+  CONTAINS: [
+  BRACKET.PARENTHESES.LEFT,
+  SINGLE_QUOTE,
+  DOUBLE_QUOTE]
+};
+const isSupportedPseudoClass = tokenValue => {
+  return SUPPORTED_PSEUDO_CLASSES.includes(tokenValue);
+};
+const isOptimizationPseudoClass = name => {
+  return OPTIMIZATION_PSEUDO_CLASSES.includes(name);
+};
+const doesRegularContinueAfterSpace = (nextTokenType, nextTokenValue) => {
+  if (!nextTokenType || !nextTokenValue) {
+    return false;
+  }
+  return COMBINATORS.includes(nextTokenValue) || nextTokenType === TOKEN_TYPE.WORD
+  || nextTokenValue === ASTERISK || nextTokenValue === ID_MARKER || nextTokenValue === CLASS_MARKER
+  || nextTokenValue === COLON
+  || nextTokenValue === SINGLE_QUOTE
+  || nextTokenValue === DOUBLE_QUOTE || nextTokenValue === BRACKET.SQUARE.LEFT;
+};
+const isRegexpOpening = (context, prevTokenValue, bufferNodeValue) => {
+  const lastExtendedPseudoClassName = getLast(context.extendedPseudoNamesStack);
+  if (!lastExtendedPseudoClassName) {
+    throw new Error('Regexp pattern allowed only in arg of extended pseudo-class');
+  }
+  if (CONTAINS_PSEUDO_NAMES.includes(lastExtendedPseudoClassName)) {
+    return POSSIBLE_MARKS_BEFORE_REGEXP.CONTAINS.includes(prevTokenValue);
+  }
+  if (prevTokenValue === SLASH && lastExtendedPseudoClassName !== XPATH_PSEUDO_CLASS_MARKER) {
+    const rawArgDesc = bufferNodeValue ? `in arg part: '${bufferNodeValue}'` : 'arg';
+    throw new Error(`Invalid regexp pattern for :${lastExtendedPseudoClassName}() pseudo-class ${rawArgDesc}`);
+  }
+  return POSSIBLE_MARKS_BEFORE_REGEXP.COMMON.includes(prevTokenValue);
+};
+const isAttributeOpening = (tokenValue, prevTokenValue) => {
+  return tokenValue === BRACKET.SQUARE.LEFT && prevTokenValue !== BACKSLASH;
+};
+const isAttributeClosing = context => {
+  var _getPrevToLast;
+  if (!context.isAttributeBracketsOpen) {
+    return false;
+  }
+  const noSpaceAttr = context.attributeBuffer.split(SPACE).join('');
+  const attrTokens = tokenizeAttribute(noSpaceAttr);
+  const firstAttrToken = getFirst(attrTokens);
+  const firstAttrTokenType = firstAttrToken === null || firstAttrToken === void 0 ? void 0 : firstAttrToken.type;
+  const firstAttrTokenValue = firstAttrToken === null || firstAttrToken === void 0 ? void 0 : firstAttrToken.value;
+  if (firstAttrTokenType === TOKEN_TYPE.MARK
+  && firstAttrTokenValue !== BACKSLASH) {
+    throw new Error(`'[${context.attributeBuffer}]' is not a valid attribute due to '${firstAttrTokenValue}' at start of it`);
+  }
+  const lastAttrToken = getLast(attrTokens);
+  const lastAttrTokenType = lastAttrToken === null || lastAttrToken === void 0 ? void 0 : lastAttrToken.type;
+  const lastAttrTokenValue = lastAttrToken === null || lastAttrToken === void 0 ? void 0 : lastAttrToken.value;
+  if (lastAttrTokenValue === EQUAL_SIGN) {
+    throw new Error(`'[${context.attributeBuffer}]' is not a valid attribute due to '${EQUAL_SIGN}'`);
+  }
+  const equalSignIndex = attrTokens.findIndex(token => {
+    return token.type === TOKEN_TYPE.MARK && token.value === EQUAL_SIGN;
+  });
+  const prevToLastAttrTokenValue = (_getPrevToLast = getPrevToLast(attrTokens)) === null || _getPrevToLast === void 0 ? void 0 : _getPrevToLast.value;
+  if (equalSignIndex === -1) {
+    if (lastAttrTokenType === TOKEN_TYPE.WORD) {
+      return true;
+    }
+    return prevToLastAttrTokenValue === BACKSLASH
+    && (lastAttrTokenValue === DOUBLE_QUOTE
+    || lastAttrTokenValue === SINGLE_QUOTE);
+  }
+  const nextToEqualSignToken = getItemByIndex(attrTokens, equalSignIndex + 1);
+  const nextToEqualSignTokenValue = nextToEqualSignToken.value;
+  const isAttrValueQuote = nextToEqualSignTokenValue === SINGLE_QUOTE || nextToEqualSignTokenValue === DOUBLE_QUOTE;
+  if (!isAttrValueQuote) {
+    if (lastAttrTokenType === TOKEN_TYPE.WORD) {
+      return true;
+    }
+    throw new Error(`'[${context.attributeBuffer}]' is not a valid attribute`);
+  }
+  if (lastAttrTokenType === TOKEN_TYPE.WORD && (lastAttrTokenValue === null || lastAttrTokenValue === void 0 ? void 0 : lastAttrTokenValue.toLocaleLowerCase()) === ATTRIBUTE_CASE_INSENSITIVE_FLAG) {
+    return prevToLastAttrTokenValue === nextToEqualSignTokenValue;
+  }
+  return lastAttrTokenValue === nextToEqualSignTokenValue;
+};
+const isWhiteSpaceChar = tokenValue => {
+  if (!tokenValue) {
+    return false;
+  }
+  return WHITE_SPACE_CHARACTERS.includes(tokenValue);
+};
+const isAbsolutePseudoClass = str => {
+  return ABSOLUTE_PSEUDO_CLASSES.includes(str);
+};
+const isRelativePseudoClass = str => {
+  return RELATIVE_PSEUDO_CLASSES.includes(str);
+};
+const getBufferNode = context => {
+  if (context.pathToBufferNode.length === 0) {
+    return null;
+  }
+  return getLast(context.pathToBufferNode) || null;
+};
+const getBufferNodeParent = context => {
+  if (context.pathToBufferNode.length < 2) {
+    return null;
+  }
+  return getPrevToLast(context.pathToBufferNode) || null;
+};
+const getContextLastRegularSelectorNode = context => {
+  const bufferNode = getBufferNode(context);
+  if (!bufferNode) {
+    throw new Error('No bufferNode found');
+  }
+  if (!isSelectorNode(bufferNode)) {
+    throw new Error('Unsupported bufferNode type');
+  }
+  const lastRegularSelectorNode = getLastRegularChild(bufferNode.children);
+  context.pathToBufferNode.push(lastRegularSelectorNode);
+  return lastRegularSelectorNode;
+};
+const updateBufferNode = (context, tokenValue) => {
+  const bufferNode = getBufferNode(context);
+  if (bufferNode === null) {
+    throw new Error('No bufferNode to update');
+  }
+  if (isAbsolutePseudoClassNode(bufferNode)) {
+    bufferNode.value += tokenValue;
+  } else if (isRegularSelectorNode(bufferNode)) {
+    bufferNode.value += tokenValue;
+    if (context.isAttributeBracketsOpen) {
+      context.attributeBuffer += tokenValue;
+    }
+  } else {
+    throw new Error(`${bufferNode.type} node cannot be updated. Only RegularSelector and AbsolutePseudoClass are supported`);
+  }
+};
+const addSelectorListNode = context => {
+  const selectorListNode = new AnySelectorNode(NODE.SELECTOR_LIST);
+  context.ast = selectorListNode;
+  context.pathToBufferNode.push(selectorListNode);
+};
+const addAstNodeByType = function (context, type) {
+  let tokenValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  const bufferNode = getBufferNode(context);
+  if (bufferNode === null) {
+    throw new Error('No buffer node');
+  }
+  let node;
+  if (type === NODE.REGULAR_SELECTOR) {
+    node = new RegularSelectorNode(tokenValue);
+  } else if (type === NODE.ABSOLUTE_PSEUDO_CLASS) {
+    node = new AbsolutePseudoClassNode(tokenValue);
+  } else if (type === NODE.RELATIVE_PSEUDO_CLASS) {
+    node = new RelativePseudoClassNode(tokenValue);
+  } else {
+    node = new AnySelectorNode(type);
+  }
+  bufferNode.addChild(node);
+  context.pathToBufferNode.push(node);
+};
+const initAst = (context, tokenValue) => {
+  addSelectorListNode(context);
+  addAstNodeByType(context, NODE.SELECTOR);
+  addAstNodeByType(context, NODE.REGULAR_SELECTOR, tokenValue);
+};
+const initRelativeSubtree = function (context) {
+  let tokenValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  addAstNodeByType(context, NODE.SELECTOR_LIST);
+  addAstNodeByType(context, NODE.SELECTOR);
+  addAstNodeByType(context, NODE.REGULAR_SELECTOR, tokenValue);
+};
+const upToClosest = (context, parentType) => {
+  for (let i = context.pathToBufferNode.length - 1; i >= 0; i -= 1) {
+    var _context$pathToBuffer;
+    if (((_context$pathToBuffer = context.pathToBufferNode[i]) === null || _context$pathToBuffer === void 0 ? void 0 : _context$pathToBuffer.type) === parentType) {
+      context.pathToBufferNode = context.pathToBufferNode.slice(0, i + 1);
+      break;
+    }
+  }
+};
+const getUpdatedBufferNode = context => {
+  const bufferNode = getBufferNode(context);
+  if (bufferNode && isSelectorListNode(bufferNode) && isRelativePseudoClassNode(getBufferNodeParent(context))) {
+    return bufferNode;
+  }
+  upToClosest(context, NODE.SELECTOR);
+  const selectorNode = getBufferNode(context);
+  if (!selectorNode) {
+    throw new Error('No SelectorNode, impossible to continue selector parsing by ExtendedCss');
+  }
+  const lastSelectorNodeChild = getLast(selectorNode.children);
+  const hasExtended = lastSelectorNodeChild && isExtendedSelectorNode(lastSelectorNodeChild)
+  && context.standardPseudoBracketsStack.length === 0;
+  const supposedPseudoClassNode = hasExtended && getFirst(lastSelectorNodeChild.children);
+  let newNeededBufferNode = selectorNode;
+  if (supposedPseudoClassNode) {
+    const lastExtendedPseudoName = hasExtended && supposedPseudoClassNode.name;
+    const isLastExtendedNameRelative = lastExtendedPseudoName && isRelativePseudoClass(lastExtendedPseudoName);
+    const isLastExtendedNameAbsolute = lastExtendedPseudoName && isAbsolutePseudoClass(lastExtendedPseudoName);
+    const hasRelativeExtended = isLastExtendedNameRelative && context.extendedPseudoBracketsStack.length > 0 && context.extendedPseudoBracketsStack.length === context.extendedPseudoNamesStack.length;
+    const hasAbsoluteExtended = isLastExtendedNameAbsolute && lastExtendedPseudoName === getLast(context.extendedPseudoNamesStack);
+    if (hasRelativeExtended) {
+      context.pathToBufferNode.push(lastSelectorNodeChild);
+      newNeededBufferNode = supposedPseudoClassNode;
+    } else if (hasAbsoluteExtended) {
+      context.pathToBufferNode.push(lastSelectorNodeChild);
+      newNeededBufferNode = supposedPseudoClassNode;
+    }
+  } else if (hasExtended) {
+    newNeededBufferNode = selectorNode;
+  } else {
+    newNeededBufferNode = getContextLastRegularSelectorNode(context);
+  }
+  context.pathToBufferNode.push(newNeededBufferNode);
+  return newNeededBufferNode;
+};
+const handleNextTokenOnColon = (context, selector, tokenValue, nextTokenValue, nextToNextTokenValue) => {
+  if (!nextTokenValue) {
+    throw new Error(`Invalid colon ':' at the end of selector: '${selector}'`);
+  }
+  if (!isSupportedPseudoClass(nextTokenValue.toLowerCase())) {
+    if (nextTokenValue.toLowerCase() === REMOVE_PSEUDO_MARKER) {
+      throw new Error(`${REMOVE_ERROR_PREFIX.INVALID_REMOVE}: '${selector}'`);
+    }
+    updateBufferNode(context, tokenValue);
+    if (nextToNextTokenValue && nextToNextTokenValue === BRACKET.PARENTHESES.LEFT
+    && !context.isAttributeBracketsOpen) {
+      context.standardPseudoNamesStack.push(nextTokenValue);
+    }
+  } else {
+    if (HAS_PSEUDO_CLASS_MARKERS.includes(nextTokenValue) && context.standardPseudoNamesStack.length > 0) {
+      throw new Error(`Usage of :${nextTokenValue}() pseudo-class is not allowed inside regular pseudo: '${getLast(context.standardPseudoNamesStack)}'`);
+    } else {
+      upToClosest(context, NODE.SELECTOR);
+      addAstNodeByType(context, NODE.EXTENDED_SELECTOR);
+    }
+  }
+};
+const IS_OR_NOT_PSEUDO_SELECTING_ROOT = `html ${ASTERISK}`;
+const hasExtendedSelector = selectorList => {
+  return selectorList.children.some(selectorNode => {
+    return selectorNode.children.some(selectorNodeChild => {
+      return isExtendedSelectorNode(selectorNodeChild);
+    });
+  });
+};
+const selectorListOfRegularsToString = selectorList => {
+  const standardCssSelectors = selectorList.children.map(selectorNode => {
+    const selectorOnlyChild = getNodeOnlyChild(selectorNode, 'Ast Selector node should have RegularSelector node');
+    return getNodeValue(selectorOnlyChild);
+  });
+  return standardCssSelectors.join(`${COMMA}${SPACE}`);
+};
+const updateNodeChildren = (node, newChildren) => {
+  node.children = newChildren;
+  return node;
+};
+const shouldOptimizeExtendedSelector = currExtendedSelectorNode => {
+  if (currExtendedSelectorNode === null) {
+    return false;
+  }
+  const extendedPseudoClassNode = getPseudoClassNode(currExtendedSelectorNode);
+  const pseudoName = getNodeName(extendedPseudoClassNode);
+  if (isAbsolutePseudoClass(pseudoName)) {
+    return false;
+  }
+  const relativeSelectorList = getRelativeSelectorListNode(extendedPseudoClassNode);
+  const innerSelectorNodes = relativeSelectorList.children;
+  if (isOptimizationPseudoClass(pseudoName)) {
+    const areAllSelectorNodeChildrenRegular = innerSelectorNodes.every(selectorNode => {
+      try {
+        const selectorOnlyChild = getNodeOnlyChild(selectorNode, 'Selector node should have RegularSelector');
+        return isRegularSelectorNode(selectorOnlyChild);
+      } catch (e) {
+        return false;
+      }
+    });
+    if (areAllSelectorNodeChildrenRegular) {
+      return true;
+    }
+  }
+  return innerSelectorNodes.some(selectorNode => {
+    return selectorNode.children.some(selectorNodeChild => {
+      if (!isExtendedSelectorNode(selectorNodeChild)) {
+        return false;
+      }
+      return shouldOptimizeExtendedSelector(selectorNodeChild);
+    });
+  });
+};
+const getOptimizedExtendedSelector = (currExtendedSelectorNode, prevRegularSelectorNode) => {
+  if (!currExtendedSelectorNode) {
+    return null;
+  }
+  const extendedPseudoClassNode = getPseudoClassNode(currExtendedSelectorNode);
+  const relativeSelectorList = getRelativeSelectorListNode(extendedPseudoClassNode);
+  const hasInnerExtendedSelector = hasExtendedSelector(relativeSelectorList);
+  if (!hasInnerExtendedSelector) {
+    const relativeSelectorListStr = selectorListOfRegularsToString(relativeSelectorList);
+    const pseudoName = getNodeName(extendedPseudoClassNode);
+    const optimizedExtendedStr = `${COLON}${pseudoName}${BRACKET.PARENTHESES.LEFT}${relativeSelectorListStr}${BRACKET.PARENTHESES.RIGHT}`;
+    prevRegularSelectorNode.value = `${getNodeValue(prevRegularSelectorNode)}${optimizedExtendedStr}`;
+    return null;
+  }
+  const optimizedRelativeSelectorList = optimizeSelectorListNode(relativeSelectorList);
+  const optimizedExtendedPseudoClassNode = updateNodeChildren(extendedPseudoClassNode, [optimizedRelativeSelectorList]);
+  return updateNodeChildren(currExtendedSelectorNode, [optimizedExtendedPseudoClassNode]);
+};
+const optimizeCurrentRegularSelector = (current, previous) => {
+  previous.value = `${getNodeValue(previous)}${SPACE}${getNodeValue(current)}`;
+};
+const optimizeSelectorNode = selectorNode => {
+  const rawSelectorNodeChildren = selectorNode.children;
+  const optimizedChildrenList = [];
+  let currentIndex = 0;
+  while (currentIndex < rawSelectorNodeChildren.length) {
+    const currentChild = getItemByIndex(rawSelectorNodeChildren, currentIndex, 'currentChild should be specified');
+    if (currentIndex === 0) {
+      optimizedChildrenList.push(currentChild);
+    } else {
+      const prevRegularChild = getLastRegularChild(optimizedChildrenList);
+      if (isExtendedSelectorNode(currentChild)) {
+        let optimizedExtendedSelector = null;
+        let isOptimizationNeeded = shouldOptimizeExtendedSelector(currentChild);
+        optimizedExtendedSelector = currentChild;
+        while (isOptimizationNeeded) {
+          optimizedExtendedSelector = getOptimizedExtendedSelector(optimizedExtendedSelector, prevRegularChild);
+          isOptimizationNeeded = shouldOptimizeExtendedSelector(optimizedExtendedSelector);
+        }
+        if (optimizedExtendedSelector !== null) {
+          optimizedChildrenList.push(optimizedExtendedSelector);
+          const optimizedPseudoClass = getPseudoClassNode(optimizedExtendedSelector);
+          const optimizedPseudoName = getNodeName(optimizedPseudoClass);
+          if (getNodeValue(prevRegularChild) === ASTERISK && isOptimizationPseudoClass(optimizedPseudoName)) {
+            prevRegularChild.value = IS_OR_NOT_PSEUDO_SELECTING_ROOT;
+          }
+        }
+      } else if (isRegularSelectorNode(currentChild)) {
+        const lastOptimizedChild = getLast(optimizedChildrenList) || null;
+        if (isRegularSelectorNode(lastOptimizedChild)) {
+          optimizeCurrentRegularSelector(currentChild, prevRegularChild);
+        }
+      }
+    }
+    currentIndex += 1;
+  }
+  return updateNodeChildren(selectorNode, optimizedChildrenList);
+};
+const optimizeSelectorListNode = selectorListNode => {
+  return updateNodeChildren(selectorListNode, selectorListNode.children.map(s => optimizeSelectorNode(s)));
+};
+const optimizeAst = ast => {
+  return optimizeSelectorListNode(ast);
+};
+const XPATH_PSEUDO_SELECTING_ROOT = 'body';
+const NO_WHITESPACE_ERROR_PREFIX = 'No white space is allowed before or after extended pseudo-class name in selector';
+const parse = selector => {
+  const tokens = tokenizeSelector(selector);
+  const context = {
+    ast: null,
+    pathToBufferNode: [],
+    extendedPseudoNamesStack: [],
+    extendedPseudoBracketsStack: [],
+    standardPseudoNamesStack: [],
+    standardPseudoBracketsStack: [],
+    isAttributeBracketsOpen: false,
+    attributeBuffer: '',
+    isRegexpOpen: false,
+    shouldOptimize: false
   };
-  Object.defineProperty(this, 'sum', zeroDescriptor);
-  Object.defineProperty(this, 'squaredSum', zeroDescriptor);
+  let i = 0;
+  while (i < tokens.length) {
+    const token = tokens[i];
+    if (!token) {
+      break;
+    }
+    const {
+      type: tokenType,
+      value: tokenValue
+    } = token;
+    const nextToken = tokens[i + 1];
+    const nextTokenType = nextToken === null || nextToken === void 0 ? void 0 : nextToken.type;
+    const nextTokenValue = nextToken === null || nextToken === void 0 ? void 0 : nextToken.value;
+    const nextToNextToken = tokens[i + 2];
+    const nextToNextTokenValue = nextToNextToken === null || nextToNextToken === void 0 ? void 0 : nextToNextToken.value;
+    const previousToken = tokens[i - 1];
+    const prevTokenType = previousToken === null || previousToken === void 0 ? void 0 : previousToken.type;
+    const prevTokenValue = previousToken === null || previousToken === void 0 ? void 0 : previousToken.value;
+    const previousToPreviousToken = tokens[i - 2];
+    const prevToPrevTokenValue = previousToPreviousToken === null || previousToPreviousToken === void 0 ? void 0 : previousToPreviousToken.value;
+    let bufferNode = getBufferNode(context);
+    switch (tokenType) {
+      case TOKEN_TYPE.WORD:
+        if (bufferNode === null) {
+          initAst(context, tokenValue);
+        } else if (isSelectorListNode(bufferNode)) {
+          addAstNodeByType(context, NODE.SELECTOR);
+          addAstNodeByType(context, NODE.REGULAR_SELECTOR, tokenValue);
+        } else if (isRegularSelectorNode(bufferNode)) {
+          updateBufferNode(context, tokenValue);
+        } else if (isExtendedSelectorNode(bufferNode)) {
+          if (isWhiteSpaceChar(nextTokenValue) && nextToNextTokenValue === BRACKET.PARENTHESES.LEFT) {
+            throw new Error(`${NO_WHITESPACE_ERROR_PREFIX}: '${selector}'`);
+          }
+          const lowerCaseTokenValue = tokenValue.toLowerCase();
+          context.extendedPseudoNamesStack.push(lowerCaseTokenValue);
+          if (isAbsolutePseudoClass(lowerCaseTokenValue)) {
+            addAstNodeByType(context, NODE.ABSOLUTE_PSEUDO_CLASS, lowerCaseTokenValue);
+          } else {
+            addAstNodeByType(context, NODE.RELATIVE_PSEUDO_CLASS, lowerCaseTokenValue);
+            if (isOptimizationPseudoClass(lowerCaseTokenValue)) {
+              context.shouldOptimize = true;
+            }
+          }
+        } else if (isAbsolutePseudoClassNode(bufferNode)) {
+          updateBufferNode(context, tokenValue);
+        } else if (isRelativePseudoClassNode(bufferNode)) {
+          initRelativeSubtree(context, tokenValue);
+        }
+        break;
+      case TOKEN_TYPE.MARK:
+        switch (tokenValue) {
+          case COMMA:
+            if (!bufferNode || typeof bufferNode !== 'undefined' && !nextTokenValue) {
+              throw new Error(`'${selector}' is not a valid selector`);
+            } else if (isRegularSelectorNode(bufferNode)) {
+              if (context.isAttributeBracketsOpen) {
+                updateBufferNode(context, tokenValue);
+              } else {
+                upToClosest(context, NODE.SELECTOR_LIST);
+              }
+            } else if (isAbsolutePseudoClassNode(bufferNode)) {
+              updateBufferNode(context, tokenValue);
+            } else if (isSelectorNode(bufferNode)) {
+              upToClosest(context, NODE.SELECTOR_LIST);
+            }
+            break;
+          case SPACE:
+            if (isRegularSelectorNode(bufferNode)
+            && !context.isAttributeBracketsOpen) {
+              bufferNode = getUpdatedBufferNode(context);
+            }
+            if (isRegularSelectorNode(bufferNode)) {
+              if (!context.isAttributeBracketsOpen
+              && (prevTokenValue === COLON && nextTokenType === TOKEN_TYPE.WORD
+              || prevTokenType === TOKEN_TYPE.WORD && nextTokenValue === BRACKET.PARENTHESES.LEFT)) {
+                throw new Error(`'${selector}' is not a valid selector`);
+              }
+              if (!nextTokenValue || doesRegularContinueAfterSpace(nextTokenType, nextTokenValue)
+              || context.isAttributeBracketsOpen) {
+                updateBufferNode(context, tokenValue);
+              }
+            }
+            if (isAbsolutePseudoClassNode(bufferNode)) {
+              updateBufferNode(context, tokenValue);
+            }
+            if (isRelativePseudoClassNode(bufferNode)) {
+              initRelativeSubtree(context);
+            }
+            if (isSelectorNode(bufferNode)) {
+              if (doesRegularContinueAfterSpace(nextTokenType, nextTokenValue)) {
+                addAstNodeByType(context, NODE.REGULAR_SELECTOR);
+              }
+            }
+            break;
+          case DESCENDANT_COMBINATOR:
+          case CHILD_COMBINATOR:
+          case NEXT_SIBLING_COMBINATOR:
+          case SUBSEQUENT_SIBLING_COMBINATOR:
+          case SEMICOLON:
+          case SLASH:
+          case BACKSLASH:
+          case SINGLE_QUOTE:
+          case DOUBLE_QUOTE:
+          case CARET:
+          case DOLLAR_SIGN:
+          case BRACKET.CURLY.LEFT:
+          case BRACKET.CURLY.RIGHT:
+          case ASTERISK:
+          case ID_MARKER:
+          case CLASS_MARKER:
+          case BRACKET.SQUARE.LEFT:
+            if (COMBINATORS.includes(tokenValue)) {
+              if (bufferNode === null) {
+                throw new Error(`'${selector}' is not a valid selector`);
+              }
+              bufferNode = getUpdatedBufferNode(context);
+            }
+            if (bufferNode === null) {
+              initAst(context, tokenValue);
+              if (isAttributeOpening(tokenValue, prevTokenValue)) {
+                context.isAttributeBracketsOpen = true;
+              }
+            } else if (isRegularSelectorNode(bufferNode)) {
+              if (tokenValue === BRACKET.CURLY.LEFT && !(context.isAttributeBracketsOpen || context.isRegexpOpen)) {
+                throw new Error(`'${selector}' is not a valid selector`);
+              }
+              updateBufferNode(context, tokenValue);
+              if (isAttributeOpening(tokenValue, prevTokenValue)) {
+                context.isAttributeBracketsOpen = true;
+              }
+            } else if (isAbsolutePseudoClassNode(bufferNode)) {
+              updateBufferNode(context, tokenValue);
+              if (tokenValue === SLASH && context.extendedPseudoNamesStack.length > 0) {
+                if (prevTokenValue === SLASH && prevToPrevTokenValue === BACKSLASH) {
+                  context.isRegexpOpen = false;
+                } else if (prevTokenValue && prevTokenValue !== BACKSLASH) {
+                  if (isRegexpOpening(context, prevTokenValue, getNodeValue(bufferNode))) {
+                    context.isRegexpOpen = !context.isRegexpOpen;
+                  } else {
+                    context.isRegexpOpen = false;
+                  }
+                }
+              }
+            } else if (isRelativePseudoClassNode(bufferNode)) {
+              initRelativeSubtree(context, tokenValue);
+              if (isAttributeOpening(tokenValue, prevTokenValue)) {
+                context.isAttributeBracketsOpen = true;
+              }
+            } else if (isSelectorNode(bufferNode)) {
+              if (COMBINATORS.includes(tokenValue)) {
+                addAstNodeByType(context, NODE.REGULAR_SELECTOR, tokenValue);
+              } else if (!context.isRegexpOpen) {
+                bufferNode = getContextLastRegularSelectorNode(context);
+                updateBufferNode(context, tokenValue);
+                if (isAttributeOpening(tokenValue, prevTokenValue)) {
+                  context.isAttributeBracketsOpen = true;
+                }
+              }
+            } else if (isSelectorListNode(bufferNode)) {
+              addAstNodeByType(context, NODE.SELECTOR);
+              addAstNodeByType(context, NODE.REGULAR_SELECTOR, tokenValue);
+              if (isAttributeOpening(tokenValue, prevTokenValue)) {
+                context.isAttributeBracketsOpen = true;
+              }
+            }
+            break;
+          case BRACKET.SQUARE.RIGHT:
+            if (isRegularSelectorNode(bufferNode)) {
+              if (!context.isAttributeBracketsOpen && prevTokenValue !== BACKSLASH) {
+                throw new Error(`'${selector}' is not a valid selector due to '${tokenValue}' after '${getNodeValue(bufferNode)}'`);
+              }
+              if (isAttributeClosing(context)) {
+                context.isAttributeBracketsOpen = false;
+                context.attributeBuffer = '';
+              }
+              updateBufferNode(context, tokenValue);
+            }
+            if (isAbsolutePseudoClassNode(bufferNode)) {
+              updateBufferNode(context, tokenValue);
+            }
+            break;
+          case COLON:
+            if (isWhiteSpaceChar(nextTokenValue) && nextToNextTokenValue && SUPPORTED_PSEUDO_CLASSES.includes(nextToNextTokenValue)) {
+              throw new Error(`${NO_WHITESPACE_ERROR_PREFIX}: '${selector}'`);
+            }
+            if (bufferNode === null) {
+              if (nextTokenValue === XPATH_PSEUDO_CLASS_MARKER) {
+                initAst(context, XPATH_PSEUDO_SELECTING_ROOT);
+              } else if (nextTokenValue === UPWARD_PSEUDO_CLASS_MARKER || nextTokenValue === NTH_ANCESTOR_PSEUDO_CLASS_MARKER) {
+                throw new Error(`${NO_SELECTOR_ERROR_PREFIX} before :${nextTokenValue}() pseudo-class`);
+              } else {
+                initAst(context, ASTERISK);
+              }
+              bufferNode = getBufferNode(context);
+            }
+            if (isSelectorListNode(bufferNode)) {
+              addAstNodeByType(context, NODE.SELECTOR);
+              addAstNodeByType(context, NODE.REGULAR_SELECTOR);
+              bufferNode = getBufferNode(context);
+            }
+            if (isRegularSelectorNode(bufferNode)) {
+              if (prevTokenValue && COMBINATORS.includes(prevTokenValue) || prevTokenValue === COMMA) {
+                updateBufferNode(context, ASTERISK);
+              }
+              handleNextTokenOnColon(context, selector, tokenValue, nextTokenValue, nextToNextTokenValue);
+            }
+            if (isSelectorNode(bufferNode)) {
+              if (!nextTokenValue) {
+                throw new Error(`Invalid colon ':' at the end of selector: '${selector}'`);
+              }
+              if (isSupportedPseudoClass(nextTokenValue.toLowerCase())) {
+                addAstNodeByType(context, NODE.EXTENDED_SELECTOR);
+              } else if (nextTokenValue.toLowerCase() === REMOVE_PSEUDO_MARKER) {
+                throw new Error(`${REMOVE_ERROR_PREFIX.INVALID_REMOVE}: '${selector}'`);
+              } else {
+                bufferNode = getContextLastRegularSelectorNode(context);
+                handleNextTokenOnColon(context, selector, tokenValue, nextTokenType, nextToNextTokenValue);
+              }
+            }
+            if (isAbsolutePseudoClassNode(bufferNode)) {
+              if (getNodeName(bufferNode) === XPATH_PSEUDO_CLASS_MARKER && nextTokenValue && SUPPORTED_PSEUDO_CLASSES.includes(nextTokenValue) && nextToNextTokenValue === BRACKET.PARENTHESES.LEFT) {
+                throw new Error(`:xpath() pseudo-class should be the last in selector: '${selector}'`);
+              }
+              updateBufferNode(context, tokenValue);
+            }
+            if (isRelativePseudoClassNode(bufferNode)) {
+              if (!nextTokenValue) {
+                throw new Error(`Invalid pseudo-class arg at the end of selector: '${selector}'`);
+              }
+              initRelativeSubtree(context, ASTERISK);
+              if (!isSupportedPseudoClass(nextTokenValue.toLowerCase())) {
+                updateBufferNode(context, tokenValue);
+                if (nextToNextTokenValue === BRACKET.PARENTHESES.LEFT) {
+                  context.standardPseudoNamesStack.push(nextTokenValue);
+                }
+              } else {
+                upToClosest(context, NODE.SELECTOR);
+                addAstNodeByType(context, NODE.EXTENDED_SELECTOR);
+              }
+            }
+            break;
+          case BRACKET.PARENTHESES.LEFT:
+            if (isAbsolutePseudoClassNode(bufferNode)) {
+              if (getNodeName(bufferNode) !== XPATH_PSEUDO_CLASS_MARKER && context.isRegexpOpen) {
+                updateBufferNode(context, tokenValue);
+              } else {
+                context.extendedPseudoBracketsStack.push(tokenValue);
+                if (context.extendedPseudoBracketsStack.length > context.extendedPseudoNamesStack.length) {
+                  updateBufferNode(context, tokenValue);
+                }
+              }
+            }
+            if (isRegularSelectorNode(bufferNode)) {
+              if (context.standardPseudoNamesStack.length > 0) {
+                updateBufferNode(context, tokenValue);
+                context.standardPseudoBracketsStack.push(tokenValue);
+              }
+              if (context.isAttributeBracketsOpen) {
+                updateBufferNode(context, tokenValue);
+              }
+            }
+            if (isRelativePseudoClassNode(bufferNode)) {
+              context.extendedPseudoBracketsStack.push(tokenValue);
+            }
+            break;
+          case BRACKET.PARENTHESES.RIGHT:
+            if (isAbsolutePseudoClassNode(bufferNode)) {
+              if (getNodeName(bufferNode) !== XPATH_PSEUDO_CLASS_MARKER && context.isRegexpOpen) {
+                updateBufferNode(context, tokenValue);
+              } else {
+                context.extendedPseudoBracketsStack.pop();
+                if (getNodeName(bufferNode) !== XPATH_PSEUDO_CLASS_MARKER) {
+                  context.extendedPseudoNamesStack.pop();
+                  if (context.extendedPseudoBracketsStack.length > context.extendedPseudoNamesStack.length) {
+                    updateBufferNode(context, tokenValue);
+                  } else if (context.extendedPseudoBracketsStack.length >= 0 && context.extendedPseudoNamesStack.length >= 0) {
+                    upToClosest(context, NODE.SELECTOR);
+                  }
+                } else {
+                  if (context.extendedPseudoBracketsStack.length < context.extendedPseudoNamesStack.length) {
+                    context.extendedPseudoNamesStack.pop();
+                  } else {
+                    updateBufferNode(context, tokenValue);
+                  }
+                }
+              }
+            }
+            if (isRegularSelectorNode(bufferNode)) {
+              if (context.isAttributeBracketsOpen) {
+                updateBufferNode(context, tokenValue);
+              } else if (context.standardPseudoNamesStack.length > 0 && context.standardPseudoBracketsStack.length > 0) {
+                updateBufferNode(context, tokenValue);
+                context.standardPseudoBracketsStack.pop();
+                const lastStandardPseudo = context.standardPseudoNamesStack.pop();
+                if (!lastStandardPseudo) {
+                  throw new Error(`Parsing error. Invalid selector: ${selector}`);
+                }
+                if (Object.values(REGULAR_PSEUDO_ELEMENTS).includes(lastStandardPseudo)
+                && nextTokenValue === COLON && nextToNextTokenValue && HAS_PSEUDO_CLASS_MARKERS.includes(nextToNextTokenValue)) {
+                  throw new Error(`Usage of :${nextToNextTokenValue}() pseudo-class is not allowed after any regular pseudo-element: '${lastStandardPseudo}'`);
+                }
+              } else {
+                context.extendedPseudoBracketsStack.pop();
+                context.extendedPseudoNamesStack.pop();
+                upToClosest(context, NODE.EXTENDED_SELECTOR);
+                upToClosest(context, NODE.SELECTOR);
+              }
+            }
+            if (isSelectorNode(bufferNode)) {
+              context.extendedPseudoBracketsStack.pop();
+              context.extendedPseudoNamesStack.pop();
+              upToClosest(context, NODE.EXTENDED_SELECTOR);
+              upToClosest(context, NODE.SELECTOR);
+            }
+            if (isRelativePseudoClassNode(bufferNode)) {
+              if (context.extendedPseudoNamesStack.length > 0 && context.extendedPseudoBracketsStack.length > 0) {
+                context.extendedPseudoBracketsStack.pop();
+                context.extendedPseudoNamesStack.pop();
+              }
+            }
+            break;
+          case LINE_FEED:
+          case FORM_FEED:
+          case CARRIAGE_RETURN:
+            throw new Error(`'${selector}' is not a valid selector`);
+          case TAB:
+            if (isRegularSelectorNode(bufferNode) && context.isAttributeBracketsOpen) {
+              updateBufferNode(context, tokenValue);
+            } else {
+              throw new Error(`'${selector}' is not a valid selector`);
+            }
+        }
+        break;
+      default:
+        throw new Error(`Unknown type of token: '${tokenValue}'`);
+    }
+    i += 1;
+  }
+  if (context.ast === null) {
+    throw new Error(`'${selector}' is not a valid selector`);
+  }
+  if (context.extendedPseudoNamesStack.length > 0 || context.extendedPseudoBracketsStack.length > 0) {
+    throw new Error(`Unbalanced brackets for extended pseudo-class: '${getLast(context.extendedPseudoNamesStack)}'`);
+  }
+  if (context.isAttributeBracketsOpen) {
+    throw new Error(`Unbalanced attribute brackets in selector: '${selector}'`);
+  }
+  return context.shouldOptimize ? optimizeAst(context.ast) : context.ast;
 };
-utils.Stats.prototype.push = function (dataPoint) {
-  this.array.push(dataPoint);
-  this.length++;
-  this.sum += dataPoint;
-  this.squaredSum += dataPoint * dataPoint;
-  this.mean = this.sum / this.length;
-  this.stddev = Math.sqrt(this.squaredSum / this.length - Math.pow(this.mean, 2));
+const natives = {
+  MutationObserver: window.MutationObserver || window.WebKitMutationObserver
 };
-utils.logError = typeof console !== 'undefined' && console.error && Function.prototype.bind && console.error.bind ? console.error.bind(window.console) : console.error;
-utils.logInfo = typeof console !== 'undefined' && console.info && Function.prototype.bind && console.info.bind ? console.info.bind(window.console) : console.info;
-function isNumber(obj) {
-  return typeof obj === 'number';
+class NativeTextContent {
+  constructor() {
+    this.nativeNode = window.Node || Node;
+  }
+  setGetter() {
+    var _Object$getOwnPropert;
+    this.getter = (_Object$getOwnPropert = Object.getOwnPropertyDescriptor(this.nativeNode.prototype, 'textContent')) === null || _Object$getOwnPropert === void 0 ? void 0 : _Object$getOwnPropert.get;
+  }
 }
-utils.getNodeSelector = function (inputEl) {
+const nativeTextContent = new NativeTextContent();
+const getNodeTextContent = domElement => {
+  if (nativeTextContent.getter) {
+    return nativeTextContent.getter.apply(domElement);
+  }
+  return domElement.textContent || '';
+};
+const getElementSelectorDesc = element => {
+  let selectorText = element.tagName.toLowerCase();
+  selectorText += Array.from(element.attributes).map(attr => {
+    return `[${attr.name}="${element.getAttribute(attr.name)}"]`;
+  }).join('');
+  return selectorText;
+};
+const getElementSelectorPath = inputEl => {
   if (!(inputEl instanceof Element)) {
     throw new Error('Function received argument with wrong type');
   }
-  var el = inputEl;
-  var path = [];
+  let el;
+  el = inputEl;
+  const path = [];
   while (!!el && el.nodeType === Node.ELEMENT_NODE) {
-    var selector = el.nodeName.toLowerCase();
+    let selector = el.nodeName.toLowerCase();
     if (el.id && typeof el.id === 'string') {
-      selector += "#".concat(el.id);
+      selector += `#${el.id}`;
       path.unshift(selector);
       break;
-    } else {
-      var sibling = el;
-      var nth = 1;
-      while (sibling.previousSibling) {
-        sibling = sibling.previousSibling;
-        if (sibling.nodeType === Node.ELEMENT_NODE && sibling.nodeName.toLowerCase() === selector) {
-          nth++;
-        }
-      }
-      if (nth !== 1) {
-        selector += ":nth-of-type(".concat(nth, ")");
+    }
+    let sibling = el;
+    let nth = 1;
+    while (sibling.previousElementSibling) {
+      sibling = sibling.previousElementSibling;
+      if (sibling.nodeType === Node.ELEMENT_NODE && sibling.nodeName.toLowerCase() === selector) {
+        nth += 1;
       }
     }
+    if (nth !== 1) {
+      selector += `:nth-of-type(${nth})`;
+    }
     path.unshift(selector);
-    el = el.parentNode;
+    el = el.parentElement;
   }
   return path.join(' > ');
 };
-var cssUtils = function () {
-  var reAttrFallback = /\[-(?:ext|abp)-([a-z-_]+)=(["'])((?:(?=(\\?))\4.)*?)\2\]/g;
-  var evaluateMatch = function evaluateMatch(match, name, quoteChar, value) {
-    var re = new RegExp("([^\\\\]|^)\\\\".concat(quoteChar), 'g');
-    value = value.replace(re, "$1".concat(quoteChar));
-    return ":".concat(name, "(").concat(value, ")");
-  };
-  var reMatchesCss = /\:(matches-css(?:-after|-before)?)\(([a-z-\s]*\:\s*\/(?:\\.|[^\/])*?\/\s*)\)/g;
-  var reContains = /:(?:-abp-)?(contains|has-text)\((\s*\/(?:\\.|[^\/])*?\/\s*)\)/g;
-  var reScope = /\(\:scope >/g;
-  var addQuotes = function addQuotes(_, c1, c2) {
-    return ":".concat(c1, "(\"").concat(c2.replace(/["\\]/g, '\\$&'), "\")");
-  };
-  var SCOPE_REPLACER = '(>';
-  var normalize = function normalize(cssText) {
-    var normalizedCssText = cssText.replace(reAttrFallback, evaluateMatch).replace(reMatchesCss, addQuotes).replace(reContains, addQuotes).replace(reScope, SCOPE_REPLACER);
-    return normalizedCssText;
-  };
-  var isSimpleSelectorValid = function isSimpleSelectorValid(selector) {
-    try {
-      document.querySelectorAll(selector);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  };
-  return {
-    normalize: normalize,
-    isSimpleSelectorValid: isSimpleSelectorValid
-  };
-}();
-var Sizzle;
-var initializeSizzle = function initializeSizzle() {
-  if (!Sizzle) {
-    Sizzle = function (window) {
-      var support,
-          Expr,
-          getText,
-          isXML,
-          tokenize,
-          compile,
-          select,
-          outermostContext,
-          sortInput,
-          hasDuplicate,
-      setDocument,
-          document,
-          docElem,
-          documentIsHTML,
-          rbuggyQSA,
-          rbuggyMatches,
-          matches,
-          contains,
-      expando = "sizzle" + 1 * new Date(),
-          preferredDoc = window.document,
-          dirruns = 0,
-          done = 0,
-          classCache = createCache(),
-          tokenCache = createCache(),
-          compilerCache = createCache(),
-          nonnativeSelectorCache = createCache(),
-          sortOrder = function sortOrder(a, b) {
-        if (a === b) {
-          hasDuplicate = true;
-        }
-        return 0;
-      },
-      hasOwn = {}.hasOwnProperty,
-          arr = [],
-          pop = arr.pop,
-          push_native = arr.push,
-          push = arr.push,
-          slice = arr.slice,
-      indexOf = function indexOf(list, elem) {
-        var i = 0,
-            len = list.length;
-        for (; i < len; i++) {
-          if (list[i] === elem) {
-            return i;
-          }
-        }
-        return -1;
-      },
-          booleans = "checked|selected|async|autofocus|autoplay|controls|defer|disabled|hidden|ismap|loop|multiple|open|readonly|required|scoped",
-      whitespace = "[\\x20\\t\\r\\n\\f]",
-      identifier = "(?:\\\\.|[\\w-]|[^\0-\\xa0])+",
-      attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
-      "*([*^$|!~]?=)" + whitespace +
-      "*(?:'((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\"|(" + identifier + "))|)" + whitespace + "*\\]",
-          pseudos = ":(" + identifier + ")(?:\\((" +
-      "('((?:\\\\.|[^\\\\'])*)'|\"((?:\\\\.|[^\\\\\"])*)\")|" +
-      "((?:\\\\.|[^\\\\()[\\]]|" + attributes + ")*)|" +
-      ".*" + ")\\)|)",
-      rwhitespace = new RegExp(whitespace + "+", "g"),
-          rtrim = new RegExp("^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g"),
-          rcomma = new RegExp("^" + whitespace + "*," + whitespace + "*"),
-          rcombinators = new RegExp("^" + whitespace + "*([>+~]|" + whitespace + ")" + whitespace + "*"),
-          rpseudo = new RegExp(pseudos),
-          ridentifier = new RegExp("^" + identifier + "$"),
-          matchExpr = {
-        "ID": new RegExp("^#(" + identifier + ")"),
-        "CLASS": new RegExp("^\\.(" + identifier + ")"),
-        "TAG": new RegExp("^(" + identifier + "|[*])"),
-        "ATTR": new RegExp("^" + attributes),
-        "PSEUDO": new RegExp("^" + pseudos),
-        "CHILD": new RegExp("^:(only|first|last|nth|nth-last)-(child|of-type)(?:\\(" + whitespace + "*(even|odd|(([+-]|)(\\d*)n|)" + whitespace + "*(?:([+-]|)" + whitespace + "*(\\d+)|))" + whitespace + "*\\)|)", "i"),
-        "bool": new RegExp("^(?:" + booleans + ")$", "i"),
-        "needsContext": new RegExp("^" + whitespace + "*[>+~]|:(even|odd|eq|gt|lt|nth|first|last)(?:\\(" + whitespace + "*((?:-\\d)?\\d*)" + whitespace + "*\\)|)(?=[^-]|$)", "i")
-      },
-          rnative = /^[^{]+\{\s*\[native \w/,
-      rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
-          rsibling = /[+~]/,
-      runescape = new RegExp("\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig"),
-          funescape = function funescape(_, escaped, escapedWhitespace) {
-        var high = "0x" + escaped - 0x10000;
-        return high !== high || escapedWhitespace ? escaped : high < 0 ?
-        String.fromCharCode(high + 0x10000) :
-        String.fromCharCode(high >> 10 | 0xD800, high & 0x3FF | 0xDC00);
-      },
-      rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\uFFFF\w-]/g,
-          fcssescape = function fcssescape(ch, asCodePoint) {
-        if (asCodePoint) {
-          if (ch === "\0") {
-            return "\uFFFD";
-          }
-          return ch.slice(0, -1) + "\\" + ch.charCodeAt(ch.length - 1).toString(16) + " ";
-        }
-        return "\\" + ch;
-      },
-      unloadHandler = function unloadHandler() {
-        setDocument();
-      },
-          inDisabledFieldset = addCombinator(function (elem) {
-        return elem.disabled === true && elem.nodeName.toLowerCase() === "fieldset";
-      }, {
-        dir: "parentNode",
-        next: "legend"
-      });
-      try {
-        push.apply(arr = slice.call(preferredDoc.childNodes), preferredDoc.childNodes);
-        arr[preferredDoc.childNodes.length].nodeType;
-      } catch (e) {
-        push = {
-          apply: arr.length ?
-          function (target, els) {
-            push_native.apply(target, slice.call(els));
-          } :
-          function (target, els) {
-            var j = target.length,
-                i = 0;
-            while (target[j++] = els[i++]) {}
-            target.length = j - 1;
-          }
-        };
-      }
-      function Sizzle(selector, context, results, seed) {
-        var m,
-            i,
-            elem,
-            nid,
-            match,
-            groups,
-            newSelector,
-            newContext = context && context.ownerDocument,
-        nodeType = context ? context.nodeType : 9;
-        results = results || [];
-        if (typeof selector !== "string" || !selector || nodeType !== 1 && nodeType !== 9 && nodeType !== 11) {
-          return results;
-        }
-        if (!seed) {
-          if ((context ? context.ownerDocument || context : preferredDoc) !== document) {
-            setDocument(context);
-          }
-          context = context || document;
-          if (documentIsHTML) {
-            if (nodeType !== 11 && (match = rquickExpr.exec(selector))) {
-              if (m = match[1]) {
-                if (nodeType === 9) {
-                  if (elem = context.getElementById(m)) {
-                    if (elem.id === m) {
-                      results.push(elem);
-                      return results;
-                    }
-                  } else {
-                    return results;
-                  }
-                } else {
-                  if (newContext && (elem = newContext.getElementById(m)) && contains(context, elem) && elem.id === m) {
-                    results.push(elem);
-                    return results;
-                  }
-                }
-              } else if (match[2]) {
-                push.apply(results, context.getElementsByTagName(selector));
-                return results;
-              } else if ((m = match[3]) && support.getElementsByClassName && context.getElementsByClassName) {
-                push.apply(results, context.getElementsByClassName(m));
-                return results;
-              }
-            }
-            if (support.qsa && !nonnativeSelectorCache[selector + " "] && (!rbuggyQSA || !rbuggyQSA.test(selector))) {
-              if (nodeType !== 1) {
-                newContext = context;
-                newSelector = selector;
-              } else if (context.nodeName.toLowerCase() !== "object") {
-                if (nid = context.getAttribute("id")) {
-                  nid = nid.replace(rcssescape, fcssescape);
-                } else {
-                  context.setAttribute("id", nid = expando);
-                }
-                groups = tokenize(selector);
-                i = groups.length;
-                while (i--) {
-                  groups[i] = "#" + nid + " " + toSelector(groups[i]);
-                }
-                newSelector = groups.join(",");
-                newContext = rsibling.test(selector) && testContext(context.parentNode) || context;
-              }
-              if (newSelector) {
-                try {
-                  if (newSelector.indexOf(':has(') > -1) {
-                    throw new Error('Do not handle :has() pseudo-class by the native method');
-                  }
-                  push.apply(results, newContext.querySelectorAll(newSelector));
-                  return results;
-                } catch (qsaError) {
-                  nonnativeSelectorCache(selector, true);
-                } finally {
-                  if (nid === expando) {
-                    context.removeAttribute("id");
-                  }
-                }
-              }
-            }
-          }
-        }
-        return select(selector.replace(rtrim, "$1"), context, results, seed);
-      }
-      function createCache() {
-        var keys = [];
-        function cache(key, value) {
-          if (keys.push(key + " ") > Expr.cacheLength) {
-            delete cache[keys.shift()];
-          }
-          return cache[key + " "] = value;
-        }
-        return cache;
-      }
-      function markFunction(fn) {
-        fn[expando] = true;
-        return fn;
-      }
-      function assert(fn) {
-        var el = document.createElement("fieldset");
-        try {
-          return !!fn(el);
-        } catch (e) {
-          return false;
-        } finally {
-          if (el.parentNode) {
-            el.parentNode.removeChild(el);
-          }
-          el = null;
-        }
-      }
-      function addHandle(attrs, handler) {
-        var arr = attrs.split("|"),
-            i = arr.length;
-        while (i--) {
-          Expr.attrHandle[arr[i]] = handler;
-        }
-      }
-      function siblingCheck(a, b) {
-        var cur = b && a,
-            diff = cur && a.nodeType === 1 && b.nodeType === 1 && a.sourceIndex - b.sourceIndex;
-        if (diff) {
-          return diff;
-        }
-        if (cur) {
-          while (cur = cur.nextSibling) {
-            if (cur === b) {
-              return -1;
-            }
-          }
-        }
-        return a ? 1 : -1;
-      }
-      function createDisabledPseudo(disabled) {
-        return function (elem) {
-          if ("form" in elem) {
-            if (elem.parentNode && elem.disabled === false) {
-              if ("label" in elem) {
-                if ("label" in elem.parentNode) {
-                  return elem.parentNode.disabled === disabled;
-                } else {
-                  return elem.disabled === disabled;
-                }
-              }
-              return elem.isDisabled === disabled ||
-              elem.isDisabled !== !disabled && inDisabledFieldset(elem) === disabled;
-            }
-            return elem.disabled === disabled;
-          } else if ("label" in elem) {
-            return elem.disabled === disabled;
-          }
-          return false;
-        };
-      }
-      function testContext(context) {
-        return context && typeof context.getElementsByTagName !== "undefined" && context;
-      }
-      support = Sizzle.support = {};
-      isXML = Sizzle.isXML = function (elem) {
-        var documentElement = elem && (elem.ownerDocument || elem).documentElement;
-        return documentElement ? documentElement.nodeName !== "HTML" : false;
-      };
-      setDocument = Sizzle.setDocument = function (node) {
-        var hasCompare,
-            subWindow,
-            doc = node ? node.ownerDocument || node : preferredDoc;
-        if (doc === document || doc.nodeType !== 9 || !doc.documentElement) {
-          return document;
-        }
-        document = doc;
-        docElem = document.documentElement;
-        documentIsHTML = !isXML(document);
-        if (preferredDoc !== document && (subWindow = document.defaultView) && subWindow.top !== subWindow) {
-          if (subWindow.addEventListener) {
-            subWindow.addEventListener("unload", unloadHandler, false);
-          } else if (subWindow.attachEvent) {
-            subWindow.attachEvent("onunload", unloadHandler);
-          }
-        }
-        support.attributes = assert(function (el) {
-          el.className = "i";
-          return !el.getAttribute("className");
-        });
-        support.getElementsByTagName = assert(function (el) {
-          el.appendChild(document.createComment(""));
-          return !el.getElementsByTagName("*").length;
-        });
-        support.getElementsByClassName = rnative.test(document.getElementsByClassName);
-        support.getById = assert(function (el) {
-          docElem.appendChild(el).id = expando;
-          return !document.getElementsByName || !document.getElementsByName(expando).length;
-        });
-        if (support.getById) {
-          Expr.filter["ID"] = function (id) {
-            var attrId = id.replace(runescape, funescape);
-            return function (elem) {
-              return elem.getAttribute("id") === attrId;
-            };
-          };
-          Expr.find["ID"] = function (id, context) {
-            if (typeof context.getElementById !== "undefined" && documentIsHTML) {
-              var elem = context.getElementById(id);
-              return elem ? [elem] : [];
-            }
-          };
-        } else {
-          Expr.filter["ID"] = function (id) {
-            var attrId = id.replace(runescape, funescape);
-            return function (elem) {
-              var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
-              return node && node.value === attrId;
-            };
-          };
-          Expr.find["ID"] = function (id, context) {
-            if (typeof context.getElementById !== "undefined" && documentIsHTML) {
-              var node,
-                  i,
-                  elems,
-                  elem = context.getElementById(id);
-              if (elem) {
-                node = elem.getAttributeNode("id");
-                if (node && node.value === id) {
-                  return [elem];
-                }
-                elems = context.getElementsByName(id);
-                i = 0;
-                while (elem = elems[i++]) {
-                  node = elem.getAttributeNode("id");
-                  if (node && node.value === id) {
-                    return [elem];
-                  }
-                }
-              }
-              return [];
-            }
-          };
-        }
-        Expr.find["TAG"] = support.getElementsByTagName ? function (tag, context) {
-          if (typeof context.getElementsByTagName !== "undefined") {
-            return context.getElementsByTagName(tag);
-          } else if (support.qsa) {
-            return context.querySelectorAll(tag);
-          }
-        } : function (tag, context) {
-          var elem,
-              tmp = [],
-              i = 0,
-          results = context.getElementsByTagName(tag);
-          if (tag === "*") {
-            while (elem = results[i++]) {
-              if (elem.nodeType === 1) {
-                tmp.push(elem);
-              }
-            }
-            return tmp;
-          }
-          return results;
-        };
-        Expr.find["CLASS"] = support.getElementsByClassName && function (className, context) {
-          if (typeof context.getElementsByClassName !== "undefined" && documentIsHTML) {
-            return context.getElementsByClassName(className);
-          }
-        };
-        rbuggyMatches = [];
-        rbuggyQSA = [];
-        if (support.qsa = rnative.test(document.querySelectorAll)) {
-          assert(function (el) {
-            docElem.appendChild(el).innerHTML = AGPolicy.createHTML("<a id='" + expando + "'></a>" + "<select id='" + expando + "-\r\\' msallowcapture=''>" + "<option selected=''></option></select>");
-            if (el.querySelectorAll("[msallowcapture^='']").length) {
-              rbuggyQSA.push("[*^$]=" + whitespace + "*(?:''|\"\")");
-            }
-            if (!el.querySelectorAll("[selected]").length) {
-              rbuggyQSA.push("\\[" + whitespace + "*(?:value|" + booleans + ")");
-            }
-            if (!el.querySelectorAll("[id~=" + expando + "-]").length) {
-              rbuggyQSA.push("~=");
-            }
-            if (!el.querySelectorAll(":checked").length) {
-              rbuggyQSA.push(":checked");
-            }
-            if (!el.querySelectorAll("a#" + expando + "+*").length) {
-              rbuggyQSA.push(".#.+[+~]");
-            }
-          });
-          assert(function (el) {
-            el.innerHTML = AGPolicy.createHTML("<a href='' disabled='disabled'></a>" + "<select disabled='disabled'><option/></select>");
-            var input = document.createElement("input");
-            input.setAttribute("type", "hidden");
-            el.appendChild(input).setAttribute("name", "D");
-            if (el.querySelectorAll("[name=d]").length) {
-              rbuggyQSA.push("name" + whitespace + "*[*^$|!~]?=");
-            }
-            if (el.querySelectorAll(":enabled").length !== 2) {
-              rbuggyQSA.push(":enabled", ":disabled");
-            }
-            docElem.appendChild(el).disabled = true;
-            if (el.querySelectorAll(":disabled").length !== 2) {
-              rbuggyQSA.push(":enabled", ":disabled");
-            }
-            el.querySelectorAll("*,:x");
-            rbuggyQSA.push(",.*:");
-          });
-        }
-        if (support.matchesSelector = rnative.test(matches = docElem.matches || docElem.webkitMatchesSelector || docElem.mozMatchesSelector || docElem.oMatchesSelector || docElem.msMatchesSelector)) {
-          assert(function (el) {
-            support.disconnectedMatch = matches.call(el, "*");
-            matches.call(el, "[s!='']:x");
-            rbuggyMatches.push("!=", pseudos);
-          });
-        }
-        rbuggyQSA = rbuggyQSA.length && new RegExp(rbuggyQSA.join("|"));
-        rbuggyMatches = rbuggyMatches.length && new RegExp(rbuggyMatches.join("|"));
-        hasCompare = rnative.test(docElem.compareDocumentPosition);
-        contains = hasCompare || rnative.test(docElem.contains) ? function (a, b) {
-          var adown = a.nodeType === 9 ? a.documentElement : a,
-              bup = b && b.parentNode;
-          return a === bup || !!(bup && bup.nodeType === 1 && (adown.contains ? adown.contains(bup) : a.compareDocumentPosition && a.compareDocumentPosition(bup) & 16));
-        } : function (a, b) {
-          if (b) {
-            while (b = b.parentNode) {
-              if (b === a) {
-                return true;
-              }
-            }
-          }
-          return false;
-        };
-        sortOrder = hasCompare ? function (a, b) {
-          if (a === b) {
-            hasDuplicate = true;
-            return 0;
-          }
-          var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
-          if (compare) {
-            return compare;
-          }
-          compare = (a.ownerDocument || a) === (b.ownerDocument || b) ? a.compareDocumentPosition(b) :
-          1;
-          if (compare & 1 || !support.sortDetached && b.compareDocumentPosition(a) === compare) {
-            if (a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a)) {
-              return -1;
-            }
-            if (b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b)) {
-              return 1;
-            }
-            return sortInput ? indexOf(sortInput, a) - indexOf(sortInput, b) : 0;
-          }
-          return compare & 4 ? -1 : 1;
-        } : function (a, b) {
-          if (a === b) {
-            hasDuplicate = true;
-            return 0;
-          }
-          var cur,
-              i = 0,
-              aup = a.parentNode,
-              bup = b.parentNode,
-              ap = [a],
-              bp = [b];
-          if (!aup || !bup) {
-            return a === document ? -1 : b === document ? 1 : aup ? -1 : bup ? 1 : sortInput ? indexOf(sortInput, a) - indexOf(sortInput, b) : 0;
-          } else if (aup === bup) {
-            return siblingCheck(a, b);
-          }
-          cur = a;
-          while (cur = cur.parentNode) {
-            ap.unshift(cur);
-          }
-          cur = b;
-          while (cur = cur.parentNode) {
-            bp.unshift(cur);
-          }
-          while (ap[i] === bp[i]) {
-            i++;
-          }
-          return i ?
-          siblingCheck(ap[i], bp[i]) :
-          ap[i] === preferredDoc ? -1 : bp[i] === preferredDoc ? 1 : 0;
-        };
-        return document;
-      };
-      Sizzle.matches = function (expr, elements) {
-        return Sizzle(expr, null, null, elements);
-      };
-      Sizzle.matchesSelector = function (elem, expr) {
-        if ((elem.ownerDocument || elem) !== document) {
-          setDocument(elem);
-        }
-        if (support.matchesSelector && documentIsHTML && !nonnativeSelectorCache[expr + " "] && (!rbuggyMatches || !rbuggyMatches.test(expr)) && (!rbuggyQSA || !rbuggyQSA.test(expr))) {
-          try {
-            var ret = matches.call(elem, expr);
-            if (ret || support.disconnectedMatch ||
-            elem.document && elem.document.nodeType !== 11) {
-              return ret;
-            }
-          } catch (e) {
-            nonnativeSelectorCache(expr, true);
-          }
-        }
-        return Sizzle(expr, document, null, [elem]).length > 0;
-      };
-      Sizzle.contains = function (context, elem) {
-        if ((context.ownerDocument || context) !== document) {
-          setDocument(context);
-        }
-        return contains(context, elem);
-      };
-      Sizzle.attr = function (elem, name) {
-        if ((elem.ownerDocument || elem) !== document) {
-          setDocument(elem);
-        }
-        var fn = Expr.attrHandle[name.toLowerCase()],
-        val = fn && hasOwn.call(Expr.attrHandle, name.toLowerCase()) ? fn(elem, name, !documentIsHTML) : undefined;
-        return val !== undefined ? val : support.attributes || !documentIsHTML ? elem.getAttribute(name) : (val = elem.getAttributeNode(name)) && val.specified ? val.value : null;
-      };
-      Sizzle.escape = function (sel) {
-        return (sel + "").replace(rcssescape, fcssescape);
-      };
-      Sizzle.error = function (msg) {
-        throw new Error("Syntax error, unrecognized expression: " + msg);
-      };
-      Sizzle.uniqueSort = function (results) {
-        var elem,
-            duplicates = [],
-            j = 0,
-            i = 0;
-        hasDuplicate = !support.detectDuplicates;
-        sortInput = !support.sortStable && results.slice(0);
-        results.sort(sortOrder);
-        if (hasDuplicate) {
-          while (elem = results[i++]) {
-            if (elem === results[i]) {
-              j = duplicates.push(i);
-            }
-          }
-          while (j--) {
-            results.splice(duplicates[j], 1);
-          }
-        }
-        sortInput = null;
-        return results;
-      };
-      getText = Sizzle.getText = function (elem) {
-        var node,
-            ret = "",
-            i = 0,
-            nodeType = elem.nodeType;
-        if (!nodeType) {
-          while (node = elem[i++]) {
-            ret += getText(node);
-          }
-        } else if (nodeType === 1 || nodeType === 9 || nodeType === 11) {
-          if (typeof elem.textContent === "string") {
-            return elem.textContent;
-          } else {
-            for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
-              ret += getText(elem);
-            }
-          }
-        } else if (nodeType === 3 || nodeType === 4) {
-          return elem.nodeValue;
-        }
-        return ret;
-      };
-      Expr = Sizzle.selectors = {
-        cacheLength: 50,
-        createPseudo: markFunction,
-        match: matchExpr,
-        attrHandle: {},
-        find: {},
-        relative: {
-          ">": {
-            dir: "parentNode",
-            first: true
-          },
-          " ": {
-            dir: "parentNode"
-          },
-          "+": {
-            dir: "previousSibling",
-            first: true
-          },
-          "~": {
-            dir: "previousSibling"
-          }
-        },
-        preFilter: {
-          "ATTR": function ATTR(match) {
-            match[1] = match[1].replace(runescape, funescape);
-            match[3] = (match[3] || match[4] || match[5] || "").replace(runescape, funescape);
-            if (match[2] === "~=") {
-              match[3] = " " + match[3] + " ";
-            }
-            return match.slice(0, 4);
-          },
-          "CHILD": function CHILD(match) {
-            match[1] = match[1].toLowerCase();
-            if (match[1].slice(0, 3) === "nth") {
-              if (!match[3]) {
-                Sizzle.error(match[0]);
-              }
-              match[4] = +(match[4] ? match[5] + (match[6] || 1) : 2 * (match[3] === "even" || match[3] === "odd"));
-              match[5] = +(match[7] + match[8] || match[3] === "odd");
-            } else if (match[3]) {
-              Sizzle.error(match[0]);
-            }
-            return match;
-          },
-          "PSEUDO": function PSEUDO(match) {
-            var excess,
-                unquoted = !match[6] && match[2];
-            if (matchExpr["CHILD"].test(match[0])) {
-              return null;
-            }
-            if (match[3]) {
-              match[2] = match[4] || match[5] || "";
-            } else if (unquoted && rpseudo.test(unquoted) && (
-            excess = tokenize(unquoted, true)) && (
-            excess = unquoted.indexOf(")", unquoted.length - excess) - unquoted.length)) {
-              match[0] = match[0].slice(0, excess);
-              match[2] = unquoted.slice(0, excess);
-            }
-            return match.slice(0, 3);
-          }
-        },
-        filter: {
-          "TAG": function TAG(nodeNameSelector) {
-            var nodeName = nodeNameSelector.replace(runescape, funescape).toLowerCase();
-            return nodeNameSelector === "*" ? function () {
-              return true;
-            } : function (elem) {
-              return elem.nodeName && elem.nodeName.toLowerCase() === nodeName;
-            };
-          },
-          "CLASS": function CLASS(className) {
-            var pattern = classCache[className + " "];
-            return pattern || (pattern = new RegExp("(^|" + whitespace + ")" + className + "(" + whitespace + "|$)")) && classCache(className, function (elem) {
-              return pattern.test(typeof elem.className === "string" && elem.className || typeof elem.getAttribute !== "undefined" && elem.getAttribute("class") || "");
-            });
-          },
-          "ATTR": function ATTR(name, operator, check) {
-            return function (elem) {
-              var result = Sizzle.attr(elem, name);
-              if (result == null) {
-                return operator === "!=";
-              }
-              if (!operator) {
-                return true;
-              }
-              result += "";
-              return operator === "=" ? result === check : operator === "!=" ? result !== check : operator === "^=" ? check && result.indexOf(check) === 0 : operator === "*=" ? check && result.indexOf(check) > -1 : operator === "$=" ? check && result.slice(-check.length) === check : operator === "~=" ? (" " + result.replace(rwhitespace, " ") + " ").indexOf(check) > -1 : operator === "|=" ? result === check || result.slice(0, check.length + 1) === check + "-" : false;
-            };
-          },
-          "CHILD": function CHILD(type, what, argument, first, last) {
-            var simple = type.slice(0, 3) !== "nth",
-                forward = type.slice(-4) !== "last",
-                ofType = what === "of-type";
-            return first === 1 && last === 0 ?
-            function (elem) {
-              return !!elem.parentNode;
-            } : function (elem, context, xml) {
-              var cache,
-                  uniqueCache,
-                  outerCache,
-                  node,
-                  nodeIndex,
-                  start,
-                  dir = simple !== forward ? "nextSibling" : "previousSibling",
-                  parent = elem.parentNode,
-                  name = ofType && elem.nodeName.toLowerCase(),
-                  useCache = !xml && !ofType,
-                  diff = false;
-              if (parent) {
-                if (simple) {
-                  while (dir) {
-                    node = elem;
-                    while (node = node[dir]) {
-                      if (ofType ? node.nodeName.toLowerCase() === name : node.nodeType === 1) {
-                        return false;
-                      }
-                    }
-                    start = dir = type === "only" && !start && "nextSibling";
-                  }
-                  return true;
-                }
-                start = [forward ? parent.firstChild : parent.lastChild];
-                if (forward && useCache) {
-                  node = parent;
-                  outerCache = node[expando] || (node[expando] = {});
-                  uniqueCache = outerCache[node.uniqueID] || (outerCache[node.uniqueID] = {});
-                  cache = uniqueCache[type] || [];
-                  nodeIndex = cache[0] === dirruns && cache[1];
-                  diff = nodeIndex && cache[2];
-                  node = nodeIndex && parent.childNodes[nodeIndex];
-                  while (node = ++nodeIndex && node && node[dir] || (
-                  diff = nodeIndex = 0) || start.pop()) {
-                    if (node.nodeType === 1 && ++diff && node === elem) {
-                      uniqueCache[type] = [dirruns, nodeIndex, diff];
-                      break;
-                    }
-                  }
-                } else {
-                  if (useCache) {
-                    node = elem;
-                    outerCache = node[expando] || (node[expando] = {});
-                    uniqueCache = outerCache[node.uniqueID] || (outerCache[node.uniqueID] = {});
-                    cache = uniqueCache[type] || [];
-                    nodeIndex = cache[0] === dirruns && cache[1];
-                    diff = nodeIndex;
-                  }
-                  if (diff === false) {
-                    while (node = ++nodeIndex && node && node[dir] || (diff = nodeIndex = 0) || start.pop()) {
-                      if ((ofType ? node.nodeName.toLowerCase() === name : node.nodeType === 1) && ++diff) {
-                        if (useCache) {
-                          outerCache = node[expando] || (node[expando] = {});
-                          uniqueCache = outerCache[node.uniqueID] || (outerCache[node.uniqueID] = {});
-                          uniqueCache[type] = [dirruns, diff];
-                        }
-                        if (node === elem) {
-                          break;
-                        }
-                      }
-                    }
-                  }
-                }
-                diff -= last;
-                return diff === first || diff % first === 0 && diff / first >= 0;
-              }
-            };
-          },
-          "PSEUDO": function PSEUDO(pseudo, argument) {
-            var args,
-                fn = Expr.pseudos[pseudo] || Expr.setFilters[pseudo.toLowerCase()] || Sizzle.error("unsupported pseudo: " + pseudo);
-            if (fn[expando]) {
-              return fn(argument);
-            }
-            if (fn.length > 1) {
-              args = [pseudo, pseudo, "", argument];
-              return Expr.setFilters.hasOwnProperty(pseudo.toLowerCase()) ? markFunction(function (seed, matches) {
-                var idx,
-                    matched = fn(seed, argument),
-                    i = matched.length;
-                while (i--) {
-                  idx = indexOf(seed, matched[i]);
-                  seed[idx] = !(matches[idx] = matched[i]);
-                }
-              }) : function (elem) {
-                return fn(elem, 0, args);
-              };
-            }
-            return fn;
-          }
-        },
-        pseudos: {
-          "not": markFunction(function (selector) {
-            var input = [],
-                results = [],
-                matcher = compile(selector.replace(rtrim, "$1"));
-            return matcher[expando] ? markFunction(function (seed, matches, context, xml) {
-              var elem,
-                  unmatched = matcher(seed, null, xml, []),
-                  i = seed.length;
-              while (i--) {
-                if (elem = unmatched[i]) {
-                  seed[i] = !(matches[i] = elem);
-                }
-              }
-            }) : function (elem, context, xml) {
-              input[0] = elem;
-              matcher(input, null, xml, results);
-              input[0] = null;
-              return !results.pop();
-            };
-          }),
-          "has": markFunction(function (selector) {
-            if (typeof selector === "string") {
-              Sizzle.compile(selector);
-            }
-            return function (elem) {
-              return Sizzle(selector, elem).length > 0;
-            };
-          }),
-          "lang": markFunction(function (lang) {
-            if (!ridentifier.test(lang || "")) {
-              Sizzle.error("unsupported lang: " + lang);
-            }
-            lang = lang.replace(runescape, funescape).toLowerCase();
-            return function (elem) {
-              var elemLang;
-              do {
-                if (elemLang = documentIsHTML ? elem.lang : elem.getAttribute("xml:lang") || elem.getAttribute("lang")) {
-                  elemLang = elemLang.toLowerCase();
-                  return elemLang === lang || elemLang.indexOf(lang + "-") === 0;
-                }
-              } while ((elem = elem.parentNode) && elem.nodeType === 1);
-              return false;
-            };
-          }),
-          "target": function target(elem) {
-            var hash = window.location && window.location.hash;
-            return hash && hash.slice(1) === elem.id;
-          },
-          "root": function root(elem) {
-            return elem === docElem;
-          },
-          "focus": function focus(elem) {
-            return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
-          },
-          "enabled": createDisabledPseudo(false),
-          "disabled": createDisabledPseudo(true),
-          "checked": function checked(elem) {
-            var nodeName = elem.nodeName.toLowerCase();
-            return nodeName === "input" && !!elem.checked || nodeName === "option" && !!elem.selected;
-          },
-          "selected": function selected(elem) {
-            if (elem.parentNode) {
-              elem.parentNode.selectedIndex;
-            }
-            return elem.selected === true;
-          },
-          "empty": function empty(elem) {
-            for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
-              if (elem.nodeType < 6) {
-                return false;
-              }
-            }
-            return true;
-          }
-        }
-      };
-      function setFilters() {}
-      setFilters.prototype = Expr.filters = Expr.pseudos;
-      Expr.setFilters = new setFilters();
-      var sortTokenGroups = function () {
-        var splitCompoundSelector = function splitCompoundSelector(tokens) {
-          var groups = [];
-          var currentTokensGroup = [];
-          var maxIdx = tokens.length - 1;
-          for (var i = 0; i <= maxIdx; i++) {
-            var token = tokens[i];
-            var relative = Sizzle.selectors.relative[token.type];
-            if (relative) {
-              groups.push(currentTokensGroup);
-              groups.push(token);
-              currentTokensGroup = [];
-            } else {
-              currentTokensGroup.push(token);
-            }
-            if (i === maxIdx) {
-              groups.push(currentTokensGroup);
-            }
-          }
-          return groups;
-        };
-        var TOKEN_TYPES_VALUES = {
-          "CHILD": 100,
-          "ID": 90,
-          "CLASS": 80,
-          "TAG": 70,
-          "ATTR": 70,
-          "PSEUDO": 60
-        };
-        var POSITIONAL_PSEUDOS = ["nth", "first", "last", "eq", "even", "odd", "lt", "gt", "not"];
-        var compareFunction = function compareFunction(left, right) {
-          var leftValue = TOKEN_TYPES_VALUES[left.type];
-          var rightValue = TOKEN_TYPES_VALUES[right.type];
-          return leftValue - rightValue;
-        };
-        var isSortable = function isSortable(tokens) {
-          var iTokens = tokens.length;
-          while (iTokens--) {
-            var token = tokens[iTokens];
-            if (token.type === "PSEUDO" && POSITIONAL_PSEUDOS.indexOf(token.matches[0]) !== -1) {
-              return false;
-            }
-            if (token.type === "CHILD") {
-              return false;
-            }
-          }
-          return true;
-        };
-        var sortTokens = function sortTokens(tokens) {
-          if (!tokens || tokens.length === 1) {
-            return tokens;
-          }
-          var sortedTokens = [];
-          var groups = splitCompoundSelector(tokens);
-          for (var i = 0; i < groups.length; i++) {
-            var group = groups[i];
-            if (group instanceof Array) {
-              if (isSortable(group)) {
-                group.sort(compareFunction);
-              }
-              sortedTokens = sortedTokens.concat(group);
-            } else {
-              sortedTokens.push(group);
-            }
-          }
-          return sortedTokens;
-        };
-        var sortTokenGroups = function sortTokenGroups(groups) {
-          var sortedGroups = [];
-          var len = groups.length;
-          var i = 0;
-          for (; i < len; i++) {
-            sortedGroups.push(sortTokens(groups[i]));
-          }
-          return sortedGroups;
-        };
-        return sortTokenGroups;
-      }();
-      var AGPolicy = function createPolicy() {
-        var defaultPolicy = {
-          createHTML: function createHTML(input) {
-            return input;
-          },
-          createScript: function createScript(input) {
-            return input;
-          },
-          createScriptURL: function createScriptURL(input) {
-            return input;
-          }
-        };
-        if (window.trustedTypes && window.trustedTypes.createPolicy) {
-          return window.trustedTypes.createPolicy("AGPolicy", defaultPolicy);
-        }
-        return defaultPolicy;
-      }();
-      function removeTrailingSpaces(tokens) {
-        var iTokens = tokens.length;
-        while (iTokens--) {
-          var token = tokens[iTokens];
-          if (token.type === " ") {
-            tokens.length = iTokens;
-          } else {
-            break;
-          }
-        }
-      }
-      function tokenGroupsToSelectors(groups) {
-        removeTrailingSpaces(groups[groups.length - 1]);
-        var sortedGroups = sortTokenGroups(groups);
-        var selectors = [];
-        for (var i = 0; i < groups.length; i++) {
-          var tokenGroups = groups[i];
-          var selectorText = toSelector(tokenGroups);
-          selectors.push({
-            groups: [tokenGroups],
-            selectorText: selectorText
-          });
-          var tokensCacheItem = {
-            groups: tokenGroups,
-            sortedGroups: [sortedGroups[i]]
-          };
-          tokenCache(selectorText, tokensCacheItem);
-        }
-        return selectors;
-      }
-      tokenize = Sizzle.tokenize = function (selector, parseOnly, options) {
-        var matched,
-            match,
-            tokens,
-            type,
-            soFar,
-            groups,
-            preFilters,
-            cached = tokenCache[selector + " "];
-        var tolerant = options && options.tolerant;
-        var returnUnsorted = options && options.returnUnsorted;
-        var cacheOnly = options && options.cacheOnly;
-        if (cached) {
-          if (parseOnly) {
-            return 0;
-          } else {
-            return (returnUnsorted ? cached.groups : cached.sortedGroups).slice(0);
-          }
-        }
-        if (cacheOnly) {
-          return null;
-        }
-        soFar = selector;
-        groups = [];
-        preFilters = Expr.preFilter;
-        while (soFar) {
-          if (!matched || (match = rcomma.exec(soFar))) {
-            if (match) {
-              soFar = soFar.slice(match[0].length) || soFar;
-            }
-            groups.push(tokens = []);
-          }
-          matched = false;
-          if (match = rcombinators.exec(soFar)) {
-            matched = match.shift();
-            tokens.push({
-              value: matched,
-              type: match[0].replace(rtrim, " ")
-            });
-            soFar = soFar.slice(matched.length);
-          }
-          for (type in Expr.filter) {
-            if ((match = matchExpr[type].exec(soFar)) && (!preFilters[type] || (match = preFilters[type](match)))) {
-              matched = match.shift();
-              tokens.push({
-                value: matched,
-                type: type,
-                matches: match
-              });
-              soFar = soFar.slice(matched.length);
-            }
-          }
-          if (!matched) {
-            break;
-          }
-        }
-        var invalidLen = soFar.length;
-        if (parseOnly) {
-          return invalidLen;
-        }
-        if (invalidLen !== 0 && !tolerant) {
-          Sizzle.error(selector);
-        }
-        if (tolerant) {
-          var nextIndex = selector.length - invalidLen;
-          var selectors = tokenGroupsToSelectors(groups);
-          return {
-            selectors: selectors,
-            nextIndex: nextIndex
-          };
-        }
-        var sortedGroups = sortTokenGroups(groups);
-        var tokensCacheItem = {
-          groups: groups,
-          sortedGroups: sortedGroups
-        };
-        tokensCacheItem = tokenCache(selector, tokensCacheItem);
-        return (returnUnsorted ? tokensCacheItem.groups : tokensCacheItem.sortedGroups).slice(0);
-      };
-      function toSelector(tokens) {
-        var i = 0,
-            len = tokens.length,
-            selector = "";
-        for (; i < len; i++) {
-          selector += tokens[i].value;
-        }
-        return selector;
-      }
-      function addCombinator(matcher, combinator, base) {
-        var dir = combinator.dir,
-            skip = combinator.next,
-            key = skip || dir,
-            checkNonElements = base && key === "parentNode",
-            doneName = done++;
-        return combinator.first ?
-        function (elem, context, xml) {
-          while (elem = elem[dir]) {
-            if (elem.nodeType === 1 || checkNonElements) {
-              return matcher(elem, context, xml);
-            }
-          }
-          return false;
-        } :
-        function (elem, context, xml) {
-          var oldCache,
-              uniqueCache,
-              outerCache,
-              newCache = [dirruns, doneName];
-          if (xml) {
-            while (elem = elem[dir]) {
-              if (elem.nodeType === 1 || checkNonElements) {
-                if (matcher(elem, context, xml)) {
-                  return true;
-                }
-              }
-            }
-          } else {
-            while (elem = elem[dir]) {
-              if (elem.nodeType === 1 || checkNonElements) {
-                outerCache = elem[expando] || (elem[expando] = {});
-                uniqueCache = outerCache[elem.uniqueID] || (outerCache[elem.uniqueID] = {});
-                if (skip && skip === elem.nodeName.toLowerCase()) {
-                  elem = elem[dir] || elem;
-                } else if ((oldCache = uniqueCache[key]) && oldCache[0] === dirruns && oldCache[1] === doneName) {
-                  return newCache[2] = oldCache[2];
-                } else {
-                  uniqueCache[key] = newCache;
-                  if (newCache[2] = matcher(elem, context, xml)) {
-                    return true;
-                  }
-                }
-              }
-            }
-          }
-          return false;
-        };
-      }
-      function elementMatcher(matchers) {
-        return matchers.length > 1 ? function (elem, context, xml) {
-          var i = matchers.length;
-          while (i--) {
-            if (!matchers[i](elem, context, xml)) {
-              return false;
-            }
-          }
-          return true;
-        } : matchers[0];
-      }
-      function multipleContexts(selector, contexts, results) {
-        var i = 0,
-            len = contexts.length;
-        for (; i < len; i++) {
-          Sizzle(selector, contexts[i], results);
-        }
-        return results;
-      }
-      function condense(unmatched, map, filter, context, xml) {
-        var elem,
-            newUnmatched = [],
-            i = 0,
-            len = unmatched.length,
-            mapped = map != null;
-        for (; i < len; i++) {
-          if (elem = unmatched[i]) {
-            if (!filter || filter(elem, context, xml)) {
-              newUnmatched.push(elem);
-              if (mapped) {
-                map.push(i);
-              }
-            }
-          }
-        }
-        return newUnmatched;
-      }
-      function setMatcher(preFilter, selector, matcher, postFilter, postFinder, postSelector) {
-        if (postFilter && !postFilter[expando]) {
-          postFilter = setMatcher(postFilter);
-        }
-        if (postFinder && !postFinder[expando]) {
-          postFinder = setMatcher(postFinder, postSelector);
-        }
-        return markFunction(function (seed, results, context, xml) {
-          var temp,
-              i,
-              elem,
-              preMap = [],
-              postMap = [],
-              preexisting = results.length,
-          elems = seed || multipleContexts(selector || "*", context.nodeType ? [context] : context, []),
-          matcherIn = preFilter && (seed || !selector) ? condense(elems, preMap, preFilter, context, xml) : elems,
-              matcherOut = matcher ?
-          postFinder || (seed ? preFilter : preexisting || postFilter) ?
-          [] :
-          results : matcherIn;
-          if (matcher) {
-            matcher(matcherIn, matcherOut, context, xml);
-          }
-          if (postFilter) {
-            temp = condense(matcherOut, postMap);
-            postFilter(temp, [], context, xml);
-            i = temp.length;
-            while (i--) {
-              if (elem = temp[i]) {
-                matcherOut[postMap[i]] = !(matcherIn[postMap[i]] = elem);
-              }
-            }
-          }
-          if (seed) {
-            if (postFinder || preFilter) {
-              if (postFinder) {
-                temp = [];
-                i = matcherOut.length;
-                while (i--) {
-                  if (elem = matcherOut[i]) {
-                    temp.push(matcherIn[i] = elem);
-                  }
-                }
-                postFinder(null, matcherOut = [], temp, xml);
-              }
-              i = matcherOut.length;
-              while (i--) {
-                if ((elem = matcherOut[i]) && (temp = postFinder ? indexOf(seed, elem) : preMap[i]) > -1) {
-                  seed[temp] = !(results[temp] = elem);
-                }
-              }
-            }
-          } else {
-            matcherOut = condense(matcherOut === results ? matcherOut.splice(preexisting, matcherOut.length) : matcherOut);
-            if (postFinder) {
-              postFinder(null, results, matcherOut, xml);
-            } else {
-              push.apply(results, matcherOut);
-            }
-          }
-        });
-      }
-      function matcherFromTokens(tokens) {
-        var checkContext,
-            matcher,
-            j,
-            len = tokens.length,
-            leadingRelative = Expr.relative[tokens[0].type],
-            implicitRelative = leadingRelative || Expr.relative[" "],
-            i = leadingRelative ? 1 : 0,
-        matchContext = addCombinator(function (elem) {
-          return elem === checkContext;
-        }, implicitRelative, true),
-            matchAnyContext = addCombinator(function (elem) {
-          return indexOf(checkContext, elem) > -1;
-        }, implicitRelative, true),
-            matchers = [function (elem, context, xml) {
-          var ret = !leadingRelative && (xml || context !== outermostContext) || ((checkContext = context).nodeType ? matchContext(elem, context, xml) : matchAnyContext(elem, context, xml));
-          checkContext = null;
-          return ret;
-        }];
-        for (; i < len; i++) {
-          if (matcher = Expr.relative[tokens[i].type]) {
-            matchers = [addCombinator(elementMatcher(matchers), matcher)];
-          } else {
-            matcher = Expr.filter[tokens[i].type].apply(null, tokens[i].matches);
-            if (matcher[expando]) {
-              j = ++i;
-              for (; j < len; j++) {
-                if (Expr.relative[tokens[j].type]) {
-                  break;
-                }
-              }
-              return setMatcher(i > 1 && elementMatcher(matchers), i > 1 && toSelector(
-              tokens.slice(0, i - 1).concat({
-                value: tokens[i - 2].type === " " ? "*" : ""
-              })).replace(rtrim, "$1"), matcher, i < j && matcherFromTokens(tokens.slice(i, j)), j < len && matcherFromTokens(tokens = tokens.slice(j)), j < len && toSelector(tokens));
-            }
-            matchers.push(matcher);
-          }
-        }
-        return elementMatcher(matchers);
-      }
-      function matcherFromGroupMatchers(elementMatchers, setMatchers) {
-        var bySet = setMatchers.length > 0,
-            byElement = elementMatchers.length > 0,
-            superMatcher = function superMatcher(seed, context, xml, results, outermost) {
-          var elem,
-              j,
-              matcher,
-              matchedCount = 0,
-              i = "0",
-              unmatched = seed && [],
-              setMatched = [],
-              contextBackup = outermostContext,
-          elems = seed || byElement && Expr.find["TAG"]("*", outermost),
-          dirrunsUnique = dirruns += contextBackup == null ? 1 : Math.random() || 0.1,
-              len = elems.length;
-          if (outermost) {
-            outermostContext = context === document || context || outermost;
-          }
-          for (; i !== len && (elem = elems[i]) != null; i++) {
-            if (byElement && elem) {
-              j = 0;
-              if (!context && elem.ownerDocument !== document) {
-                setDocument(elem);
-                xml = !documentIsHTML;
-              }
-              while (matcher = elementMatchers[j++]) {
-                if (matcher(elem, context || document, xml)) {
-                  results.push(elem);
-                  break;
-                }
-              }
-              if (outermost) {
-                dirruns = dirrunsUnique;
-              }
-            }
-            if (bySet) {
-              if (elem = !matcher && elem) {
-                matchedCount--;
-              }
-              if (seed) {
-                unmatched.push(elem);
-              }
-            }
-          }
-          matchedCount += i;
-          if (bySet && i !== matchedCount) {
-            j = 0;
-            while (matcher = setMatchers[j++]) {
-              matcher(unmatched, setMatched, context, xml);
-            }
-            if (seed) {
-              if (matchedCount > 0) {
-                while (i--) {
-                  if (!(unmatched[i] || setMatched[i])) {
-                    setMatched[i] = pop.call(results);
-                  }
-                }
-              }
-              setMatched = condense(setMatched);
-            }
-            push.apply(results, setMatched);
-            if (outermost && !seed && setMatched.length > 0 && matchedCount + setMatchers.length > 1) {
-              Sizzle.uniqueSort(results);
-            }
-          }
-          if (outermost) {
-            dirruns = dirrunsUnique;
-            outermostContext = contextBackup;
-          }
-          return unmatched;
-        };
-        return bySet ? markFunction(superMatcher) : superMatcher;
-      }
-      compile = Sizzle.compile = function (selector, match
-      ) {
-        var i,
-            setMatchers = [],
-            elementMatchers = [],
-            cached = compilerCache[selector + " "];
-        if (!cached) {
-          if (!match) {
-            match = tokenize(selector);
-          }
-          i = match.length;
-          while (i--) {
-            cached = matcherFromTokens(match[i]);
-            if (cached[expando]) {
-              setMatchers.push(cached);
-            } else {
-              elementMatchers.push(cached);
-            }
-          }
-          cached = compilerCache(selector, matcherFromGroupMatchers(elementMatchers, setMatchers));
-          cached.selector = selector;
-        }
-        return cached;
-      };
-      select = Sizzle.select = function (selector, context, results, seed) {
-        var i,
-            tokens,
-            token,
-            type,
-            find,
-            compiled = typeof selector === "function" && selector,
-            match = !seed && tokenize(selector = compiled.selector || selector);
-        results = results || [];
-        if (match.length === 1) {
-          tokens = match[0] = match[0].slice(0);
-          if (tokens.length > 2 && (token = tokens[0]).type === "ID" && context.nodeType === 9 && documentIsHTML && Expr.relative[tokens[1].type]) {
-            context = (Expr.find["ID"](token.matches[0].replace(runescape, funescape), context) || [])[0];
-            if (!context) {
-              return results;
-            } else if (compiled) {
-              context = context.parentNode;
-            }
-            selector = selector.slice(tokens.shift().value.length);
-          }
-          i = matchExpr["needsContext"].test(selector) ? 0 : tokens.length;
-          while (i--) {
-            token = tokens[i];
-            if (Expr.relative[type = token.type]) {
-              break;
-            }
-            if (find = Expr.find[type]) {
-              if (seed = find(token.matches[0].replace(runescape, funescape), rsibling.test(tokens[0].type) && testContext(context.parentNode) || context)) {
-                tokens.splice(i, 1);
-                selector = seed.length && toSelector(tokens);
-                if (!selector) {
-                  push.apply(results, seed);
-                  return results;
-                }
-                break;
-              }
-            }
-          }
-        }
-        (compiled || compile(selector, match))(seed, context, !documentIsHTML, results, !context || rsibling.test(selector) && testContext(context.parentNode) || context);
-        return results;
-      };
-      support.sortStable = expando.split("").sort(sortOrder).join("") === expando;
-      support.detectDuplicates = !!hasDuplicate;
-      setDocument();
-      support.sortDetached = assert(function (el) {
-        return el.compareDocumentPosition(document.createElement("fieldset")) & 1;
-      });
-      if (!assert(function (el) {
-        el.innerHTML = AGPolicy.createHTML("<a href='#'></a>");
-        return el.firstChild.getAttribute("href") === "#";
-      })) {
-        addHandle("type|href|height|width", function (elem, name, isXML) {
-          if (!isXML) {
-            return elem.getAttribute(name, name.toLowerCase() === "type" ? 1 : 2);
-          }
-        });
-      }
-      if (!support.attributes || !assert(function (el) {
-        el.innerHTML = AGPolicy.createHTML("<input/>");
-        el.firstChild.setAttribute("value", "");
-        return el.firstChild.getAttribute("value") === "";
-      })) {
-        addHandle("value", function (elem, name, isXML) {
-          if (!isXML && elem.nodeName.toLowerCase() === "input") {
-            return elem.defaultValue;
-          }
-        });
-      }
-      if (!assert(function (el) {
-        return el.getAttribute("disabled") == null;
-      })) {
-        addHandle(booleans, function (elem, name, isXML) {
-          var val;
-          if (!isXML) {
-            return elem[name] === true ? name.toLowerCase() : (val = elem.getAttributeNode(name)) && val.specified ? val.value : null;
-          }
-        });
-      }
-      return Sizzle;
-    }(window);
-  }
-  return Sizzle;
+const isHtmlElement = element => {
+  return element instanceof HTMLElement;
 };
-var StylePropertyMatcher = function (window) {
-  var isPhantom = !!window._phantom;
-  var useFallback = isPhantom && !!window.getMatchedCSSRules;
-  var removeContentQuotes = function removeContentQuotes(value) {
-    if (typeof value === 'string') {
-      return value.replace(/^(["'])([\s\S]*)\1$/, '$2');
-    }
-    return value;
-  };
-  var getComputedStyle = window.getComputedStyle.bind(window);
-  var getMatchedCSSRules = useFallback ? window.getMatchedCSSRules.bind(window) : null;
-  var getComputedStylePropertyValue = function getComputedStylePropertyValue(element, pseudoElement, propertyName) {
-    var value = '';
-    if (useFallback && pseudoElement) {
-      var cssRules = getMatchedCSSRules(element, pseudoElement) || [];
-      var i = cssRules.length;
-      while (i-- > 0 && !value) {
-        value = cssRules[i].style.getPropertyValue(propertyName);
-      }
-    } else {
-      var style = getComputedStyle(element, pseudoElement);
-      if (style) {
-        value = style.getPropertyValue(propertyName);
-        if (propertyName === 'opacity' && utils.isSafariBrowser) {
-          value = (Math.round(parseFloat(value) * 100) / 100).toString();
-        }
-      }
-    }
-    if (propertyName === 'content') {
-      value = removeContentQuotes(value);
-    }
-    return value;
-  };
-  var addUrlQuotes = function addUrlQuotes(pattern) {
-    if (pattern[0] === '/' && pattern[pattern.length - 1] === '/' && pattern.indexOf('\\"') < 10) {
-      var re = /(\^)?url(\\)?\\\((\w|\[\w)/g;
-      return pattern.replace(re, '$1url$2\\\(\\"?$3');
-    }
-    if (pattern.indexOf('url("') === -1) {
-      var _re = /url\((.*?)\)/g;
-      return pattern.replace(_re, 'url("$1")');
-    }
-    return pattern;
-  };
-  var Matcher = function Matcher(propertyFilter, pseudoElement) {
-    this.pseudoElement = pseudoElement;
-    try {
-      var index = propertyFilter.indexOf(':');
-      this.propertyName = propertyFilter.substring(0, index).trim();
-      var pattern = propertyFilter.substring(index + 1).trim();
-      pattern = addUrlQuotes(pattern);
-      if (/^\/.*\/$/.test(pattern)) {
-        pattern = pattern.slice(1, -1);
-        this.regex = utils.pseudoArgToRegex(pattern);
-      } else {
-        pattern = pattern.replace(/\\([\\()[\]"])/g, '$1');
-        this.regex = utils.createURLRegex(pattern);
-      }
-    } catch (ex) {
-      utils.logError("StylePropertyMatcher: invalid match string ".concat(propertyFilter));
-    }
-  };
-  Matcher.prototype.matches = function (element) {
-    if (!this.regex || !this.propertyName) {
-      return false;
-    }
-    var value = getComputedStylePropertyValue(element, this.pseudoElement, this.propertyName);
-    return value && this.regex.test(value);
-  };
-  var extendSizzle = function extendSizzle(sizzle) {
-    sizzle.selectors.pseudos['matches-css'] = sizzle.selectors.createPseudo(function (propertyFilter) {
-      var matcher = new Matcher(propertyFilter);
-      return function (element) {
-        return matcher.matches(element);
-      };
-    });
-    sizzle.selectors.pseudos['matches-css-before'] = sizzle.selectors.createPseudo(function (propertyFilter) {
-      var matcher = new Matcher(propertyFilter, ':before');
-      return function (element) {
-        return matcher.matches(element);
-      };
-    });
-    sizzle.selectors.pseudos['matches-css-after'] = sizzle.selectors.createPseudo(function (propertyFilter) {
-      var matcher = new Matcher(propertyFilter, ':after');
-      return function (element) {
-        return matcher.matches(element);
-      };
-    });
-  };
-  return {
-    extendSizzle: extendSizzle
-  };
-}(window);
-var matcherUtils = {};
-matcherUtils.MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-matcherUtils.parseMatcherFilter = function (matcherFilter) {
-  var FULL_MATCH_MARKER = '"="';
-  var rawArgs = [];
-  if (matcherFilter.indexOf(FULL_MATCH_MARKER) === -1) {
-    rawArgs.push(matcherFilter);
-  } else {
-    matcherFilter.split('=').forEach(function (arg) {
-      if (arg[0] === '"' && arg[arg.length - 1] === '"') {
-        rawArgs.push(arg.slice(1, -1));
-      }
-    });
+const getParent = (element, errorMessage) => {
+  const {
+    parentElement
+  } = element;
+  if (!parentElement) {
+    throw new Error(errorMessage || 'Element does no have parent element');
   }
-  return rawArgs;
+  return parentElement;
 };
-matcherUtils.parseRawMatcherArg = function (rawArg) {
-  var arg = rawArg;
-  var isRegexp = !!rawArg && rawArg[0] === '/' && rawArg[rawArg.length - 1] === '/';
-  if (isRegexp) {
-    if (rawArg.length > 2) {
-      arg = utils.toRegExp(rawArg);
-    } else {
-      throw new Error("Invalid regexp: ".concat(rawArg));
-    }
-  }
-  return {
-    arg: arg,
-    isRegexp: isRegexp
-  };
+const isErrorWithMessage = error => {
+  return typeof error === 'object' && error !== null && 'message' in error && typeof error.message === 'string';
 };
-matcherUtils.filterRootsByRegexpChain = function (base, chain) {
-  var output = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  var tempProp = chain[0];
-  if (chain.length === 1) {
-    for (var key in base) {
-      if (tempProp.isRegexp) {
-        if (tempProp.arg.test(key)) {
-          output.push({
-            base: base,
-            prop: key,
-            value: base[key]
-          });
-        }
-      } else if (tempProp.arg === key) {
-        output.push({
-          base: base,
-          prop: tempProp.arg,
-          value: base[key]
-        });
-      }
-    }
-    return output;
+const toErrorWithMessage = maybeError => {
+  if (isErrorWithMessage(maybeError)) {
+    return maybeError;
   }
-  if (tempProp.isRegexp) {
-    var nextProp = chain.slice(1);
-    var baseKeys = [];
-    for (var _key in base) {
-      if (tempProp.arg.test(_key)) {
-        baseKeys.push(_key);
-      }
-    }
-    baseKeys.forEach(function (key) {
-      var item = base[key];
-      matcherUtils.filterRootsByRegexpChain(item, nextProp, output);
-    });
+  try {
+    return new Error(JSON.stringify(maybeError));
+  } catch {
+    return new Error(String(maybeError));
   }
-  if (base === null) {
-    return;
+};
+const getErrorMessage = error => {
+  return toErrorWithMessage(error).message;
+};
+const logger = {
+  error: typeof console !== 'undefined' && console.error && console.error.bind ? console.error.bind(window.console) : console.error,
+  info: typeof console !== 'undefined' && console.info && console.info.bind ? console.info.bind(window.console) : console.info
+};
+const removeSuffix = (str, suffix) => {
+  const index = str.indexOf(suffix, str.length - suffix.length);
+  if (index >= 0) {
+    return str.substring(0, index);
   }
-  var nextBase = base[tempProp.arg];
-  chain = chain.slice(1);
-  if (nextBase !== undefined) {
-    matcherUtils.filterRootsByRegexpChain(nextBase, chain, output);
+  return str;
+};
+const replaceAll = (input, pattern, replacement) => {
+  if (!input) {
+    return input;
+  }
+  return input.split(pattern).join(replacement);
+};
+const toRegExp = str => {
+  if (str.startsWith(SLASH) && str.endsWith(SLASH)) {
+    return new RegExp(str.slice(1, -1));
+  }
+  const escaped = str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(escaped);
+};
+const convertTypeIntoString = value => {
+  let output;
+  switch (value) {
+    case undefined:
+      output = 'undefined';
+      break;
+    case null:
+      output = 'null';
+      break;
+    default:
+      output = value.toString();
   }
   return output;
 };
-matcherUtils.validatePropMatcherArgs = function () {
-  for (var _len = arguments.length, args = new Array(_len), _key2 = 0; _key2 < _len; _key2++) {
-    args[_key2] = arguments[_key2];
-  }
-  for (var i = 0; i < args.length; i += 1) {
-    if (args[i].isRegexp) {
-      if (!utils.startsWith(args[i].arg.toString(), '/') || !utils.endsWith(args[i].arg.toString(), '/')) {
-        return false;
-      }
-    } else if (!/^[\w-]+$/.test(args[i].arg)) {
-      return false;
-    }
-  }
-  return true;
-};
-var AttributesMatcher = function () {
-  var AttrMatcher = function AttrMatcher(nameArg, valueArg, pseudoElement) {
-    this.pseudoElement = pseudoElement;
-    this.attrName = nameArg.arg;
-    this.isRegexpName = nameArg.isRegexp;
-    this.attrValue = valueArg.arg;
-    this.isRegexpValue = valueArg.isRegexp;
-  };
-  AttrMatcher.prototype.matches = function (element) {
-    var elAttrs = element.attributes;
-    if (elAttrs.length === 0 || !this.attrName) {
-      return false;
-    }
-    var i = 0;
-    while (i < elAttrs.length) {
-      var attr = elAttrs[i];
-      var matched = false;
-      var attrNameMatched = this.isRegexpName ? this.attrName.test(attr.name) : this.attrName === attr.name;
-      if (!this.attrValue) {
-        matched = attrNameMatched;
-      } else {
-        var attrValueMatched = this.isRegexpValue ? this.attrValue.test(attr.value) : this.attrValue === attr.value;
-        matched = attrNameMatched && attrValueMatched;
-      }
-      if (matched) {
-        return true;
-      }
-      i += 1;
-    }
-  };
-  var extendSizzle = function extendSizzle(sizzle) {
-    sizzle.selectors.pseudos['matches-attr'] = sizzle.selectors.createPseudo(function (attrFilter) {
-      var _matcherUtils$parseMa = matcherUtils.parseMatcherFilter(attrFilter),
-          _matcherUtils$parseMa2 = _slicedToArray(_matcherUtils$parseMa, 2),
-          rawName = _matcherUtils$parseMa2[0],
-          rawValue = _matcherUtils$parseMa2[1];
-      var nameArg = matcherUtils.parseRawMatcherArg(rawName);
-      var valueArg = matcherUtils.parseRawMatcherArg(rawValue);
-      if (!attrFilter || !matcherUtils.validatePropMatcherArgs(nameArg, valueArg)) {
-        throw new Error("Invalid argument of :matches-attr pseudo class: ".concat(attrFilter));
-      }
-      var matcher = new AttrMatcher(nameArg, valueArg);
-      return function (element) {
-        return matcher.matches(element);
-      };
-    });
-  };
-  return {
-    extendSizzle: extendSizzle
-  };
-}();
-var parseRawPropChain = function parseRawPropChain(input) {
-  var PROPS_DIVIDER = '.';
-  var REGEXP_MARKER = '/';
-  var propsArr = [];
-  var str = input;
-  while (str.length > 0) {
-    if (utils.startsWith(str, PROPS_DIVIDER)) {
-      throw new Error("Invalid chain property: ".concat(input));
-    }
-    if (!utils.startsWith(str, REGEXP_MARKER)) {
-      var isRegexp = false;
-      var dividerIndex = str.indexOf(PROPS_DIVIDER);
-      if (str.indexOf(PROPS_DIVIDER) === -1) {
-        propsArr.push({
-          arg: str,
-          isRegexp: isRegexp
-        });
-        return propsArr;
-      }
-      var prop = str.slice(0, dividerIndex);
-      if (prop.indexOf(REGEXP_MARKER) > -1) {
-        throw new Error("Invalid chain property: ".concat(prop));
-      }
-      propsArr.push({
-        arg: prop,
-        isRegexp: isRegexp
-      });
-      str = str.slice(dividerIndex);
-    } else {
-      var propChunks = [];
-      propChunks.push(str.slice(0, 1));
-      str = str.slice(1);
-      var regexEndIndex = str.indexOf(REGEXP_MARKER);
-      if (regexEndIndex < 1) {
-        throw new Error("Invalid regexp: ".concat(REGEXP_MARKER).concat(str));
-      }
-      var _isRegexp = true;
-      propChunks.push(str.slice(0, regexEndIndex + 1));
-      var _prop = utils.toRegExp(propChunks.join(''));
-      propsArr.push({
-        arg: _prop,
-        isRegexp: _isRegexp
-      });
-      str = str.slice(regexEndIndex + 1);
-    }
-    if (!str) {
-      return propsArr;
-    }
-    if (!utils.startsWith(str, PROPS_DIVIDER) || utils.startsWith(str, PROPS_DIVIDER) && str.length === 1) {
-      throw new Error("Invalid chain property: ".concat(input));
-    }
-    str = str.slice(1);
-  }
-};
-var convertTypeFromStr = function convertTypeFromStr(value) {
-  var numValue = Number(value);
-  var output;
+const convertTypeFromString = value => {
+  const numValue = Number(value);
+  let output;
   if (!Number.isNaN(numValue)) {
     output = numValue;
   } else {
@@ -4980,1027 +4019,1877 @@ var convertTypeFromStr = function convertTypeFromStr(value) {
   }
   return output;
 };
-var convertTypeIntoStr = function convertTypeIntoStr(value) {
-  var output;
-  switch (value) {
-    case undefined:
-      output = 'undefined';
+const SAFARI_USER_AGENT_REGEXP = /\sVersion\/(\d{2}\.\d)(.+\s|\s)(Safari)\//;
+const isSafariBrowser = SAFARI_USER_AGENT_REGEXP.test(navigator.userAgent);
+const isUserAgentSupported = userAgent => {
+  if (userAgent.includes('MSIE') || userAgent.includes('Trident/')) {
+    return false;
+  }
+  return true;
+};
+const isBrowserSupported = () => {
+  return isUserAgentSupported(navigator.userAgent);
+};
+const CSS_PROPERTY = {
+  BACKGROUND: 'background',
+  BACKGROUND_IMAGE: 'background-image',
+  CONTENT: 'content',
+  OPACITY: 'opacity'
+};
+const REGEXP_ANY_SYMBOL = '.*';
+const REGEXP_WITH_FLAGS_REGEXP = /^\s*\/.*\/[gmisuy]*\s*$/;
+const removeContentQuotes = str => {
+  return str.replace(/^(["'])([\s\S]*)\1$/, '$2');
+};
+const addUrlPropertyQuotes = str => {
+  if (!str.includes('url("')) {
+    const re = /url\((.*?)\)/g;
+    return str.replace(re, 'url("$1")');
+  }
+  return str;
+};
+const addUrlQuotesTo = {
+  regexpArg: str => {
+    const re = /(\^)?url(\\)?\\\((\w|\[\w)/g;
+    return str.replace(re, '$1url$2\\(\\"?$3');
+  },
+  noneRegexpArg: addUrlPropertyQuotes
+};
+const escapeRegExp = str => {
+  const specials = ['.', '+', '?', '$', '{', '}', '(', ')', '[', ']', '\\', '/'];
+  const specialsRegex = new RegExp(`[${specials.join('\\')}]`, 'g');
+  return str.replace(specialsRegex, '\\$&');
+};
+const convertStyleMatchValueToRegexp = rawValue => {
+  let value;
+  if (rawValue.startsWith(SLASH) && rawValue.endsWith(SLASH)) {
+    value = addUrlQuotesTo.regexpArg(rawValue);
+    value = value.slice(1, -1);
+  } else {
+    value = addUrlQuotesTo.noneRegexpArg(rawValue);
+    value = value.replace(/\\([\\()[\]"])/g, '$1');
+    value = escapeRegExp(value);
+    value = replaceAll(value, ASTERISK, REGEXP_ANY_SYMBOL);
+  }
+  return new RegExp(value, 'i');
+};
+const normalizePropertyValue = (propertyName, propertyValue) => {
+  let normalized = '';
+  switch (propertyName) {
+    case CSS_PROPERTY.BACKGROUND:
+    case CSS_PROPERTY.BACKGROUND_IMAGE:
+      normalized = addUrlPropertyQuotes(propertyValue);
       break;
-    case null:
-      output = 'null';
+    case CSS_PROPERTY.CONTENT:
+      normalized = removeContentQuotes(propertyValue);
+      break;
+    case CSS_PROPERTY.OPACITY:
+      normalized = isSafariBrowser ? (Math.round(parseFloat(propertyValue) * 100) / 100).toString() : propertyValue;
       break;
     default:
-      output = value.toString();
+      normalized = propertyValue;
+  }
+  return normalized;
+};
+const getComputedStylePropertyValue = (domElement, propertyName, regularPseudoElement) => {
+  const style = window.getComputedStyle(domElement, regularPseudoElement);
+  const propertyValue = style.getPropertyValue(propertyName);
+  return normalizePropertyValue(propertyName, propertyValue);
+};
+const getPseudoArgData = (pseudoArg, separator) => {
+  const index = pseudoArg.indexOf(separator);
+  let name;
+  let value;
+  if (index > -1) {
+    name = pseudoArg.substring(0, index).trim();
+    value = pseudoArg.substring(index + 1).trim();
+  } else {
+    name = pseudoArg;
+  }
+  return {
+    name,
+    value
+  };
+};
+const parseStyleMatchArg = (pseudoName, rawArg) => {
+  const {
+    name,
+    value
+  } = getPseudoArgData(rawArg, COMMA);
+  let regularPseudoElement = name;
+  let styleMatchArg = value;
+  if (!Object.values(REGULAR_PSEUDO_ELEMENTS).includes(name)) {
+    regularPseudoElement = null;
+    styleMatchArg = rawArg;
+  }
+  if (!styleMatchArg) {
+    throw new Error(`Required style property argument part is missing in :${pseudoName}() arg: '${rawArg}'`);
+  }
+  if (regularPseudoElement) {
+    regularPseudoElement = `${COLON}${COLON}${regularPseudoElement}`;
+  }
+  return {
+    regularPseudoElement,
+    styleMatchArg
+  };
+};
+const isStyleMatched = argsData => {
+  const {
+    pseudoName,
+    pseudoArg,
+    domElement
+  } = argsData;
+  const {
+    regularPseudoElement,
+    styleMatchArg
+  } = parseStyleMatchArg(pseudoName, pseudoArg);
+  const {
+    name: matchName,
+    value: matchValue
+  } = getPseudoArgData(styleMatchArg, COLON);
+  if (!matchName || !matchValue) {
+    throw new Error(`Required property name or value is missing in :${pseudoName}() arg: '${styleMatchArg}'`);
+  }
+  let valueRegexp;
+  try {
+    valueRegexp = convertStyleMatchValueToRegexp(matchValue);
+  } catch (e) {
+    logger.error(getErrorMessage(e));
+    throw new Error(`Invalid argument of :${pseudoName}() pseudo-class: '${styleMatchArg}'`);
+  }
+  const value = getComputedStylePropertyValue(domElement, matchName, regularPseudoElement);
+  return valueRegexp && valueRegexp.test(value);
+};
+const validateStrMatcherArg = arg => {
+  if (arg.includes(SLASH)) {
+    return false;
+  }
+  if (!/^[\w-]+$/.test(arg)) {
+    return false;
+  }
+  return true;
+};
+const getValidMatcherArg = function (rawArg) {
+  let isWildcardAllowed = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  let arg;
+  if (rawArg.length > 1 && rawArg.startsWith(DOUBLE_QUOTE) && rawArg.endsWith(DOUBLE_QUOTE)) {
+    rawArg = rawArg.slice(1, -1);
+  }
+  if (rawArg === '') {
+    throw new Error('Argument should be specified. Empty arg is invalid.');
+  }
+  if (rawArg.startsWith(SLASH) && rawArg.endsWith(SLASH)) {
+    if (rawArg.length > 2) {
+      arg = toRegExp(rawArg);
+    } else {
+      throw new Error(`Invalid regexp: '${rawArg}'`);
+    }
+  } else if (rawArg.includes(ASTERISK)) {
+    if (rawArg === ASTERISK && !isWildcardAllowed) {
+      throw new Error(`Argument should be more specific than ${rawArg}`);
+    }
+    arg = replaceAll(rawArg, ASTERISK, REGEXP_ANY_SYMBOL);
+    arg = new RegExp(arg);
+  } else {
+    if (!validateStrMatcherArg(rawArg)) {
+      throw new Error(`Invalid argument: '${rawArg}'`);
+    }
+    arg = rawArg;
+  }
+  return arg;
+};
+const getRawMatchingData = (pseudoName, pseudoArg) => {
+  const {
+    name: rawName,
+    value: rawValue
+  } = getPseudoArgData(pseudoArg, EQUAL_SIGN);
+  if (!rawName) {
+    throw new Error(`Required attribute name is missing in :${pseudoName} arg: ${pseudoArg}`);
+  }
+  return {
+    rawName,
+    rawValue
+  };
+};
+const isAttributeMatched = argsData => {
+  const {
+    pseudoName,
+    pseudoArg,
+    domElement
+  } = argsData;
+  const elementAttributes = domElement.attributes;
+  if (elementAttributes.length === 0) {
+    return false;
+  }
+  const {
+    rawName: rawAttrName,
+    rawValue: rawAttrValue
+  } = getRawMatchingData(pseudoName, pseudoArg);
+  let attrNameMatch;
+  try {
+    attrNameMatch = getValidMatcherArg(rawAttrName);
+  } catch (e) {
+    const errorMessage = getErrorMessage(e);
+    logger.error(errorMessage);
+    throw new SyntaxError(errorMessage);
+  }
+  let isMatched = false;
+  let i = 0;
+  while (i < elementAttributes.length && !isMatched) {
+    const attr = elementAttributes[i];
+    if (!attr) {
+      break;
+    }
+    const isNameMatched = attrNameMatch instanceof RegExp ? attrNameMatch.test(attr.name) : attrNameMatch === attr.name;
+    if (!rawAttrValue) {
+      isMatched = isNameMatched;
+    } else {
+      let attrValueMatch;
+      try {
+        attrValueMatch = getValidMatcherArg(rawAttrValue);
+      } catch (e) {
+        const errorMessage = getErrorMessage(e);
+        logger.error(errorMessage);
+        throw new SyntaxError(errorMessage);
+      }
+      const isValueMatched = attrValueMatch instanceof RegExp ? attrValueMatch.test(attr.value) : attrValueMatch === attr.value;
+      isMatched = isNameMatched && isValueMatched;
+    }
+    i += 1;
+  }
+  return isMatched;
+};
+const parseRawPropChain = input => {
+  if (input.length > 1 && input.startsWith(DOUBLE_QUOTE) && input.endsWith(DOUBLE_QUOTE)) {
+    input = input.slice(1, -1);
+  }
+  const chainChunks = input.split(DOT);
+  const chainPatterns = [];
+  let patternBuffer = '';
+  let isRegexpPattern = false;
+  let i = 0;
+  while (i < chainChunks.length) {
+    const chunk = getItemByIndex(chainChunks, i, `Invalid pseudo-class arg: '${input}'`);
+    if (chunk.startsWith(SLASH) && chunk.endsWith(SLASH) && chunk.length > 2) {
+      chainPatterns.push(chunk);
+    } else if (chunk.startsWith(SLASH)) {
+      isRegexpPattern = true;
+      patternBuffer += chunk;
+    } else if (chunk.endsWith(SLASH)) {
+      isRegexpPattern = false;
+      patternBuffer += `.${chunk}`;
+      chainPatterns.push(patternBuffer);
+      patternBuffer = '';
+    } else {
+      if (isRegexpPattern) {
+        patternBuffer += chunk;
+      } else {
+        chainPatterns.push(chunk);
+      }
+    }
+    i += 1;
+  }
+  if (patternBuffer.length > 0) {
+    throw new Error(`Invalid regexp property pattern '${input}'`);
+  }
+  const chainMatchPatterns = chainPatterns.map(pattern => {
+    if (pattern.length === 0) {
+      throw new Error(`Empty pattern '${pattern}' is invalid in chain '${input}'`);
+    }
+    let validPattern;
+    try {
+      validPattern = getValidMatcherArg(pattern, true);
+    } catch (e) {
+      logger.error(getErrorMessage(e));
+      throw new Error(`Invalid property pattern '${pattern}' in property chain '${input}'`);
+    }
+    return validPattern;
+  });
+  return chainMatchPatterns;
+};
+const filterRootsByRegexpChain = function (base, chain) {
+  let output = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  const tempProp = getFirst(chain);
+  if (chain.length === 1) {
+    let key;
+    for (key in base) {
+      if (tempProp instanceof RegExp) {
+        if (tempProp.test(key)) {
+          output.push({
+            base,
+            prop: key,
+            value: base[key]
+          });
+        }
+      } else if (tempProp === key) {
+        output.push({
+          base,
+          prop: tempProp,
+          value: base[key]
+        });
+      }
+    }
+    return output;
+  }
+  if (tempProp instanceof RegExp) {
+    const nextProp = chain.slice(1);
+    const baseKeys = [];
+    for (const key in base) {
+      if (tempProp.test(key)) {
+        baseKeys.push(key);
+      }
+    }
+    baseKeys.forEach(key => {
+      var _Object$getOwnPropert;
+      const item = (_Object$getOwnPropert = Object.getOwnPropertyDescriptor(base, key)) === null || _Object$getOwnPropert === void 0 ? void 0 : _Object$getOwnPropert.value;
+      filterRootsByRegexpChain(item, nextProp, output);
+    });
+  }
+  if (base && typeof tempProp === 'string') {
+    var _Object$getOwnPropert2;
+    const nextBase = (_Object$getOwnPropert2 = Object.getOwnPropertyDescriptor(base, tempProp)) === null || _Object$getOwnPropert2 === void 0 ? void 0 : _Object$getOwnPropert2.value;
+    chain = chain.slice(1);
+    if (nextBase !== undefined) {
+      filterRootsByRegexpChain(nextBase, chain, output);
+    }
   }
   return output;
 };
-var ElementPropertyMatcher = function () {
-  var PropMatcher = function PropMatcher(propsChainArg, valueArg, pseudoElement) {
-    this.pseudoElement = pseudoElement;
-    this.chainedProps = propsChainArg;
-    this.propValue = valueArg.arg;
-    this.isRegexpValue = valueArg.isRegexp;
-  };
-  PropMatcher.prototype.matches = function (element) {
-    var ownerObjArr = matcherUtils.filterRootsByRegexpChain(element, this.chainedProps);
-    if (ownerObjArr.length === 0) {
-      return false;
-    }
-    var matched = true;
-    if (this.propValue) {
-      for (var i = 0; i < ownerObjArr.length; i += 1) {
-        var realValue = ownerObjArr[i].value;
-        if (this.isRegexpValue) {
-          matched = this.propValue.test(convertTypeIntoStr(realValue));
-        } else {
-          if (realValue === 'null' || realValue === 'undefined') {
-            matched = this.propValue === realValue;
-            break;
-          }
-          matched = convertTypeFromStr(this.propValue) === realValue;
-        }
-        if (matched) {
-          break;
-        }
-      }
-    }
-    return matched;
-  };
-  var extendSizzle = function extendSizzle(sizzle) {
-    sizzle.selectors.pseudos['matches-property'] = sizzle.selectors.createPseudo(function (propertyFilter) {
-      if (!propertyFilter) {
-        throw new Error('No argument is given for :matches-property pseudo class');
-      }
-      var _matcherUtils$parseMa = matcherUtils.parseMatcherFilter(propertyFilter),
-          _matcherUtils$parseMa2 = _slicedToArray(_matcherUtils$parseMa, 2),
-          rawProp = _matcherUtils$parseMa2[0],
-          rawValue = _matcherUtils$parseMa2[1];
-      if (rawProp.indexOf('\\/') > -1 || rawProp.indexOf('\\.') > -1) {
-        throw new Error("Invalid property name: ".concat(rawProp));
-      }
-      var propsChainArg = parseRawPropChain(rawProp);
-      var valueArg = matcherUtils.parseRawMatcherArg(rawValue);
-      var propsToValidate = [].concat(_toConsumableArray(propsChainArg), [valueArg]);
-      if (!matcherUtils.validatePropMatcherArgs(propsToValidate)) {
-        throw new Error("Invalid argument of :matches-property pseudo class: ".concat(propertyFilter));
-      }
-      var matcher = new PropMatcher(propsChainArg, valueArg);
-      return function (element) {
-        return matcher.matches(element);
-      };
-    });
-  };
-  return {
-    extendSizzle: extendSizzle
-  };
-}();
-var IsAnyMatcher = function () {
-  var IsMatcher = function IsMatcher(selectors, pseudoElement) {
-    this.selectors = selectors;
-    this.pseudoElement = pseudoElement;
-  };
-  IsMatcher.prototype.matches = function (element) {
-    var isMatched = !!this.selectors.find(function (selector) {
-      var nodes = document.querySelectorAll(selector);
-      return Array.from(nodes).find(function (node) {
-        return node === element;
-      });
-    });
-    return isMatched;
-  };
-  var extendSizzle = function extendSizzle(sizzle) {
-    sizzle.selectors.pseudos['is'] = sizzle.selectors.createPseudo(function (input) {
-      if (input === '') {
-        throw new Error("Invalid argument of :is pseudo-class: ".concat(input));
-      }
-      var selectors = input.split(',').map(function (s) {
-        return s.trim();
-      });
-      var validSelectors = selectors.reduce(function (acc, selector) {
-        if (cssUtils.isSimpleSelectorValid(selector)) {
-          acc.push(selector);
-        } else {
-          utils.logInfo("Invalid selector passed to :is() pseudo-class: '".concat(selector, "'"));
-        }
-        return acc;
-      }, []);
-      var matcher = new IsMatcher(validSelectors);
-      return function (element) {
-        return matcher.matches(element);
-      };
-    });
-  };
-  return {
-    extendSizzle: extendSizzle
-  };
-}();
-var ExtendedSelectorFactory = function () {
-  var PSEUDO_EXTENSIONS_MARKERS = [':has', ':contains', ':has-text', ':matches-css', ':-abp-has', ':-abp-has-text', ':if', ':if-not', ':xpath', ':nth-ancestor', ':upward', ':remove', ':matches-attr', ':matches-property', ':-abp-contains', ':is'];
-  var initialized = false;
-  var Sizzle;
-  function initialize() {
-    if (initialized) {
-      return;
-    }
-    initialized = true;
-    Sizzle = initializeSizzle();
-    StylePropertyMatcher.extendSizzle(Sizzle);
-    AttributesMatcher.extendSizzle(Sizzle);
-    ElementPropertyMatcher.extendSizzle(Sizzle);
-    IsAnyMatcher.extendSizzle(Sizzle);
-    var containsPseudo = Sizzle.selectors.createPseudo(function (text) {
-      if (/^\s*\/.*\/[gmisuy]*\s*$/.test(text)) {
-        text = text.trim();
-        var flagsIndex = text.lastIndexOf('/');
-        var flags = text.substring(flagsIndex + 1);
-        text = text.substr(0, flagsIndex + 1).slice(1, -1).replace(/\\([\\"])/g, '$1');
-        var regex;
-        try {
-          regex = new RegExp(text, flags);
-        } catch (e) {
-          throw new Error("Invalid argument of :contains pseudo class: ".concat(text));
-        }
-        return function (elem) {
-          var elemTextContent = utils.nodeTextContentGetter.apply(elem);
-          return regex.test(elemTextContent);
-        };
-      }
-      text = text.replace(/\\([\\()[\]"])/g, '$1');
-      return function (elem) {
-        var elemTextContent = utils.nodeTextContentGetter.apply(elem);
-        return elemTextContent.indexOf(text) > -1;
-      };
-    });
-    Sizzle.selectors.pseudos['contains'] = containsPseudo;
-    Sizzle.selectors.pseudos['has-text'] = containsPseudo;
-    Sizzle.selectors.pseudos['-abp-contains'] = containsPseudo;
-    Sizzle.selectors.pseudos['if'] = Sizzle.selectors.pseudos['has'];
-    Sizzle.selectors.pseudos['-abp-has'] = Sizzle.selectors.pseudos['has'];
-    Sizzle.selectors.pseudos['if-not'] = Sizzle.selectors.createPseudo(function (selector) {
-      if (typeof selector === 'string') {
-        Sizzle.compile(selector);
-      }
-      return function (elem) {
-        return Sizzle(selector, elem).length === 0;
-      };
-    });
-    registerParserOnlyTokens();
+const isPropertyMatched = argsData => {
+  const {
+    pseudoName,
+    pseudoArg,
+    domElement
+  } = argsData;
+  const {
+    rawName: rawPropertyName,
+    rawValue: rawPropertyValue
+  } = getRawMatchingData(pseudoName, pseudoArg);
+  if (rawPropertyName.includes('\\/') || rawPropertyName.includes('\\.')) {
+    throw new Error(`Invalid :${pseudoName} name pattern: ${rawPropertyName}`);
   }
-  function registerParserOnlyTokens() {
-    Sizzle.selectors.pseudos['xpath'] = Sizzle.selectors.createPseudo(function (selector) {
-      try {
-        document.createExpression(selector, null);
-      } catch (e) {
-        throw new Error("Invalid argument of :xpath pseudo class: ".concat(selector));
-      }
-      return function () {
-        return true;
-      };
-    });
-    Sizzle.selectors.pseudos['nth-ancestor'] = Sizzle.selectors.createPseudo(function (selector) {
-      var deep = Number(selector);
-      if (Number.isNaN(deep) || deep < 1 || deep >= 256) {
-        throw new Error("Invalid argument of :nth-ancestor pseudo class: ".concat(selector));
-      }
-      return function () {
-        return true;
-      };
-    });
-    Sizzle.selectors.pseudos['upward'] = Sizzle.selectors.createPseudo(function (input) {
-      if (input === '') {
-        throw new Error("Invalid argument of :upward pseudo class: ".concat(input));
-      } else if (Number.isInteger(+input) && (+input < 1 || +input >= 256)) {
-        throw new Error("Invalid argument of :upward pseudo class: ".concat(input));
-      }
-      return function () {
-        return true;
-      };
-    });
-    Sizzle.selectors.pseudos['remove'] = Sizzle.selectors.createPseudo(function (input) {
-      if (input !== '') {
-        throw new Error("Invalid argument of :remove pseudo class: ".concat(input));
-      }
-      return function () {
-        return true;
-      };
-    });
+  let propChainMatches;
+  try {
+    propChainMatches = parseRawPropChain(rawPropertyName);
+  } catch (e) {
+    const errorMessage = getErrorMessage(e);
+    logger.error(errorMessage);
+    throw new SyntaxError(errorMessage);
   }
-  function isSimpleToken(token) {
-    var type = token.type;
-    if (type === 'ID' || type === 'CLASS' || type === 'ATTR' || type === 'TAG' || type === 'CHILD') {
-      return true;
-    }
-    if (type === 'PSEUDO') {
-      var i = PSEUDO_EXTENSIONS_MARKERS.length;
-      while (i--) {
-        if (token.value.indexOf(PSEUDO_EXTENSIONS_MARKERS[i]) >= 0) {
-          return false;
-        }
-      }
-      return true;
-    }
+  const ownerObjArr = filterRootsByRegexpChain(domElement, propChainMatches);
+  if (ownerObjArr.length === 0) {
     return false;
   }
-  function isRelationToken(token) {
-    var type = token.type;
-    return type === ' ' || type === '>' || type === '+' || type === '~';
-  }
-  function ExtendedSelectorParser(selectorText, tokens, debug) {
-    initialize();
-    if (typeof tokens === 'undefined') {
-      this.selectorText = cssUtils.normalize(selectorText);
-      this.tokens = Sizzle.tokenize(this.selectorText, false, {
-        returnUnsorted: true
-      });
-    } else {
-      this.selectorText = selectorText;
-      this.tokens = tokens;
+  let isMatched = true;
+  if (rawPropertyValue) {
+    let propValueMatch;
+    try {
+      propValueMatch = getValidMatcherArg(rawPropertyValue);
+    } catch (e) {
+      const errorMessage = getErrorMessage(e);
+      logger.error(errorMessage);
+      throw new SyntaxError(errorMessage);
     }
-    if (debug === true) {
-      this.debug = true;
-    }
-  }
-  ExtendedSelectorParser.prototype = {
-    createSelector: function createSelector() {
-      var debug = this.debug;
-      var tokens = this.tokens;
-      var selectorText = this.selectorText;
-      if (tokens.length !== 1) {
-        return new TraitLessSelector(selectorText, debug);
-      }
-      var xpathPart = this.getXpathPart();
-      if (typeof xpathPart !== 'undefined') {
-        return new XpathSelector(selectorText, xpathPart, debug);
-      }
-      var upwardPart = this.getUpwardPart();
-      if (typeof upwardPart !== 'undefined') {
-        var output;
-        var upwardDeep = parseInt(upwardPart, 10);
-        if (Number.isNaN(upwardDeep)) {
-          output = new UpwardSelector(selectorText, upwardPart, debug);
+    if (propValueMatch) {
+      for (let i = 0; i < ownerObjArr.length; i += 1) {
+        var _ownerObjArr$i;
+        const realValue = (_ownerObjArr$i = ownerObjArr[i]) === null || _ownerObjArr$i === void 0 ? void 0 : _ownerObjArr$i.value;
+        if (propValueMatch instanceof RegExp) {
+          isMatched = propValueMatch.test(convertTypeIntoString(realValue));
         } else {
-          var xpath = this.convertNthAncestorToken(upwardDeep);
-          output = new XpathSelector(selectorText, xpath, debug);
-        }
-        return output;
-      }
-      var removePart = this.getRemovePart();
-      if (typeof removePart !== 'undefined') {
-        var hasValidRemovePart = removePart === '';
-        return new RemoveSelector(selectorText, hasValidRemovePart, debug);
-      }
-      tokens = tokens[0];
-      var l = tokens.length;
-      var lastRelTokenInd = this.getSplitPoint();
-      if (typeof lastRelTokenInd === 'undefined') {
-        try {
-          document.querySelector(selectorText);
-        } catch (e) {
-          return new TraitLessSelector(selectorText, debug);
-        }
-        return new NotAnExtendedSelector(selectorText, debug);
-      }
-      var simple = '';
-      var relation = null;
-      var complex = '';
-      var i = 0;
-      for (; i < lastRelTokenInd; i++) {
-        simple += tokens[i].value;
-      }
-      if (i > 0) {
-        relation = tokens[i++].type;
-      }
-      for (; i < l; i++) {
-        complex += tokens[i].value;
-      }
-      return lastRelTokenInd === -1 ? new TraitLessSelector(selectorText, debug) : new SplittedSelector(selectorText, simple, relation, complex, debug);
-    },
-    getSplitPoint: function getSplitPoint() {
-      var tokens = this.tokens[0];
-      var latestRelationTokenIndex = -1;
-      var haveMetComplexToken = false;
-      for (var i = 0, l = tokens.length; i < l; i++) {
-        var token = tokens[i];
-        if (isRelationToken(token)) {
-          if (haveMetComplexToken) {
-            return;
+          if (realValue === 'null' || realValue === 'undefined') {
+            isMatched = propValueMatch === realValue;
+            break;
           }
-          latestRelationTokenIndex = i;
-        } else if (!isSimpleToken(token)) {
-          haveMetComplexToken = true;
+          isMatched = convertTypeFromString(propValueMatch) === realValue;
+        }
+        if (isMatched) {
+          break;
         }
       }
-      if (!haveMetComplexToken) {
-        return;
+    }
+  }
+  return isMatched;
+};
+const isTextMatched = argsData => {
+  const {
+    pseudoName,
+    pseudoArg,
+    domElement
+  } = argsData;
+  const textContent = getNodeTextContent(domElement);
+  let isTextContentMatched;
+  let pseudoArgToMatch = pseudoArg;
+  if (pseudoArgToMatch.startsWith(SLASH) && REGEXP_WITH_FLAGS_REGEXP.test(pseudoArgToMatch)) {
+    const flagsIndex = pseudoArgToMatch.lastIndexOf('/');
+    const flagsStr = pseudoArgToMatch.substring(flagsIndex + 1);
+    pseudoArgToMatch = pseudoArgToMatch.substring(0, flagsIndex + 1).slice(1, -1).replace(/\\([\\"])/g, '$1');
+    let regex;
+    try {
+      regex = new RegExp(pseudoArgToMatch, flagsStr);
+    } catch (e) {
+      throw new Error(`Invalid argument of :${pseudoName}() pseudo-class: ${pseudoArg}`);
+    }
+    isTextContentMatched = regex.test(textContent);
+  } else {
+    pseudoArgToMatch = pseudoArgToMatch.replace(/\\([\\()[\]"])/g, '$1');
+    isTextContentMatched = textContent.includes(pseudoArgToMatch);
+  }
+  return isTextContentMatched;
+};
+const getValidNumberAncestorArg = (rawArg, pseudoName) => {
+  const deep = Number(rawArg);
+  if (Number.isNaN(deep) || deep < 1 || deep >= 256) {
+    throw new Error(`Invalid argument of :${pseudoName} pseudo-class: '${rawArg}'`);
+  }
+  return deep;
+};
+const getNthAncestor = (domElement, nth, pseudoName) => {
+  let ancestor = null;
+  let i = 0;
+  while (i < nth) {
+    ancestor = domElement.parentElement;
+    if (!ancestor) {
+      throw new Error(`Out of DOM: Argument of :${pseudoName}() pseudo-class is too big — '${nth}'.`);
+    }
+    domElement = ancestor;
+    i += 1;
+  }
+  return ancestor;
+};
+const validateStandardSelector = selector => {
+  let isValid;
+  try {
+    document.querySelectorAll(selector);
+    isValid = true;
+  } catch (e) {
+    isValid = false;
+  }
+  return isValid;
+};
+const matcherWrapper = (callback, argsData, errorMessage) => {
+  let isMatched;
+  try {
+    isMatched = callback(argsData);
+  } catch (e) {
+    logger.error(getErrorMessage(e));
+    throw new Error(errorMessage);
+  }
+  return isMatched;
+};
+const getAbsolutePseudoError = (propDesc, pseudoName, pseudoArg) => {
+  return `${MATCHING_ELEMENT_ERROR_PREFIX} ${propDesc}, may be invalid :${pseudoName}() pseudo-class arg: '${pseudoArg}'`;
+};
+const isMatchedByAbsolutePseudo = (domElement, pseudoName, pseudoArg) => {
+  let argsData;
+  let errorMessage;
+  let callback;
+  switch (pseudoName) {
+    case CONTAINS_PSEUDO:
+    case HAS_TEXT_PSEUDO:
+    case ABP_CONTAINS_PSEUDO:
+      callback = isTextMatched;
+      argsData = {
+        pseudoName,
+        pseudoArg,
+        domElement
+      };
+      errorMessage = getAbsolutePseudoError('text content', pseudoName, pseudoArg);
+      break;
+    case MATCHES_CSS_PSEUDO:
+    case MATCHES_CSS_AFTER_PSEUDO:
+    case MATCHES_CSS_BEFORE_PSEUDO:
+      callback = isStyleMatched;
+      argsData = {
+        pseudoName,
+        pseudoArg,
+        domElement
+      };
+      errorMessage = getAbsolutePseudoError('style', pseudoName, pseudoArg);
+      break;
+    case MATCHES_ATTR_PSEUDO_CLASS_MARKER:
+      callback = isAttributeMatched;
+      argsData = {
+        domElement,
+        pseudoName,
+        pseudoArg
+      };
+      errorMessage = getAbsolutePseudoError('attributes', pseudoName, pseudoArg);
+      break;
+    case MATCHES_PROPERTY_PSEUDO_CLASS_MARKER:
+      callback = isPropertyMatched;
+      argsData = {
+        domElement,
+        pseudoName,
+        pseudoArg
+      };
+      errorMessage = getAbsolutePseudoError('properties', pseudoName, pseudoArg);
+      break;
+    default:
+      throw new Error(`Unknown absolute pseudo-class :${pseudoName}()`);
+  }
+  return matcherWrapper(callback, argsData, errorMessage);
+};
+const findByAbsolutePseudoPseudo = {
+  nthAncestor: (domElements, rawPseudoArg, pseudoName) => {
+    const deep = getValidNumberAncestorArg(rawPseudoArg, pseudoName);
+    const ancestors = domElements.map(domElement => {
+      let ancestor = null;
+      try {
+        ancestor = getNthAncestor(domElement, deep, pseudoName);
+      } catch (e) {
+        logger.error(getErrorMessage(e));
       }
-      return latestRelationTokenIndex;
-    },
-    getXpathPart: function getXpathPart() {
-      var tokens = this.tokens[0];
-      for (var i = 0, tokensLength = tokens.length; i < tokensLength; i++) {
-        var token = tokens[i];
-        if (token.type === 'PSEUDO') {
-          var matches = token.matches;
-          if (matches && matches.length > 1) {
-            if (matches[0] === 'xpath') {
-              if (this.isLastToken(tokens, i)) {
-                throw new Error('Invalid pseudo: \':xpath\' should be at the end of the selector');
-              }
-              return matches[1];
-            }
-            if (matches[0] === 'nth-ancestor') {
-              if (this.isLastToken(tokens, i)) {
-                throw new Error('Invalid pseudo: \':nth-ancestor\' should be at the end of the selector');
-              }
-              var deep = matches[1];
-              if (deep > 0 && deep < 256) {
-                return this.convertNthAncestorToken(deep);
-              }
-            }
-          }
+      return ancestor;
+    }).filter(isHtmlElement);
+    return ancestors;
+  },
+  xpath: (domElements, rawPseudoArg) => {
+    const foundElements = domElements.map(domElement => {
+      const result = [];
+      let xpathResult;
+      try {
+        xpathResult = document.evaluate(rawPseudoArg, domElement, null, window.XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
+      } catch (e) {
+        logger.error(getErrorMessage(e));
+        throw new Error(`Invalid argument of :xpath() pseudo-class: '${rawPseudoArg}'`);
+      }
+      let node = xpathResult.iterateNext();
+      while (node) {
+        if (isHtmlElement(node)) {
+          result.push(node);
         }
-      }
-    },
-    convertNthAncestorToken: function convertNthAncestorToken(deep) {
-      var result = '..';
-      while (deep > 1) {
-        result += '/..';
-        deep--;
+        node = xpathResult.iterateNext();
       }
       return result;
-    },
-    isLastToken: function isLastToken(tokens, i) {
-      var isNextRemoveToken = tokens[i + 1] && tokens[i + 1].type === 'PSEUDO' && tokens[i + 1].matches && tokens[i + 1].matches[0] === 'remove';
-      return i + 1 !== tokens.length && !isNextRemoveToken;
-    },
-    getUpwardPart: function getUpwardPart() {
-      var tokens = this.tokens[0];
-      for (var i = 0, tokensLength = tokens.length; i < tokensLength; i++) {
-        var token = tokens[i];
-        if (token.type === 'PSEUDO') {
-          var matches = token.matches;
-          if (matches && matches.length > 1) {
-            if (matches[0] === 'upward') {
-              if (this.isLastToken(tokens, i)) {
-                throw new Error('Invalid pseudo: \':upward\' should be at the end of the selector');
-              }
-              return matches[1];
-            }
-          }
-        }
-      }
-    },
-    getRemovePart: function getRemovePart() {
-      var tokens = this.tokens[0];
-      for (var i = 0, tokensLength = tokens.length; i < tokensLength; i++) {
-        var token = tokens[i];
-        if (token.type === 'PSEUDO') {
-          var matches = token.matches;
-          if (matches && matches.length > 1) {
-            if (matches[0] === 'remove') {
-              if (i + 1 !== tokensLength) {
-                throw new Error('Invalid pseudo: \':remove\' should be at the end of the selector');
-              }
-              return matches[1];
-            }
-          }
-        }
-      }
+    });
+    return flatten(foundElements);
+  },
+  upward: (domElements, rawPseudoArg) => {
+    if (!validateStandardSelector(rawPseudoArg)) {
+      throw new Error(`Invalid argument of :upward pseudo-class: '${rawPseudoArg}'`);
     }
-  };
-  var globalDebuggingFlag = false;
-  function isDebugging() {
-    return globalDebuggingFlag || this.debug;
-  }
-  function NotAnExtendedSelector(selectorText, debug) {
-    this.selectorText = selectorText;
-    this.debug = debug;
-  }
-  NotAnExtendedSelector.prototype = {
-    querySelectorAll: function querySelectorAll() {
-      return document.querySelectorAll(this.selectorText);
-    },
-    matches: function matches(element) {
-      return element[utils.matchesPropertyName](this.selectorText);
-    },
-    isDebugging: isDebugging
-  };
-  function TraitLessSelector(selectorText, debug) {
-    this.selectorText = selectorText;
-    this.debug = debug;
-    Sizzle.compile(selectorText);
-  }
-  TraitLessSelector.prototype = {
-    querySelectorAll: function querySelectorAll() {
-      return Sizzle(this.selectorText);
-    },
-    matches: function matches(element) {
-      return Sizzle.matchesSelector(element, this.selectorText);
-    },
-    isDebugging: isDebugging
-  };
-  function BaseLastArgumentSelector(selectorText, pseudoClassArg, debug) {
-    this.selectorText = selectorText;
-    this.pseudoClassArg = pseudoClassArg;
-    this.debug = debug;
-    Sizzle.compile(this.selectorText);
-  }
-  BaseLastArgumentSelector.prototype = {
-    querySelectorAll: function querySelectorAll() {
-      var _this = this;
-      var resultNodes = [];
-      var simpleNodes;
-      if (this.selectorText) {
-        simpleNodes = Sizzle(this.selectorText);
-        if (!simpleNodes || !simpleNodes.length) {
-          return resultNodes;
-        }
-      } else {
-        simpleNodes = [document];
+    const closestAncestors = domElements.map(domElement => {
+      const parent = domElement.parentElement;
+      if (!parent) {
+        return null;
       }
-      simpleNodes.forEach(function (node) {
-        _this.searchResultNodes(node, _this.pseudoClassArg, resultNodes);
-      });
-      return Sizzle.uniqueSort(resultNodes);
-    },
-    matches: function matches(element) {
-      var results = this.querySelectorAll();
-      return results.indexOf(element) > -1;
-    },
-    isDebugging: isDebugging,
-    searchResultNodes: function searchResultNodes(node, pseudoClassArg, result) {
-      if (pseudoClassArg) {
-        result.push(node);
-      }
-    }
-  };
-  function XpathSelector(selectorText, xpath, debug) {
-    var NO_SELECTOR_MARKER = ':xpath(//';
-    var BODY_SELECTOR_REPLACER = 'body:xpath(//';
-    var modifiedSelectorText = selectorText;
-    if (utils.startsWith(selectorText, NO_SELECTOR_MARKER)) {
-      modifiedSelectorText = selectorText.replace(NO_SELECTOR_MARKER, BODY_SELECTOR_REPLACER);
-    }
-    BaseLastArgumentSelector.call(this, modifiedSelectorText, xpath, debug);
+      return parent.closest(rawPseudoArg);
+    }).filter(isHtmlElement);
+    return closestAncestors;
   }
-  XpathSelector.prototype = Object.create(BaseLastArgumentSelector.prototype);
-  XpathSelector.prototype.constructor = XpathSelector;
-  XpathSelector.prototype.searchResultNodes = function (node, pseudoClassArg, result) {
-    var xpathResult = document.evaluate(pseudoClassArg, node, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
-    var iNode;
-    while (iNode = xpathResult.iterateNext()) {
-      result.push(iNode);
-    }
-  };
-  function UpwardSelector(selectorText, upwardSelector, debug) {
-    BaseLastArgumentSelector.call(this, selectorText, upwardSelector, debug);
-  }
-  UpwardSelector.prototype = Object.create(BaseLastArgumentSelector.prototype);
-  UpwardSelector.prototype.constructor = UpwardSelector;
-  UpwardSelector.prototype.searchResultNodes = function (node, upwardSelector, result) {
-    if (upwardSelector !== '') {
-      var parent = node.parentElement;
-      if (parent === null) {
-        return;
-      }
-      node = parent.closest(upwardSelector);
-      if (node === null) {
-        return;
-      }
-    }
-    result.push(node);
-  };
-  function RemoveSelector(selectorText, hasValidRemovePart, debug) {
-    var REMOVE_PSEUDO_MARKER = ':remove()';
-    var removeMarkerIndex = selectorText.indexOf(REMOVE_PSEUDO_MARKER);
-    var modifiedSelectorText = selectorText.slice(0, removeMarkerIndex);
-    BaseLastArgumentSelector.call(this, modifiedSelectorText, hasValidRemovePart, debug);
-    this.isRemoveSelector = true;
-  }
-  RemoveSelector.prototype = Object.create(BaseLastArgumentSelector.prototype);
-  RemoveSelector.prototype.constructor = RemoveSelector;
-  function SplittedSelector(selectorText, simple, relation, complex, debug) {
-    TraitLessSelector.call(this, selectorText, debug);
-    this.simple = simple;
-    this.relation = relation;
-    this.complex = complex;
-    Sizzle.compile(complex);
-  }
-  SplittedSelector.prototype = Object.create(TraitLessSelector.prototype);
-  SplittedSelector.prototype.constructor = SplittedSelector;
-  SplittedSelector.prototype.querySelectorAll = function () {
-    var _this2 = this;
-    var resultNodes = [];
-    var simpleNodes;
-    var simple = this.simple;
-    var relation;
-    if (simple) {
-      simpleNodes = document.querySelectorAll(simple);
-      if (!simpleNodes || !simpleNodes.length) {
-        return resultNodes;
-      }
-      relation = this.relation;
+};
+const scopeDirectChildren = `${SCOPE_CSS_PSEUDO_CLASS}${CHILD_COMBINATOR}`;
+const scopeAnyChildren = `${SCOPE_CSS_PSEUDO_CLASS}${DESCENDANT_COMBINATOR}`;
+const getFirstInnerRegularChild = (selectorNode, pseudoName) => {
+  return getFirstRegularChild(selectorNode.children, `RegularSelector is missing for :${pseudoName}() pseudo-class`);
+};
+const hasRelativesBySelectorList = argsData => {
+  const {
+    element,
+    relativeSelectorList,
+    pseudoName
+  } = argsData;
+  return relativeSelectorList.children
+  .every(selectorNode => {
+    const relativeRegularSelector = getFirstInnerRegularChild(selectorNode, pseudoName);
+    let specifiedSelector = '';
+    let rootElement = null;
+    const regularSelector = getNodeValue(relativeRegularSelector);
+    if (regularSelector.startsWith(NEXT_SIBLING_COMBINATOR) || regularSelector.startsWith(SUBSEQUENT_SIBLING_COMBINATOR)) {
+      rootElement = element.parentElement;
+      const elementSelectorText = getElementSelectorDesc(element);
+      specifiedSelector = `${scopeDirectChildren}${elementSelectorText}${regularSelector}`;
+    } else if (regularSelector === ASTERISK) {
+      rootElement = element;
+      specifiedSelector = `${scopeAnyChildren}${ASTERISK}`;
     } else {
-      simpleNodes = [document];
-      relation = ' ';
+      specifiedSelector = `${scopeAnyChildren}${regularSelector}`;
+      rootElement = element;
     }
-    switch (relation) {
-      case ' ':
-        simpleNodes.forEach(function (node) {
-          _this2.relativeSearch(node, resultNodes);
+    if (!rootElement) {
+      throw new Error(`Selection by :${pseudoName}() pseudo-class is not possible`);
+    }
+    let relativeElements;
+    try {
+      relativeElements = getElementsForSelectorNode(selectorNode, rootElement, specifiedSelector);
+    } catch (e) {
+      logger.error(getErrorMessage(e));
+      throw new Error(`Invalid selector for :${pseudoName}() pseudo-class: '${regularSelector}'`);
+    }
+    return relativeElements.length > 0;
+  });
+};
+const isAnyElementBySelectorList = argsData => {
+  const {
+    element,
+    relativeSelectorList,
+    pseudoName
+  } = argsData;
+  return relativeSelectorList.children
+  .some(selectorNode => {
+    const relativeRegularSelector = getFirstInnerRegularChild(selectorNode, pseudoName);
+    const rootElement = getParent(element, `Selection by :${pseudoName}() pseudo-class is not possible`);
+    const specifiedSelector = `${scopeDirectChildren}${getNodeValue(relativeRegularSelector)}`;
+    let anyElements;
+    try {
+      anyElements = getElementsForSelectorNode(selectorNode, rootElement, specifiedSelector);
+    } catch (e) {
+      return false;
+    }
+    return anyElements.includes(element);
+  });
+};
+const notElementBySelectorList = argsData => {
+  const {
+    element,
+    relativeSelectorList,
+    pseudoName
+  } = argsData;
+  return relativeSelectorList.children
+  .every(selectorNode => {
+    const relativeRegularSelector = getFirstInnerRegularChild(selectorNode, pseudoName);
+    const rootElement = getParent(element, `Selection by :${pseudoName}() pseudo-class is not possible`);
+    const specifiedSelector = `${scopeDirectChildren}${getNodeValue(relativeRegularSelector)}`;
+    let anyElements;
+    try {
+      anyElements = getElementsForSelectorNode(selectorNode, rootElement, specifiedSelector);
+    } catch (e) {
+      logger.error(getErrorMessage(e));
+      throw new Error(`Invalid selector for :${pseudoName}() pseudo-class: '${getNodeValue(relativeRegularSelector)}'`);
+    }
+    return !anyElements.includes(element);
+  });
+};
+const getByRegularSelector = (regularSelectorNode, root, specifiedSelector) => {
+  const selectorText = specifiedSelector ? specifiedSelector : getNodeValue(regularSelectorNode);
+  let selectedElements = [];
+  try {
+    selectedElements = Array.from(root.querySelectorAll(selectorText));
+  } catch (e) {
+    throw new Error(`Error: unable to select by '${selectorText}' — ${getErrorMessage(e)}`);
+  }
+  return selectedElements;
+};
+const getByExtendedSelector = (domElements, extendedSelectorNode) => {
+  let foundElements = [];
+  const extendedPseudoClassNode = getPseudoClassNode(extendedSelectorNode);
+  const pseudoName = getNodeName(extendedPseudoClassNode);
+  if (isAbsolutePseudoClass(pseudoName)) {
+    const absolutePseudoArg = getNodeValue(extendedPseudoClassNode, `Missing arg for :${pseudoName}() pseudo-class`);
+    if (pseudoName === NTH_ANCESTOR_PSEUDO_CLASS_MARKER) {
+      foundElements = findByAbsolutePseudoPseudo.nthAncestor(domElements, absolutePseudoArg, pseudoName);
+    } else if (pseudoName === XPATH_PSEUDO_CLASS_MARKER) {
+      try {
+        document.createExpression(absolutePseudoArg, null);
+      } catch (e) {
+        throw new Error(`Invalid argument of :${pseudoName}() pseudo-class: '${absolutePseudoArg}'`);
+      }
+      foundElements = findByAbsolutePseudoPseudo.xpath(domElements, absolutePseudoArg);
+    } else if (pseudoName === UPWARD_PSEUDO_CLASS_MARKER) {
+      if (Number.isNaN(Number(absolutePseudoArg))) {
+        foundElements = findByAbsolutePseudoPseudo.upward(domElements, absolutePseudoArg);
+      } else {
+        foundElements = findByAbsolutePseudoPseudo.nthAncestor(domElements, absolutePseudoArg, pseudoName);
+      }
+    } else {
+      foundElements = domElements.filter(element => {
+        return isMatchedByAbsolutePseudo(element, pseudoName, absolutePseudoArg);
+      });
+    }
+  } else if (isRelativePseudoClass(pseudoName)) {
+    const relativeSelectorList = getRelativeSelectorListNode(extendedPseudoClassNode);
+    let relativePredicate;
+    switch (pseudoName) {
+      case HAS_PSEUDO_CLASS_MARKER:
+      case ABP_HAS_PSEUDO_CLASS_MARKER:
+        relativePredicate = element => hasRelativesBySelectorList({
+          element,
+          relativeSelectorList,
+          pseudoName
         });
         break;
-      case '>':
-        {
-          simpleNodes.forEach(function (node) {
-            Object.values(node.children).forEach(function (childNode) {
-              if (_this2.matches(childNode)) {
-                resultNodes.push(childNode);
-              }
-            });
-          });
-          break;
-        }
-      case '+':
-        {
-          simpleNodes.forEach(function (node) {
-            var parentNode = node.parentNode;
-            Object.values(parentNode.children).forEach(function (childNode) {
-              if (_this2.matches(childNode) && childNode.previousElementSibling === node) {
-                resultNodes.push(childNode);
-              }
-            });
-          });
-          break;
-        }
-      case '~':
-        {
-          simpleNodes.forEach(function (node) {
-            var parentNode = node.parentNode;
-            Object.values(parentNode.children).forEach(function (childNode) {
-              if (_this2.matches(childNode) && node.compareDocumentPosition(childNode) === 4) {
-                resultNodes.push(childNode);
-              }
-            });
-          });
-          break;
-        }
-    }
-    return Sizzle.uniqueSort(resultNodes);
-  };
-  SplittedSelector.prototype.relativeSearch = function (node, results) {
-    Sizzle(this.complex, node, results);
-  };
-  return {
-    createSelector: function createSelector(selector, tokens, debug) {
-      return new ExtendedSelectorParser(selector, tokens, debug).createSelector();
-    },
-    enableGlobalDebugging: function enableGlobalDebugging() {
-      globalDebuggingFlag = true;
-    }
-  };
-}();
-var ExtendedCssParser = function () {
-  var reDeclEnd = /[;}]/g;
-  var reDeclDivider = /[;:}]/g;
-  var reNonWhitespace = /\S/g;
-  var Sizzle;
-  function Parser(cssText) {
-    this.cssText = cssText;
-  }
-  Parser.prototype = {
-    error: function error(position) {
-      throw new Error("CssParser: parse error at position ".concat(this.posOffset + position));
-    },
-    validateSelectors: function validateSelectors(selectors) {
-      var iSelectors = selectors.length;
-      while (iSelectors--) {
-        var groups = selectors[iSelectors].groups;
-        var iGroups = groups.length;
-        while (iGroups--) {
-          var tokens = groups[iGroups];
-          var lastToken = tokens[tokens.length - 1];
-          if (Sizzle.selectors.relative[lastToken.type]) {
-            return false;
-          }
-        }
-      }
-      return true;
-    },
-    parseCss: function parseCss() {
-      this.posOffset = 0;
-      if (!this.cssText) {
-        this.error(0);
-      }
-      var results = [];
-      while (this.cssText) {
-        var parseResult = Sizzle.tokenize(this.cssText, false, {
-          tolerant: true,
-          returnUnsorted: true
+      case IS_PSEUDO_CLASS_MARKER:
+        relativePredicate = element => isAnyElementBySelectorList({
+          element,
+          relativeSelectorList,
+          pseudoName
         });
-        var selectorData = parseResult.selectors;
-        this.nextIndex = parseResult.nextIndex;
-        if (this.cssText.charCodeAt(this.nextIndex) !== 123 ||
-        !this.validateSelectors(selectorData)) {
-          this.error(this.nextIndex);
-        }
-        this.nextIndex++;
-        var styleMap = this.parseNextStyle();
-        var debug = false;
-        var debugPropertyValue = styleMap['debug'];
-        if (typeof debugPropertyValue !== 'undefined') {
-          if (debugPropertyValue === 'global') {
-            ExtendedSelectorFactory.enableGlobalDebugging();
-          }
-          debug = true;
-          delete styleMap['debug'];
-        }
-        for (var i = 0, l = selectorData.length; i < l; i++) {
-          var data = selectorData[i];
-          try {
-            var extendedSelector = ExtendedSelectorFactory.createSelector(data.selectorText, data.groups, debug);
-            if (extendedSelector.pseudoClassArg && extendedSelector.isRemoveSelector) {
-              styleMap['remove'] = 'true';
-            }
-            results.push({
-              selector: extendedSelector,
-              style: styleMap
-            });
-          } catch (ex) {
-            utils.logError("ExtendedCssParser: ignoring invalid selector ".concat(data.selectorText));
-          }
-        }
-      }
-      return results;
-    },
-    parseNextStyle: function parseNextStyle() {
-      var styleMap = Object.create(null);
-      var bracketPos = this.parseUntilClosingBracket(styleMap);
-      reNonWhitespace.lastIndex = bracketPos + 1;
-      var match = reNonWhitespace.exec(this.cssText);
-      if (match === null) {
-        this.cssText = '';
-        return styleMap;
-      }
-      var matchPos = match.index;
-      this.cssText = this.cssText.slice(matchPos);
-      this.posOffset += matchPos;
-      return styleMap;
-    },
-    parseUntilClosingBracket: function parseUntilClosingBracket(styleMap) {
-      reDeclDivider.lastIndex = this.nextIndex;
-      var match = reDeclDivider.exec(this.cssText);
-      if (match === null) {
-        this.error(this.nextIndex);
-      }
-      var matchPos = match.index;
-      var matched = match[0];
-      if (matched === '}') {
-        return matchPos;
-      }
-      if (matched === ':') {
-        var colonIndex = matchPos;
-        reDeclEnd.lastIndex = colonIndex;
-        match = reDeclEnd.exec(this.cssText);
-        if (match === null) {
-          this.error(colonIndex);
-        }
-        matchPos = match.index;
-        matched = match[0];
-        var property = this.cssText.slice(this.nextIndex, colonIndex).trim();
-        var value = this.cssText.slice(colonIndex + 1, matchPos).trim();
-        styleMap[property] = value;
-        if (matched === '}') {
-          return matchPos;
-        }
-      }
-      this.nextIndex = matchPos + 1;
-      return this.parseUntilClosingBracket(styleMap);
+        break;
+      case NOT_PSEUDO_CLASS_MARKER:
+        relativePredicate = element => notElementBySelectorList({
+          element,
+          relativeSelectorList,
+          pseudoName
+        });
+        break;
+      default:
+        throw new Error(`Unknown relative pseudo-class: '${pseudoName}'`);
     }
-  };
-  return {
-    parseCss: function parseCss(cssText) {
-      Sizzle = initializeSizzle();
-      return new Parser(cssUtils.normalize(cssText)).parseCss();
-    }
-  };
-}();
-function ExtendedCss(configuration) {
-  if (!configuration) {
-    throw new Error('Configuration is not provided.');
+    foundElements = domElements.filter(relativePredicate);
+  } else {
+    throw new Error(`Unknown extended pseudo-class: '${pseudoName}'`);
   }
-  var styleSheet = configuration.styleSheet;
-  var beforeStyleApplied = configuration.beforeStyleApplied;
-  if (beforeStyleApplied && typeof beforeStyleApplied !== 'function') {
-    throw new Error("Wrong configuration. Type of 'beforeStyleApplied' field should be a function, received: ".concat(_typeof(beforeStyleApplied)));
-  }
-  var EventTracker = function () {
-    var ignoredEventTypes = ['mouseover', 'mouseleave', 'mouseenter', 'mouseout'];
-    var LAST_EVENT_TIMEOUT_MS = 10;
-    var EVENTS = [
-    'keydown', 'keypress', 'keyup',
-    'auxclick', 'click', 'contextmenu', 'dblclick', 'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover', 'mouseout', 'mouseup', 'pointerlockchange', 'pointerlockerror', 'select', 'wheel'];
-    var safariProblematicEvents = ['wheel'];
-    var trackedEvents = utils.isSafariBrowser ? EVENTS.filter(function (el) {
-      return !(safariProblematicEvents.indexOf(el) > -1);
-    }) : EVENTS;
-    var lastEventType;
-    var lastEventTime;
-    var trackEvent = function trackEvent(e) {
-      lastEventType = e.type;
-      lastEventTime = Date.now();
-    };
-    trackedEvents.forEach(function (evName) {
-      document.documentElement.addEventListener(evName, trackEvent, true);
+  return foundElements;
+};
+const getByFollowingRegularSelector = (domElements, regularSelectorNode) => {
+  let foundElements = [];
+  const value = getNodeValue(regularSelectorNode);
+  if (value.startsWith(CHILD_COMBINATOR)) {
+    foundElements = domElements.map(root => {
+      const specifiedSelector = `${SCOPE_CSS_PSEUDO_CLASS}${value}`;
+      return getByRegularSelector(regularSelectorNode, root, specifiedSelector);
     });
-    var getLastEventType = function getLastEventType() {
-      return lastEventType;
-    };
-    var getTimeSinceLastEvent = function getTimeSinceLastEvent() {
-      return Date.now() - lastEventTime;
-    };
-    return {
-      isIgnoredEventType: function isIgnoredEventType() {
-        return ignoredEventTypes.indexOf(getLastEventType()) > -1 && getTimeSinceLastEvent() < LAST_EVENT_TIMEOUT_MS;
+  } else if (value.startsWith(NEXT_SIBLING_COMBINATOR) || value.startsWith(SUBSEQUENT_SIBLING_COMBINATOR)) {
+    foundElements = domElements.map(element => {
+      const rootElement = element.parentElement;
+      if (!rootElement) {
+        return [];
       }
-    };
-  }();
-  var rules = [];
-  var affectedElements = [];
-  var removalsStatistic = {};
-  var domObserved;
-  var eventListenerSupported = window.addEventListener;
-  var domMutationObserver;
-  function observeDocument(callback) {
-    var isIgnoredMutation = function isIgnoredMutation(mutations) {
-      for (var i = 0; i < mutations.length; i += 1) {
-        if (mutations.type !== 'attributes') {
-          return false;
-        }
-      }
-      return true;
-    };
-    if (utils.MutationObserver) {
-      domMutationObserver = new utils.MutationObserver(function (mutations) {
-        if (!mutations || mutations.length === 0) {
-          return;
-        }
-        if (EventTracker.isIgnoredEventType() && isIgnoredMutation(mutations)) {
-          return;
-        }
-        callback();
-      });
-      domMutationObserver.observe(document, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['id', 'class']
-      });
-    } else if (eventListenerSupported) {
-      document.addEventListener('DOMNodeInserted', callback, false);
-      document.addEventListener('DOMNodeRemoved', callback, false);
-      document.addEventListener('DOMAttrModified', callback, false);
-    }
-  }
-  function disconnectDocument(callback) {
-    if (domMutationObserver) {
-      domMutationObserver.disconnect();
-    } else if (eventListenerSupported) {
-      document.removeEventListener('DOMNodeInserted', callback, false);
-      document.removeEventListener('DOMNodeRemoved', callback, false);
-      document.removeEventListener('DOMAttrModified', callback, false);
-    }
-  }
-  var MAX_STYLE_PROTECTION_COUNT = 50;
-  var protectionObserverOption = {
-    attributes: true,
-    attributeOldValue: true,
-    attributeFilter: ['style']
-  };
-  function createProtectionFunction(styles) {
-    function protectionFunction(mutations, observer) {
-      if (!mutations.length) {
-        return;
-      }
-      var mutation = mutations[0];
-      var target = mutation.target;
-      observer.disconnect();
-      styles.forEach(function (style) {
-        setStyleToElement(target, style);
-      });
-      if (++observer.styleProtectionCount < MAX_STYLE_PROTECTION_COUNT) {
-        observer.observe(target, protectionObserverOption);
-      } else {
-        utils.logError('ExtendedCss: infinite loop protection for style');
-      }
-    }
-    return protectionFunction;
-  }
-  function protectStyleAttribute(node, rules) {
-    if (!utils.MutationObserver) {
-      return null;
-    }
-    var styles = rules.map(function (r) {
-      return r.style;
+      const elementSelectorText = getElementSelectorDesc(element);
+      const specifiedSelector = `${scopeDirectChildren}${elementSelectorText}${value}`;
+      const selected = getByRegularSelector(regularSelectorNode, rootElement, specifiedSelector);
+      return selected;
     });
-    var protectionObserver = new utils.MutationObserver(createProtectionFunction(styles));
-    protectionObserver.observe(node, protectionObserverOption);
-    protectionObserver.styleProtectionCount = 0;
-    return protectionObserver;
-  }
-  function removeSuffix(str, suffix) {
-    var index = str.indexOf(suffix, str.length - suffix.length);
-    if (index >= 0) {
-      return str.substring(0, index);
-    }
-    return str;
-  }
-  function findAffectedElement(node) {
-    for (var i = 0; i < affectedElements.length; i += 1) {
-      if (affectedElements[i].node === node) {
-        return affectedElements[i];
-      }
-    }
-    return null;
-  }
-  function removeElement(affectedElement) {
-    var node = affectedElement.node;
-    affectedElement.removed = true;
-    var elementSelector = utils.getNodeSelector(node);
-    var elementRemovalsCounter = removalsStatistic[elementSelector] || 0;
-    if (elementRemovalsCounter > MAX_STYLE_PROTECTION_COUNT) {
-      utils.logError('ExtendedCss: infinite loop protection for SELECTOR', elementSelector);
-      return;
-    }
-    if (node.parentNode) {
-      node.parentNode.removeChild(node);
-      removalsStatistic[elementSelector] = elementRemovalsCounter + 1;
-    }
-  }
-  function applyStyle(affectedElement) {
-    if (affectedElement.protectionObserver) {
-      return;
-    }
-    if (beforeStyleApplied) {
-      affectedElement = beforeStyleApplied(affectedElement);
-      if (!affectedElement) {
-        return;
-      }
-    }
-    var _affectedElement = affectedElement,
-        node = _affectedElement.node;
-    for (var i = 0; i < affectedElement.rules.length; i++) {
-      var style = affectedElement.rules[i].style;
-      if (style['remove'] === 'true') {
-        removeElement(affectedElement);
-        return;
-      }
-      setStyleToElement(node, style);
-    }
-  }
-  function setStyleToElement(node, style) {
-    Object.keys(style).forEach(function (prop) {
-      if (typeof node.style.getPropertyValue(prop) !== 'undefined') {
-        var value = style[prop];
-        value = removeSuffix(value.trim(), '!important').trim();
-        node.style.setProperty(prop, value, 'important');
-      }
+  } else {
+    foundElements = domElements.map(root => {
+      const specifiedSelector = `${scopeAnyChildren}${getNodeValue(regularSelectorNode)}`;
+      return getByRegularSelector(regularSelectorNode, root, specifiedSelector);
     });
   }
-  function revertStyle(affectedElement) {
-    if (affectedElement.protectionObserver) {
-      affectedElement.protectionObserver.disconnect();
+  return flatten(foundElements);
+};
+const getElementsForSelectorNode = (selectorNode, root, specifiedSelector) => {
+  let selectedElements = [];
+  let i = 0;
+  while (i < selectorNode.children.length) {
+    const selectorNodeChild = getItemByIndex(selectorNode.children, i, 'selectorNodeChild should be specified');
+    if (i === 0) {
+      selectedElements = getByRegularSelector(selectorNodeChild, root, specifiedSelector);
+    } else if (isExtendedSelectorNode(selectorNodeChild)) {
+      selectedElements = getByExtendedSelector(selectedElements, selectorNodeChild);
+    } else if (isRegularSelectorNode(selectorNodeChild)) {
+      selectedElements = getByFollowingRegularSelector(selectedElements, selectorNodeChild);
     }
-    affectedElement.node.style.cssText = affectedElement.originalStyle;
+    i += 1;
   }
-  function applyRule(rule) {
-    var debug = rule.selector.isDebugging();
-    var start;
-    if (debug) {
-      start = utils.AsyncWrapper.now();
-    }
-    var selector = rule.selector;
-    var nodes = selector.querySelectorAll();
-    nodes.forEach(function (node) {
-      var affectedElement = findAffectedElement(node);
-      if (affectedElement) {
-        affectedElement.rules.push(rule);
-        applyStyle(affectedElement);
-      } else {
-        var originalStyle = node.style.cssText;
-        affectedElement = {
-          node: node,
-          rules: [rule],
-          originalStyle: originalStyle,
-          protectionObserver: null
-        };
-        applyStyle(affectedElement);
-        affectedElements.push(affectedElement);
-      }
-    });
-    if (debug) {
-      var elapsed = utils.AsyncWrapper.now() - start;
-      if (!('timingStats' in rule)) {
-        rule.timingStats = new utils.Stats();
-      }
-      rule.timingStats.push(elapsed);
-    }
-    return nodes;
+  return selectedElements;
+};
+const selectElementsByAst = function (ast) {
+  let doc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+  const selectedElements = [];
+  ast.children.forEach(selectorNode => {
+    selectedElements.push(...getElementsForSelectorNode(selectorNode, doc));
+  });
+  const uniqueElements = [...new Set(flatten(selectedElements))];
+  return uniqueElements;
+};
+class ExtCssDocument {
+  constructor() {
+    this.astCache = new Map();
   }
-  function applyRules() {
-    var elementsIndex = [];
-    stopObserve();
-    rules.forEach(function (rule) {
-      var nodes = applyRule(rule);
-      Array.prototype.push.apply(elementsIndex, nodes);
-    });
-    var l = affectedElements.length;
-    if (elementsIndex.length > 0) {
-      while (l--) {
-        var obj = affectedElements[l];
-        if (elementsIndex.indexOf(obj.node) === -1) {
-          revertStyle(obj);
-          affectedElements.splice(l, 1);
-        } else if (!obj.removed) {
-          if (!obj.protectionObserver) {
-            obj.protectionObserver = protectStyleAttribute(obj.node, obj.rules);
-          }
-        }
-      }
-    }
-    observe();
-    printTimingInfo();
+  saveAstToCache(selector, ast) {
+    this.astCache.set(selector, ast);
   }
-  var APPLY_RULES_DELAY = 150;
-  var applyRulesScheduler = new utils.AsyncWrapper(applyRules, APPLY_RULES_DELAY);
-  var mainCallback = applyRulesScheduler.run.bind(applyRulesScheduler);
-  function observe() {
-    if (domObserved) {
-      return;
-    }
-    domObserved = true;
-    observeDocument(mainCallback);
+  getAstFromCache(selector) {
+    const cachedAst = this.astCache.get(selector) || null;
+    return cachedAst;
   }
-  function stopObserve() {
-    if (!domObserved) {
-      return;
+  getSelectorAst(selector) {
+    let ast = this.getAstFromCache(selector);
+    if (!ast) {
+      ast = parse(selector);
     }
-    domObserved = false;
-    disconnectDocument(mainCallback);
+    this.saveAstToCache(selector, ast);
+    return ast;
   }
-  function apply() {
-    applyRules();
-    if (document.readyState !== 'complete') {
-      document.addEventListener('DOMContentLoaded', applyRules);
-    }
+  querySelectorAll(selector) {
+    const ast = this.getSelectorAst(selector);
+    return selectElementsByAst(ast);
   }
-  function dispose() {
-    stopObserve();
-    affectedElements.forEach(function (obj) {
-      revertStyle(obj);
-    });
-  }
-  var timingsPrinted = false;
-  function printTimingInfo() {
-    if (timingsPrinted) {
-      return;
-    }
-    timingsPrinted = true;
-    var timings = rules.filter(function (rule) {
-      return rule.selector.isDebugging();
-    }).map(function (rule) {
-      return {
-        selectorText: rule.selector.selectorText,
-        timingStats: rule.timingStats
-      };
-    });
-    if (timings.length === 0) {
-      return;
-    }
-    utils.logInfo('[ExtendedCss] Timings for %o:\n%o (in milliseconds)', window.location.href, timings);
-  }
-  rules = ExtendedCssParser.parseCss(styleSheet);
-  this.dispose = dispose;
-  this.apply = apply;
-  this._getAffectedElements = function () {
-    return affectedElements;
-  };
 }
-ExtendedCss.query = function (selectorText, noTiming) {
-  if (typeof selectorText !== 'string') {
-    throw new Error('Selector text is empty');
+const extCssDocument = new ExtCssDocument();
+const getObjectFromEntries = entries => {
+  const object = {};
+  entries.forEach(el => {
+    const [key, value] = el;
+    object[key] = value;
+  });
+  return object;
+};
+const DEBUG_PSEUDO_PROPERTY_KEY = 'debug';
+const parseRemoveSelector = rawSelector => {
+  const VALID_REMOVE_MARKER = `${COLON}${REMOVE_PSEUDO_MARKER}${BRACKET.PARENTHESES.LEFT}${BRACKET.PARENTHESES.RIGHT}`;
+  const INVALID_REMOVE_MARKER = `${COLON}${REMOVE_PSEUDO_MARKER}${BRACKET.PARENTHESES.LEFT}`;
+  let selector;
+  let shouldRemove = false;
+  const firstIndex = rawSelector.indexOf(VALID_REMOVE_MARKER);
+  if (firstIndex === 0) {
+    throw new Error(`${REMOVE_ERROR_PREFIX.NO_TARGET_SELECTOR}: '${rawSelector}'`);
+  } else if (firstIndex > 0) {
+    if (firstIndex !== rawSelector.lastIndexOf(VALID_REMOVE_MARKER)) {
+      throw new Error(`${REMOVE_ERROR_PREFIX.MULTIPLE_USAGE}: '${rawSelector}'`);
+    } else if (firstIndex + VALID_REMOVE_MARKER.length < rawSelector.length) {
+      throw new Error(`${REMOVE_ERROR_PREFIX.INVALID_POSITION}: '${rawSelector}'`);
+    } else {
+      selector = rawSelector.substring(0, firstIndex);
+      shouldRemove = true;
+    }
+  } else if (rawSelector.includes(INVALID_REMOVE_MARKER)) {
+    throw new Error(`${REMOVE_ERROR_PREFIX.INVALID_REMOVE}: '${rawSelector}'`);
+  } else {
+    selector = rawSelector;
   }
-  var now = utils.AsyncWrapper.now;
-  var start = now();
+  const stylesOfSelector = shouldRemove ? [{
+    property: REMOVE_PSEUDO_MARKER,
+    value: PSEUDO_PROPERTY_POSITIVE_VALUE
+  }] : [];
+  return {
+    selector,
+    stylesOfSelector
+  };
+};
+const parseSelectorRulePart = (selectorBuffer, extCssDoc) => {
+  let selector = selectorBuffer.trim();
+  if (selector.startsWith(AT_RULE_MARKER)) {
+    throw new Error(`${NO_AT_RULE_ERROR_PREFIX}: '${selector}'.`);
+  }
+  let removeSelectorData;
   try {
-    return ExtendedSelectorFactory.createSelector(selectorText).querySelectorAll();
-  } finally {
-    var end = now();
-    if (!noTiming) {
-      utils.logInfo("[ExtendedCss] Elapsed: ".concat(Math.round((end - start) * 1000), " \u03BCs."));
+    removeSelectorData = parseRemoveSelector(selector);
+  } catch (e) {
+    logger.error(getErrorMessage(e));
+    throw new Error(`${REMOVE_ERROR_PREFIX.INVALID_REMOVE}: '${selector}'`);
+  }
+  let stylesOfSelector = [];
+  let success = false;
+  let ast;
+  try {
+    selector = removeSelectorData.selector;
+    stylesOfSelector = removeSelectorData.stylesOfSelector;
+    ast = extCssDoc.getSelectorAst(selector);
+    success = true;
+  } catch (e) {
+    success = false;
+  }
+  return {
+    success,
+    selector,
+    ast,
+    stylesOfSelector
+  };
+};
+const createRawResultsMap = () => {
+  return new Map();
+};
+const saveToRawResults = (rawResults, rawRuleData) => {
+  const {
+    selector,
+    ast,
+    rawStyles
+  } = rawRuleData;
+  if (!rawStyles) {
+    throw new Error(`No style declaration for selector: '${selector}'`);
+  }
+  if (!ast) {
+    throw new Error(`No ast parsed for selector: '${selector}'`);
+  }
+  const storedRuleData = rawResults.get(selector);
+  if (!storedRuleData) {
+    rawResults.set(selector, {
+      ast,
+      styles: rawStyles
+    });
+  } else {
+    storedRuleData.styles.push(...rawStyles);
+  }
+};
+const isRemoveSetInStyles = styles => {
+  return styles.some(s => {
+    return s.property === REMOVE_PSEUDO_MARKER && s.value === PSEUDO_PROPERTY_POSITIVE_VALUE;
+  });
+};
+const getDebugStyleValue = styles => {
+  const debugStyle = styles.find(s => {
+    return s.property === DEBUG_PSEUDO_PROPERTY_KEY;
+  });
+  return debugStyle === null || debugStyle === void 0 ? void 0 : debugStyle.value;
+};
+const prepareRuleData = rawRuleData => {
+  const {
+    selector,
+    ast,
+    rawStyles
+  } = rawRuleData;
+  if (!ast) {
+    throw new Error(`AST should be parsed for selector: '${selector}'`);
+  }
+  if (!rawStyles) {
+    throw new Error(`Styles should be parsed for selector: '${selector}'`);
+  }
+  const ruleData = {
+    selector,
+    ast
+  };
+  const debugValue = getDebugStyleValue(rawStyles);
+  const shouldRemove = isRemoveSetInStyles(rawStyles);
+  let styles = rawStyles;
+  if (debugValue) {
+    styles = rawStyles.filter(s => s.property !== DEBUG_PSEUDO_PROPERTY_KEY);
+    if (debugValue === PSEUDO_PROPERTY_POSITIVE_VALUE || debugValue === DEBUG_PSEUDO_PROPERTY_GLOBAL_VALUE) {
+      ruleData.debug = debugValue;
+    }
+  }
+  if (shouldRemove) {
+    ruleData.style = {
+      [REMOVE_PSEUDO_MARKER]: PSEUDO_PROPERTY_POSITIVE_VALUE
+    };
+    const contentStyle = styles.find(s => s.property === CONTENT_CSS_PROPERTY);
+    if (contentStyle) {
+      ruleData.style[CONTENT_CSS_PROPERTY] = contentStyle.value;
+    }
+  } else {
+    if (styles.length > 0) {
+      const stylesAsEntries = styles.map(style => {
+        const {
+          property,
+          value
+        } = style;
+        return [property, value];
+      });
+      const preparedStyleData = getObjectFromEntries(stylesAsEntries);
+      ruleData.style = preparedStyleData;
+    }
+  }
+  return ruleData;
+};
+const combineRulesData = rawResults => {
+  const results = [];
+  rawResults.forEach((value, key) => {
+    const selector = key;
+    const {
+      ast,
+      styles: rawStyles
+    } = value;
+    results.push(prepareRuleData({
+      selector,
+      ast,
+      rawStyles
+    }));
+  });
+  return results;
+};
+const tokenizeStyleBlock = rawStyle => {
+  const styleDeclaration = rawStyle.trim();
+  return tokenize(styleDeclaration, SUPPORTED_STYLE_DECLARATION_MARKS);
+};
+const DECLARATION_PART = {
+  PROPERTY: 'property',
+  VALUE: 'value'
+};
+const isValueQuotesOpen = context => {
+  return context.bufferValue !== '' && context.valueQuoteMark !== null;
+};
+const collectStyle = context => {
+  context.styles.push({
+    property: context.bufferProperty.trim(),
+    value: context.bufferValue.trim()
+  });
+  context.bufferProperty = '';
+  context.bufferValue = '';
+};
+const processPropertyToken = (context, styleBlock, token) => {
+  const {
+    value: tokenValue
+  } = token;
+  switch (token.type) {
+    case TOKEN_TYPE.WORD:
+      if (context.bufferProperty.length > 0) {
+        throw new Error(`Invalid style property in style block: '${styleBlock}'`);
+      }
+      context.bufferProperty += tokenValue;
+      break;
+    case TOKEN_TYPE.MARK:
+      if (tokenValue === COLON) {
+        if (context.bufferProperty.trim().length === 0) {
+          throw new Error(`Missing style property before ':' in style block: '${styleBlock}'`);
+        }
+        context.bufferProperty = context.bufferProperty.trim();
+        context.processing = DECLARATION_PART.VALUE;
+      } else if (WHITE_SPACE_CHARACTERS.includes(tokenValue)) ; else {
+        throw new Error(`Invalid style declaration in style block: '${styleBlock}'`);
+      }
+      break;
+    default:
+      throw new Error(`Unsupported style property character: '${tokenValue}' in style block: '${styleBlock}'`);
+  }
+};
+const processValueToken = (context, styleBlock, token) => {
+  const {
+    value: tokenValue
+  } = token;
+  if (token.type === TOKEN_TYPE.WORD) {
+    context.bufferValue += tokenValue;
+  } else {
+    switch (tokenValue) {
+      case COLON:
+        if (!isValueQuotesOpen(context)) {
+          throw new Error(`Invalid style value for property '${context.bufferProperty}' in style block: '${styleBlock}'`);
+        }
+        context.bufferValue += tokenValue;
+        break;
+      case SEMICOLON:
+        if (isValueQuotesOpen(context)) {
+          context.bufferValue += tokenValue;
+        } else {
+          collectStyle(context);
+          context.processing = DECLARATION_PART.PROPERTY;
+        }
+        break;
+      case SINGLE_QUOTE:
+      case DOUBLE_QUOTE:
+        if (context.valueQuoteMark === null) {
+          context.valueQuoteMark = tokenValue;
+        } else if (!context.bufferValue.endsWith(BACKSLASH)
+        && context.valueQuoteMark === tokenValue) {
+          context.valueQuoteMark = null;
+        }
+        context.bufferValue += tokenValue;
+        break;
+      case BACKSLASH:
+        if (!isValueQuotesOpen(context)) {
+          throw new Error(`Invalid style value for property '${context.bufferProperty}' in style block: '${styleBlock}'`);
+        }
+        context.bufferValue += tokenValue;
+        break;
+      case SPACE:
+      case TAB:
+      case CARRIAGE_RETURN:
+      case LINE_FEED:
+      case FORM_FEED:
+        if (context.bufferValue.length > 0) {
+          context.bufferValue += tokenValue;
+        }
+        break;
+      default:
+        throw new Error(`Unknown style declaration token: '${tokenValue}'`);
     }
   }
 };
+const parseStyleBlock = rawStyleBlock => {
+  const styleBlock = rawStyleBlock.trim();
+  const tokens = tokenizeStyleBlock(styleBlock);
+  const context = {
+    processing: DECLARATION_PART.PROPERTY,
+    styles: [],
+    bufferProperty: '',
+    bufferValue: '',
+    valueQuoteMark: null
+  };
+  let i = 0;
+  while (i < tokens.length) {
+    const token = tokens[i];
+    if (!token) {
+      break;
+    }
+    if (context.processing === DECLARATION_PART.PROPERTY) {
+      processPropertyToken(context, styleBlock, token);
+    } else if (context.processing === DECLARATION_PART.VALUE) {
+      processValueToken(context, styleBlock, token);
+    } else {
+      throw new Error('Style declaration parsing failed');
+    }
+    i += 1;
+  }
+  if (isValueQuotesOpen(context)) {
+    throw new Error(`Unbalanced style declaration quotes in style block: '${styleBlock}'`);
+  }
+  if (context.bufferProperty.length > 0) {
+    if (context.bufferValue.length === 0) {
+      throw new Error(`Missing style value for property '${context.bufferProperty}' in style block '${styleBlock}'`);
+    }
+    collectStyle(context);
+  }
+  if (context.styles.length === 0) {
+    throw new Error(STYLE_ERROR_PREFIX.NO_STYLE);
+  }
+  return context.styles;
+};
+const getLeftCurlyBracketIndexes = cssRule => {
+  const indexes = [];
+  for (let i = 0; i < cssRule.length; i += 1) {
+    if (cssRule[i] === BRACKET.CURLY.LEFT) {
+      indexes.push(i);
+    }
+  }
+  return indexes;
+};
+const parseRule = (rawCssRule, extCssDoc) => {
+  var _rawRuleData$selector;
+  const cssRule = rawCssRule.trim();
+  if (cssRule.includes(`${SLASH}${ASTERISK}`) && cssRule.includes(`${ASTERISK}${SLASH}`)) {
+    throw new Error(STYLE_ERROR_PREFIX.NO_COMMENT);
+  }
+  const leftCurlyBracketIndexes = getLeftCurlyBracketIndexes(cssRule);
+  if (getFirst(leftCurlyBracketIndexes) === 0) {
+    throw new Error(NO_SELECTOR_ERROR_PREFIX);
+  }
+  let selectorData;
+  if (leftCurlyBracketIndexes.length > 0 && !cssRule.includes(BRACKET.CURLY.RIGHT)) {
+    throw new Error(`${STYLE_ERROR_PREFIX.NO_STYLE} OR ${STYLE_ERROR_PREFIX.UNCLOSED_STYLE}`);
+  }
+  if (
+  leftCurlyBracketIndexes.length === 0
+  || !cssRule.includes(BRACKET.CURLY.RIGHT)) {
+    try {
+      selectorData = parseSelectorRulePart(cssRule, extCssDoc);
+      if (selectorData.success) {
+        var _selectorData$stylesO;
+        if (((_selectorData$stylesO = selectorData.stylesOfSelector) === null || _selectorData$stylesO === void 0 ? void 0 : _selectorData$stylesO.length) === 0) {
+          throw new Error(STYLE_ERROR_PREFIX.NO_STYLE_OR_REMOVE);
+        }
+        return {
+          selector: selectorData.selector.trim(),
+          ast: selectorData.ast,
+          rawStyles: selectorData.stylesOfSelector
+        };
+      } else {
+        throw new Error('Invalid selector');
+      }
+    } catch (e) {
+      throw new Error(getErrorMessage(e));
+    }
+  }
+  let selectorBuffer;
+  let styleBlockBuffer;
+  const rawRuleData = {
+    selector: ''
+  };
+  for (let i = leftCurlyBracketIndexes.length - 1; i > -1; i -= 1) {
+    const index = leftCurlyBracketIndexes[i];
+    if (!index) {
+      throw new Error(`Impossible to continue, no '{' to process for rule: '${cssRule}'`);
+    }
+    selectorBuffer = cssRule.slice(0, index);
+    styleBlockBuffer = cssRule.slice(index + 1, cssRule.length - 1);
+    selectorData = parseSelectorRulePart(selectorBuffer, extCssDoc);
+    if (selectorData.success) {
+      var _rawRuleData$rawStyle;
+      rawRuleData.selector = selectorData.selector.trim();
+      rawRuleData.ast = selectorData.ast;
+      rawRuleData.rawStyles = selectorData.stylesOfSelector;
+      const parsedStyles = parseStyleBlock(styleBlockBuffer);
+      (_rawRuleData$rawStyle = rawRuleData.rawStyles) === null || _rawRuleData$rawStyle === void 0 ? void 0 : _rawRuleData$rawStyle.push(...parsedStyles);
+      break;
+    } else {
+      continue;
+    }
+  }
+  if (((_rawRuleData$selector = rawRuleData.selector) === null || _rawRuleData$selector === void 0 ? void 0 : _rawRuleData$selector.length) === 0) {
+    throw new Error('Selector in not valid');
+  }
+  return rawRuleData;
+};
+const parseRules = (rawCssRules, extCssDoc) => {
+  const rawResults = createRawResultsMap();
+  const warnings = [];
+  const uniqueRules = [...new Set(rawCssRules.map(r => r.trim()))];
+  uniqueRules.forEach(rule => {
+    try {
+      saveToRawResults(rawResults, parseRule(rule, extCssDoc));
+    } catch (e) {
+      const errorMessage = getErrorMessage(e);
+      warnings.push(`'${rule}' - error: '${errorMessage}'`);
+    }
+  });
+  if (warnings.length > 0) {
+    logger.info(`Invalid rules:\n  ${warnings.join('\n  ')}`);
+  }
+  return combineRulesData(rawResults);
+};
+const REGEXP_DECLARATION_END = /[;}]/g;
+const REGEXP_DECLARATION_DIVIDER = /[;:}]/g;
+const REGEXP_NON_WHITESPACE = /\S/g;
+const restoreRuleAcc = context => {
+  context.rawRuleData = {
+    selector: ''
+  };
+};
+const parseSelectorPart = (context, extCssDoc) => {
+  let selector = context.selectorBuffer.trim();
+  if (selector.startsWith(AT_RULE_MARKER)) {
+    throw new Error(`${NO_AT_RULE_ERROR_PREFIX}: '${selector}'.`);
+  }
+  let removeSelectorData;
+  try {
+    removeSelectorData = parseRemoveSelector(selector);
+  } catch (e) {
+    logger.error(getErrorMessage(e));
+    throw new Error(`${REMOVE_ERROR_PREFIX.INVALID_REMOVE}: '${selector}'`);
+  }
+  if (context.nextIndex === -1) {
+    if (selector === removeSelectorData.selector) {
+      throw new Error(`${STYLE_ERROR_PREFIX.NO_STYLE_OR_REMOVE}: '${context.cssToParse}'`);
+    }
+    context.cssToParse = '';
+  }
+  let stylesOfSelector = [];
+  let success = false;
+  let ast;
+  try {
+    selector = removeSelectorData.selector;
+    stylesOfSelector = removeSelectorData.stylesOfSelector;
+    ast = extCssDoc.getSelectorAst(selector);
+    success = true;
+  } catch (e) {
+    success = false;
+  }
+  if (context.nextIndex > 0) {
+    context.cssToParse = context.cssToParse.slice(context.nextIndex);
+  }
+  return {
+    success,
+    selector,
+    ast,
+    stylesOfSelector
+  };
+};
+const parseUntilClosingBracket = (context, styles) => {
+  REGEXP_DECLARATION_DIVIDER.lastIndex = context.nextIndex;
+  let match = REGEXP_DECLARATION_DIVIDER.exec(context.cssToParse);
+  if (match === null) {
+    throw new Error(`${STYLE_ERROR_PREFIX.INVALID_STYLE}: '${context.cssToParse}'`);
+  }
+  let matchPos = match.index;
+  let matched = match[0];
+  if (matched === BRACKET.CURLY.RIGHT) {
+    const declarationChunk = context.cssToParse.slice(context.nextIndex, matchPos);
+    if (declarationChunk.trim().length === 0) {
+      if (styles.length === 0) {
+        throw new Error(`${STYLE_ERROR_PREFIX.NO_STYLE}: '${context.cssToParse}'`);
+      }
+    } else {
+      throw new Error(`${STYLE_ERROR_PREFIX.INVALID_STYLE}: '${context.cssToParse}'`);
+    }
+    return matchPos;
+  }
+  if (matched === COLON) {
+    const colonIndex = matchPos;
+    REGEXP_DECLARATION_END.lastIndex = colonIndex;
+    match = REGEXP_DECLARATION_END.exec(context.cssToParse);
+    if (match === null) {
+      throw new Error(`${STYLE_ERROR_PREFIX.UNCLOSED_STYLE}: '${context.cssToParse}'`);
+    }
+    matchPos = match.index;
+    matched = match[0];
+    const property = context.cssToParse.slice(context.nextIndex, colonIndex).trim();
+    if (property.length === 0) {
+      throw new Error(`${STYLE_ERROR_PREFIX.NO_PROPERTY}: '${context.cssToParse}'`);
+    }
+    const value = context.cssToParse.slice(colonIndex + 1, matchPos).trim();
+    if (value.length === 0) {
+      throw new Error(`${STYLE_ERROR_PREFIX.NO_VALUE}: '${context.cssToParse}'`);
+    }
+    styles.push({
+      property,
+      value
+    });
+    if (matched === BRACKET.CURLY.RIGHT) {
+      return matchPos;
+    }
+  }
+  context.cssToParse = context.cssToParse.slice(matchPos + 1);
+  context.nextIndex = 0;
+  return parseUntilClosingBracket(context, styles);
+};
+const parseNextStyle = context => {
+  const styles = [];
+  const styleEndPos = parseUntilClosingBracket(context, styles);
+  REGEXP_NON_WHITESPACE.lastIndex = styleEndPos + 1;
+  const match = REGEXP_NON_WHITESPACE.exec(context.cssToParse);
+  if (match === null) {
+    context.cssToParse = '';
+    return styles;
+  }
+  const matchPos = match.index;
+  context.cssToParse = context.cssToParse.slice(matchPos);
+  return styles;
+};
+const parseStylesheet = (rawStylesheet, extCssDoc) => {
+  const stylesheet = rawStylesheet.trim();
+  if (stylesheet.includes(`${SLASH}${ASTERISK}`) && stylesheet.includes(`${ASTERISK}${SLASH}`)) {
+    throw new Error(`${STYLE_ERROR_PREFIX.NO_COMMENT} in stylesheet: '${stylesheet}'`);
+  }
+  const context = {
+    isSelector: true,
+    nextIndex: 0,
+    cssToParse: stylesheet,
+    selectorBuffer: '',
+    rawRuleData: {
+      selector: ''
+    }
+  };
+  const rawResults = createRawResultsMap();
+  let selectorData;
+  while (context.cssToParse) {
+    if (context.isSelector) {
+      context.nextIndex = context.cssToParse.indexOf(BRACKET.CURLY.LEFT);
+      if (context.selectorBuffer.length === 0 && context.nextIndex === 0) {
+        throw new Error(`${STYLE_ERROR_PREFIX.NO_SELECTOR}: '${context.cssToParse}'`);
+      }
+      if (context.nextIndex === -1) {
+        context.selectorBuffer = context.cssToParse;
+      } else {
+        context.selectorBuffer += context.cssToParse.slice(0, context.nextIndex);
+      }
+      selectorData = parseSelectorPart(context, extCssDoc);
+      if (selectorData.success) {
+        context.rawRuleData.selector = selectorData.selector.trim();
+        context.rawRuleData.ast = selectorData.ast;
+        context.rawRuleData.rawStyles = selectorData.stylesOfSelector;
+        context.isSelector = false;
+        if (context.nextIndex === -1) {
+          saveToRawResults(rawResults, context.rawRuleData);
+          restoreRuleAcc(context);
+        } else {
+          context.nextIndex = 1;
+          context.selectorBuffer = '';
+        }
+      } else {
+        context.selectorBuffer += BRACKET.CURLY.LEFT;
+        context.cssToParse = context.cssToParse.slice(1);
+      }
+    } else {
+      var _context$rawRuleData$;
+      const parsedStyles = parseNextStyle(context);
+      (_context$rawRuleData$ = context.rawRuleData.rawStyles) === null || _context$rawRuleData$ === void 0 ? void 0 : _context$rawRuleData$.push(...parsedStyles);
+      saveToRawResults(rawResults, context.rawRuleData);
+      context.nextIndex = 0;
+      restoreRuleAcc(context);
+      context.isSelector = true;
+    }
+  }
+  return combineRulesData(rawResults);
+};
+const isNumber = arg => {
+  return typeof arg === 'number' && !Number.isNaN(arg);
+};
+const isSupported = typeof window.requestAnimationFrame !== 'undefined';
+const timeout = isSupported ? requestAnimationFrame : window.setTimeout;
+const deleteTimeout = isSupported ? cancelAnimationFrame : clearTimeout;
+const perf = isSupported ? performance : Date;
+const DEFAULT_THROTTLE_DELAY_MS = 150;
+class ThrottleWrapper {
+  constructor(context, callback, throttleMs) {
+    this.context = context;
+    this.callback = callback;
+    this.throttleDelayMs = throttleMs || DEFAULT_THROTTLE_DELAY_MS;
+    this.wrappedCb = this.wrappedCallback.bind(this);
+  }
+  wrappedCallback(timestamp) {
+    this.lastRunTime = isNumber(timestamp) ? timestamp : perf.now();
+    if (this.timeoutId) {
+      deleteTimeout(this.timeoutId);
+      delete this.timeoutId;
+    }
+    clearTimeout(this.timerId);
+    delete this.timerId;
+    if (this.callback) {
+      this.callback(this.context);
+    }
+  }
+  hasPendingCallback() {
+    return isNumber(this.timeoutId) || isNumber(this.timerId);
+  }
+  run() {
+    if (this.hasPendingCallback()) {
+      return;
+    }
+    if (typeof this.lastRunTime !== 'undefined') {
+      const elapsedTime = perf.now() - this.lastRunTime;
+      if (elapsedTime < this.throttleDelayMs) {
+        this.timerId = window.setTimeout(this.wrappedCb, this.throttleDelayMs - elapsedTime);
+        return;
+      }
+    }
+    this.timeoutId = timeout(this.wrappedCb);
+  }
+  static now() {
+    return perf.now();
+  }
+}
+const LAST_EVENT_TIMEOUT_MS = 10;
+const IGNORED_EVENTS = ['mouseover', 'mouseleave', 'mouseenter', 'mouseout'];
+const SUPPORTED_EVENTS = [
+'keydown', 'keypress', 'keyup',
+'auxclick', 'click', 'contextmenu', 'dblclick', 'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover', 'mouseout', 'mouseup', 'pointerlockchange', 'pointerlockerror', 'select', 'wheel'];
+const SAFARI_PROBLEMATIC_EVENTS = ['wheel'];
+class EventTracker {
+  constructor() {
+    _defineProperty(this, "getLastEventType", () => this.lastEventType);
+    _defineProperty(this, "getTimeSinceLastEvent", () => {
+      if (!this.lastEventTime) {
+        return null;
+      }
+      return Date.now() - this.lastEventTime;
+    });
+    this.trackedEvents = isSafariBrowser ? SUPPORTED_EVENTS.filter(event => !SAFARI_PROBLEMATIC_EVENTS.includes(event)) : SUPPORTED_EVENTS;
+    this.trackedEvents.forEach(eventName => {
+      document.documentElement.addEventListener(eventName, this.trackEvent, true);
+    });
+  }
+  trackEvent(event) {
+    this.lastEventType = event.type;
+    this.lastEventTime = Date.now();
+  }
+  isIgnoredEventType() {
+    const lastEventType = this.getLastEventType();
+    const sinceLastEventTime = this.getTimeSinceLastEvent();
+    return !!lastEventType && IGNORED_EVENTS.includes(lastEventType) && !!sinceLastEventTime && sinceLastEventTime < LAST_EVENT_TIMEOUT_MS;
+  }
+  stopTracking() {
+    this.trackedEvents.forEach(eventName => {
+      document.documentElement.removeEventListener(eventName, this.trackEvent, true);
+    });
+  }
+}
+const isEventListenerSupported = typeof window.addEventListener !== 'undefined';
+const observeDocument = (context, callback) => {
+  const shouldIgnoreMutations = mutations => {
+    return mutations.every(m => m.type === 'attributes');
+  };
+  if (natives.MutationObserver) {
+    context.domMutationObserver = new natives.MutationObserver(mutations => {
+      if (!mutations || mutations.length === 0) {
+        return;
+      }
+      const eventTracker = new EventTracker();
+      if (eventTracker.isIgnoredEventType() && shouldIgnoreMutations(mutations)) {
+        return;
+      }
+      context.eventTracker = eventTracker;
+      callback();
+    });
+    context.domMutationObserver.observe(document, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['id', 'class']
+    });
+  } else if (isEventListenerSupported) {
+    document.addEventListener('DOMNodeInserted', callback, false);
+    document.addEventListener('DOMNodeRemoved', callback, false);
+    document.addEventListener('DOMAttrModified', callback, false);
+  }
+};
+const disconnectDocument = (context, callback) => {
+  var _context$eventTracker;
+  if (context.domMutationObserver) {
+    context.domMutationObserver.disconnect();
+  } else if (isEventListenerSupported) {
+    document.removeEventListener('DOMNodeInserted', callback, false);
+    document.removeEventListener('DOMNodeRemoved', callback, false);
+    document.removeEventListener('DOMAttrModified', callback, false);
+  }
+  (_context$eventTracker = context.eventTracker) === null || _context$eventTracker === void 0 ? void 0 : _context$eventTracker.stopTracking();
+};
+const mainObserve = (context, mainCallback) => {
+  if (context.isDomObserved) {
+    return;
+  }
+  context.isDomObserved = true;
+  observeDocument(context, mainCallback);
+};
+const mainDisconnect = (context, mainCallback) => {
+  if (!context.isDomObserved) {
+    return;
+  }
+  context.isDomObserved = false;
+  disconnectDocument(context, mainCallback);
+};
+const CONTENT_ATTR_PREFIX_REGEXP = /^("|')adguard.+?/;
+const removeElement = (context, affectedElement) => {
+  const {
+    node
+  } = affectedElement;
+  affectedElement.removed = true;
+  const elementSelector = getElementSelectorPath(node);
+  const elementRemovalsCounter = context.removalsStatistic[elementSelector] || 0;
+  if (elementRemovalsCounter > MAX_STYLE_PROTECTION_COUNT) {
+    logger.error(`ExtendedCss: infinite loop protection for selector: '${elementSelector}'`);
+    return;
+  }
+  if (node.parentElement) {
+    node.parentElement.removeChild(node);
+    context.removalsStatistic[elementSelector] = elementRemovalsCounter + 1;
+  }
+};
+const setStyleToElement = (node, style) => {
+  if (!(node instanceof HTMLElement)) {
+    return;
+  }
+  Object.keys(style).forEach(prop => {
+    if (typeof node.style.getPropertyValue(prop.toString()) !== 'undefined') {
+      let value = style[prop];
+      if (!value) {
+        return;
+      }
+      if (prop === CONTENT_CSS_PROPERTY && value.match(CONTENT_ATTR_PREFIX_REGEXP)) {
+        return;
+      }
+      value = removeSuffix(value.trim(), '!important').trim();
+      node.style.setProperty(prop, value, 'important');
+    }
+  });
+};
+const isIAffectedElement = affectedElement => {
+  return 'node' in affectedElement && 'rules' in affectedElement && affectedElement.rules instanceof Array;
+};
+const isAffectedElement = affectedElement => {
+  return 'node' in affectedElement && 'originalStyle' in affectedElement && 'rules' in affectedElement && affectedElement.rules instanceof Array;
+};
+const applyStyle = (context, rawAffectedElement) => {
+  if (rawAffectedElement.protectionObserver) {
+    return;
+  }
+  let affectedElement;
+  if (context.beforeStyleApplied) {
+    if (!isIAffectedElement(rawAffectedElement)) {
+      throw new Error("Returned IAffectedElement should have 'node' and 'rules' properties");
+    }
+    affectedElement = context.beforeStyleApplied(rawAffectedElement);
+    if (!affectedElement) {
+      throw new Error("Callback 'beforeStyleApplied' should return IAffectedElement");
+    }
+  } else {
+    affectedElement = rawAffectedElement;
+  }
+  if (!isAffectedElement(affectedElement)) {
+    throw new Error("Returned IAffectedElement should have 'node' and 'rules' properties");
+  }
+  const {
+    node,
+    rules
+  } = affectedElement;
+  for (let i = 0; i < rules.length; i += 1) {
+    const rule = rules[i];
+    const selector = rule === null || rule === void 0 ? void 0 : rule.selector;
+    const style = rule === null || rule === void 0 ? void 0 : rule.style;
+    const debug = rule === null || rule === void 0 ? void 0 : rule.debug;
+    if (style) {
+      if (style[REMOVE_PSEUDO_MARKER] === PSEUDO_PROPERTY_POSITIVE_VALUE) {
+        removeElement(context, affectedElement);
+        return;
+      }
+      setStyleToElement(node, style);
+    } else if (!debug) {
+      throw new Error(`No style declaration in rule for selector: '${selector}'`);
+    }
+  }
+};
+const revertStyle = affectedElement => {
+  if (affectedElement.protectionObserver) {
+    affectedElement.protectionObserver.disconnect();
+  }
+  affectedElement.node.style.cssText = affectedElement.originalStyle;
+};
+class ExtMutationObserver {
+  constructor(protectionCallback) {
+    this.styleProtectionCount = 0;
+    this.observer = new natives.MutationObserver(mutations => {
+      if (!mutations.length) {
+        return;
+      }
+      this.styleProtectionCount += 1;
+      protectionCallback(mutations, this);
+    });
+  }
+  observe(target, options) {
+    if (this.styleProtectionCount < MAX_STYLE_PROTECTION_COUNT) {
+      this.observer.observe(target, options);
+    } else {
+      logger.error('ExtendedCss: infinite loop protection for style');
+    }
+  }
+  disconnect() {
+    this.observer.disconnect();
+  }
+}
+const PROTECTION_OBSERVER_OPTIONS = {
+  attributes: true,
+  attributeOldValue: true,
+  attributeFilter: ['style']
+};
+const createProtectionCallback = styles => {
+  const protectionCallback = (mutations, extObserver) => {
+    if (!mutations[0]) {
+      return;
+    }
+    const {
+      target
+    } = mutations[0];
+    extObserver.disconnect();
+    styles.forEach(style => {
+      setStyleToElement(target, style);
+    });
+    extObserver.observe(target, PROTECTION_OBSERVER_OPTIONS);
+  };
+  return protectionCallback;
+};
+const protectStyleAttribute = (node, rules) => {
+  if (!natives.MutationObserver) {
+    return null;
+  }
+  const styles = [];
+  rules.forEach(ruleData => {
+    const {
+      style
+    } = ruleData;
+    if (style) {
+      styles.push(style);
+    }
+  });
+  const protectionObserver = new ExtMutationObserver(createProtectionCallback(styles));
+  protectionObserver.observe(node, PROTECTION_OBSERVER_OPTIONS);
+  return protectionObserver;
+};
+const STATS_DECIMAL_DIGITS_COUNT = 4;
+class TimingStats {
+  constructor() {
+    this.appliesTimings = [];
+    this.appliesCount = 0;
+    this.timingsSum = 0;
+    this.meanTiming = 0;
+    this.squaredSum = 0;
+    this.standardDeviation = 0;
+  }
+  push(elapsedTimeMs) {
+    this.appliesTimings.push(elapsedTimeMs);
+    this.appliesCount += 1;
+    this.timingsSum += elapsedTimeMs;
+    this.meanTiming = this.timingsSum / this.appliesCount;
+    this.squaredSum += elapsedTimeMs * elapsedTimeMs;
+    this.standardDeviation = Math.sqrt(this.squaredSum / this.appliesCount - Math.pow(this.meanTiming, 2));
+  }
+}
+const beautifyTimingNumber = timestamp => {
+  return Number(timestamp.toFixed(STATS_DECIMAL_DIGITS_COUNT));
+};
+const beautifyTimings = rawTimings => {
+  return {
+    appliesTimings: rawTimings.appliesTimings.map(t => beautifyTimingNumber(t)),
+    appliesCount: beautifyTimingNumber(rawTimings.appliesCount),
+    timingsSum: beautifyTimingNumber(rawTimings.timingsSum),
+    meanTiming: beautifyTimingNumber(rawTimings.meanTiming),
+    standardDeviation: beautifyTimingNumber(rawTimings.standardDeviation)
+  };
+};
+const printTimingInfo = context => {
+  if (context.areTimingsPrinted) {
+    return;
+  }
+  context.areTimingsPrinted = true;
+  const timingsLogData = {};
+  context.parsedRules.forEach(ruleData => {
+    if (ruleData.timingStats) {
+      const {
+        selector,
+        style,
+        debug,
+        matchedElements
+      } = ruleData;
+      if (!style && !debug) {
+        throw new Error(`Rule should have style declaration for selector: '${selector}'`);
+      }
+      const selectorData = {
+        selectorParsed: selector,
+        timings: beautifyTimings(ruleData.timingStats)
+      };
+      if (style && style[REMOVE_PSEUDO_MARKER] === PSEUDO_PROPERTY_POSITIVE_VALUE) {
+        selectorData.removed = true;
+      } else {
+        selectorData.styleApplied = style || null;
+        selectorData.matchedElements = matchedElements;
+      }
+      timingsLogData[selector] = selectorData;
+    }
+  });
+  if (Object.keys(timingsLogData).length === 0) {
+    return;
+  }
+  logger.info('[ExtendedCss] Timings in milliseconds for %o:\n%o', window.location.href, timingsLogData);
+};
+const findAffectedElement = (affElements, domNode) => {
+  return affElements.find(affEl => affEl.node === domNode);
+};
+const applyRule = (context, ruleData) => {
+  const isDebuggingMode = !!ruleData.debug || context.debug;
+  let startTime;
+  if (isDebuggingMode) {
+    startTime = ThrottleWrapper.now();
+  }
+  const {
+    ast
+  } = ruleData;
+  const nodes = [];
+  try {
+    nodes.push(...selectElementsByAst(ast));
+  } catch (e) {
+    if (context.debug) {
+      logger.error(getErrorMessage(e));
+    }
+  }
+  nodes.forEach(node => {
+    let affectedElement = findAffectedElement(context.affectedElements, node);
+    if (affectedElement) {
+      affectedElement.rules.push(ruleData);
+      applyStyle(context, affectedElement);
+    } else {
+      const originalStyle = node.style.cssText;
+      affectedElement = {
+        node,
+        rules: [ruleData],
+        originalStyle,
+        protectionObserver: null
+      };
+      applyStyle(context, affectedElement);
+      context.affectedElements.push(affectedElement);
+    }
+  });
+  if (isDebuggingMode && startTime) {
+    const elapsedTimeMs = ThrottleWrapper.now() - startTime;
+    if (!ruleData.timingStats) {
+      ruleData.timingStats = new TimingStats();
+    }
+    ruleData.timingStats.push(elapsedTimeMs);
+  }
+  return nodes;
+};
+const applyRules = context => {
+  const newSelectedElements = [];
+  mainDisconnect(context, context.mainCallback);
+  context.parsedRules.forEach(ruleData => {
+    const nodes = applyRule(context, ruleData);
+    Array.prototype.push.apply(newSelectedElements, nodes);
+    if (ruleData.debug) {
+      ruleData.matchedElements = nodes;
+    }
+  });
+  let affLength = context.affectedElements.length;
+  while (affLength) {
+    const affectedElement = context.affectedElements[affLength - 1];
+    if (!affectedElement) {
+      break;
+    }
+    if (!newSelectedElements.includes(affectedElement.node)) {
+      revertStyle(affectedElement);
+      context.affectedElements.splice(affLength - 1, 1);
+    } else if (!affectedElement.removed) {
+      if (!affectedElement.protectionObserver) {
+        affectedElement.protectionObserver = protectStyleAttribute(affectedElement.node, affectedElement.rules);
+      }
+    }
+    affLength -= 1;
+  }
+  mainObserve(context, context.mainCallback);
+  printTimingInfo(context);
+};
+const APPLY_RULES_DELAY = 150;
+class ExtendedCss {
+  constructor(configuration) {
+    if (!isBrowserSupported()) {
+      logger.error('Browser is not supported by ExtendedCss');
+    }
+    if (!configuration) {
+      throw new Error('ExtendedCss configuration should be provided.');
+    }
+    this.context = {
+      beforeStyleApplied: configuration.beforeStyleApplied,
+      debug: false,
+      affectedElements: [],
+      isDomObserved: false,
+      removalsStatistic: {},
+      parsedRules: [],
+      mainCallback: () => {}
+    };
+    if (!configuration.styleSheet && !configuration.cssRules) {
+      throw new Error("ExtendedCss configuration should have 'styleSheet' or 'cssRules' defined.");
+    }
+    if (configuration.styleSheet) {
+      try {
+        this.context.parsedRules.push(...parseStylesheet(configuration.styleSheet, extCssDocument));
+      } catch (e) {
+        throw new Error(`Pass the rules as configuration.cssRules since configuration.styleSheet cannot be parsed because of: '${getErrorMessage(e)}'`);
+      }
+    }
+    if (configuration.cssRules) {
+      this.context.parsedRules.push(...parseRules(configuration.cssRules, extCssDocument));
+    }
+    this.context.debug = configuration.debug || this.context.parsedRules.some(ruleData => {
+      return ruleData.debug === DEBUG_PSEUDO_PROPERTY_GLOBAL_VALUE;
+    });
+    this.applyRulesScheduler = new ThrottleWrapper(this.context, applyRules, APPLY_RULES_DELAY);
+    this.context.mainCallback = this.applyRulesScheduler.run.bind(this.applyRulesScheduler);
+    if (this.context.beforeStyleApplied && typeof this.context.beforeStyleApplied !== 'function') {
+      throw new Error(`Invalid configuration. Type of 'beforeStyleApplied' should be a function, received: '${typeof this.context.beforeStyleApplied}'`);
+    }
+    this.applyRulesCallbackListener = () => {
+      applyRules(this.context);
+    };
+  }
+  init() {
+    nativeTextContent.setGetter();
+  }
+  apply() {
+    applyRules(this.context);
+    if (document.readyState !== 'complete') {
+      document.addEventListener('DOMContentLoaded', this.applyRulesCallbackListener, false);
+    }
+  }
+  dispose() {
+    mainDisconnect(this.context, this.context.mainCallback);
+    this.context.affectedElements.forEach(el => {
+      revertStyle(el);
+    });
+    document.removeEventListener('DOMContentLoaded', this.applyRulesCallbackListener, false);
+  }
+  getAffectedElements() {
+    return this.context.affectedElements;
+  }
+  static query(selector) {
+    let noTiming = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    if (typeof selector !== 'string') {
+      throw new Error('Selector should be defined as a string.');
+    }
+    const start = ThrottleWrapper.now();
+    try {
+      return extCssDocument.querySelectorAll(selector);
+    } finally {
+      const end = ThrottleWrapper.now();
+      if (!noTiming) {
+        logger.info(`[ExtendedCss] Elapsed: ${Math.round((end - start) * 1000)} μs.`);
+      }
+    }
+  }
+  static validate(inputSelector) {
+    try {
+      const {
+        selector
+      } = parseRemoveSelector(inputSelector);
+      ExtendedCss.query(selector);
+      return {
+        ok: true,
+        error: null
+      };
+    } catch (e) {
+      const error = `Error: Invalid selector: '${inputSelector}' -- ${getErrorMessage(e)}`;
+      return {
+        ok: false,
+        error
+      };
+    }
+  }
+}
 
 /**
  * Utils class
@@ -6200,7 +6089,6 @@ var HitsStorage = /** @class */ (function () {
     return HitsStorage;
 }());
 
-/* eslint-disable no-param-reassign */
 /**
  * Class represents collecting css style hits process
  *
@@ -6390,6 +6278,11 @@ var CssHitsCounter = /** @class */ (function () {
         if (this.observer) {
             this.observer.disconnect();
         }
+        /**
+         * To avoid cases where two css hits counters try to append and remove the
+         * same elements one after the other, we do not append already met nodes.
+         */
+        var probesWeakSet = new WeakSet();
         var timeoutId = null;
         this.observer = new MutationObserver((function (mutationRecords) {
             // Collect probe elements, count them, then remove from their targets
@@ -6407,10 +6300,18 @@ var CssHitsCounter = /** @class */ (function () {
                     }
                     var target = mutationRecord.target;
                     if (!node.parentNode && target) {
+                        // If this node has been appended to the DOM and counted once, do not add
+                        // it again.
+                        if (probesWeakSet.has(node)) {
+                            return;
+                        }
                         // Most likely this is a "probe" element that was added and then
                         // immediately removed from DOM.
                         // We re-add it and check if any rule matched it
                         probeElements.push(node);
+                        // To ensure that this "probe" node has only been added once to the DOM,
+                        // we add it to the weak set.
+                        probesWeakSet.add(node);
                         // CSS rules could be applied to the nodes inside probe element
                         // that's why we get all child elements of added node
                         ElementUtils.appendChildren(node, childrenOfProbeElements);

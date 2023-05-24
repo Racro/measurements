@@ -275,13 +275,13 @@
     "message": "版本",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑：強調有第三方腳本的一行",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "腳本",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑：強調有第三方框架的一行",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "框架",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "建立",
@@ -400,7 +400,7 @@
     "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
   },
   "settingsAdvanced": {
-    "message": "進階設定",
+    "message": "進階",
     "description": "Section for controlling advanced-user settings"
   },
   "settingsAdvancedSynopsis": {
@@ -972,7 +972,7 @@
     "description": "An entry in the widget used to select the type of issue"
   },
   "supportS6Select1Option3": {
-    "message": "會偵測到您已安裝 uBlock Origin",
+    "message": "偵測到 uBlock Origin",
     "description": "An entry in the widget used to select the type of issue"
   },
   "supportS6Select1Option4": {
@@ -1115,6 +1115,10 @@
     "message": "關閉",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "頁面已阻擋",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock Origin 已防止下列頁面載入：",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "關閉此視窗",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "不再針對此網站作出警告",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "停止針對 {{hostname}} 的嚴格封鎖",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "永久",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "繼續載入",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "匯出至雲端儲存空間",
@@ -1203,6 +1215,10 @@
     "message": "暫時允許大型媒體元素",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "檢視原始碼…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "輸入快捷鍵",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "點擊以載入",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "錯誤：{{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "無法在瀏覽器啟動的時候正確過濾。\n請重新載入頁面來確保過濾正確。",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "此條目須為最後一個",

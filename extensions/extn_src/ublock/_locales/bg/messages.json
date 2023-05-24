@@ -275,13 +275,13 @@
     "message": "Версия",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Открояване на редовете, в които има скриптове на 3-ти страни",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "скрипт",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Открояване на редовете, в които има рамки на 3-ти страни",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "рамка",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Създаване",
@@ -1040,7 +1040,7 @@
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
-    "message": "Изнасяне във файл",
+    "message": "Изнасяне във файл...",
     "description": "Text for button to create a backup of all settings"
   },
   "aboutBackupFilename": {
@@ -1115,6 +1115,10 @@
     "message": "изключен",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Страницата е блокирана",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock Origin предотврати зареждането на страницата:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Затваряне на прозореца",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Без повторно предупреждение за този сайт",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Изключване на строгото блокиране за {{hostname}}",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Постоянно",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Продължаване",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Изнасяне в облачно хранилище",
@@ -1203,6 +1215,10 @@
     "message": "Временно разрешаване на големи мултимедийни елементи",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "Преглед на изходния код…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Натиснете клавиши",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Щракнете, за да се зареди",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Грешки: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Не може да се филтрира правилно при стартиране на браузъра.\nПрезаредете страницата, за да се уверите, че филтрирането е правилно.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "Това поле трябва да бъде последното",

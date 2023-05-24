@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "ABP Atlama Önleyici Süzgeç Listesi"
   },
-  "common_feature_cookies_title": {
-    "message": "Çerez uyarılarını engelle"
+  "common_feature_annoyances_title": {
+    "message": "Daha fazla dikkat dağıtıcı öge engelleyin"
   },
   "common_feature_malware_title": {
     "message": "Kötücül Yazılımı Engelle"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Engelle"
+  },
+  "composer_block_reload": {
+    "message": "Engelle & sayfayı yeniden yükle"
   },
   "composer_cancel": {
     "message": "Vazgeç"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Beta"
   },
   "options_builtin_filterList_add": {
     "message": "Yerleşik süzgeç listeleri ekleyin"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "Katkıda bulun"
   },
+  "options_free_filters_header": {
+    "message": "Ücretsiz özellikler"
+  },
   "options_general_description": {
     "message": "Adblock Plus'ın sayfalarda ne gösterip ne gizleyeceğini belirleyin"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Ayarlar"
   },
+  "options_premium_manage": {
+    "message": "Aboneliğimi yönet"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Reklam engelleme deneyiminizi özelleştirin ve geliştirin! <a0>Daha fazla bilgi edinin</a0>"
+  },
   "options_privacy_header": {
     "message": "Gizlilik ve güvenlik"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Bizi değerlendirin"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "Bu filtreyi ekleyerek, çerezler hakkında bilgilendirilme ve bireysel web sitelerindeki çerez ayarlarını düzenleme hakkınızdan feragat etmiş olursunuz. Lütfen bazı web sitelerinin varsayılan olarak sizi izleyebileceğini unutmayın. Daha fazla bilgiye şu adresten ulaşabilirsiniz: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Yüzen videoları, bülten açılır pencerelerini, anket taleplerini ve site bildirimlerini engelleyin."
   },
-  "options_recommended_filters_header": {
-    "message": "Önerilen filtreler"
+  "options_recommended_notifications_description": {
+    "message": "Web sitelerinin, çevrimiçi etkinliğinizi izleyebilecek anlık bildirimlere izin vermeniz için istek göndermesine son verin."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Web sitelerinin, çevrim içi etkinliğinizi izleyebilecek anlık bildirimlere izin vermeniz konusunda gönderdiği isteklerini durdurun."
+  "options_recommended_privacy_description": {
+    "message": "Gizliliğinizi, ziyaret ettiğiniz web sitelerindeki çevrimiçi aktivitenizi izleyebilecek bilinen varlıklardan koruyun."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Gizliliğinizi, ziyaret ettiğiniz web sitelerindeki çevrim içi etkinliğinizi izleyebilecek bilinen varlıklardan koruyun."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "Ziyaret ettiğiniz web sitelerindeki sosyal medya simgeleri, bunlara tıklamadığınızda bile, sosyal medya ağlarının, gezinme alışkanlıklarınıza göre sizin bir profilinizi oluşturmalarına olanak tanır. Bu simgeleri gizlemek profilinizi koruyabilir."
+  "options_recommended_social_description": {
+    "message": "Sosyal medya ağlarının, gezinme alışkanlıklarınıza bakarak size ait profil oluşturmasını önleyin."
   },
   "options_report_bug": {
     "message": "Hataya mı rastladınız? <a>Sorunu bize bildirin.</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "Tamam, anladım"
   },
+  "options_upgrade_button": {
+    "message": "Yükselt"
+  },
   "devtools_action_block": {
     "message": "Öğeyi engelle"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Tür"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "CSS seçici çok kısa. Lütfen daha uzun bir seçici kullanın ya da bu öge gizleme filtresi için en az bir alan belirtin."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Etkin alan belirtilmedi. Lütfen, bu genişletilmiş öge gizleme filtresi için en az bir alan adı belirtin."
   },
@@ -638,7 +656,7 @@
     "message": "Geçersiz düzenli ifade (söz dizimi standarda uygun değil)."
   },
   "filter_slow": {
-    "message": "Hızlı bir süzgeç için, lütfen yöntemin uzunluğunu kontrol edin ve kurallı ifade içermediğinden emin olun."
+    "message": "Filtre yavaş. Lütfen örüntünün uzunluğunu kontrol edin ve düzenli bir ifade içermediğinden emin olun."
   },
   "filter_snippet_nodomain": {
     "message": "Etkin alan belirtilmedi. Lütfen, bu parçacık filtresi için en az bir alan adı belirtin."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "URL örüntüsü çok kısa. Lütfen daha uzun bir örüntü kullanın ya da bu filtre için en az bir alan belirtin."
+  },
   "line": {
     "message": "$number$. satır: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Maksimum filtre sayısına ulaştınız. Lütfen, yeni filtre eklemeden önce aynı türden başka filtreleri kaldırın."
   },
   "unexpected_filter_list_header": {
     "message": "Filtre listesi başlıkları yalnızca indirilebilir filtre listelerinde desteklenir."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "Bizimle iletişimde kalın!"
   },
+  "idle_header": {
+    "message": "Bu sayfada engellenecek bir şey yok!"
+  },
   "options_refresh": {
     "message": "Tazele"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Bildirimleri gösterme"
+  },
+  "premium_upgrade": {
+    "message": "Yükselt"
   },
   "refresh_this_page": {
     "message": "Bu sayfayı yenile"

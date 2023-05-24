@@ -20,14 +20,15 @@ _src_pages_blocking_pages__WEBPACK_IMPORTED_MODULE_0__/* .adBlocked.init */ .U.i
 /* harmony export */   "Oi": () => (/* binding */ FULLSCREEN_USER_RULES_EDITOR),
 /* harmony export */   "Qp": () => (/* binding */ NOTIFIER_TYPES),
 /* harmony export */   "TJ": () => (/* binding */ NAVIGATION_TAGS),
+/* harmony export */   "VC": () => (/* binding */ CUSTOM_FILTERS_GROUP_DISPLAY_NUMBER),
 /* harmony export */   "XR": () => (/* binding */ TRUSTED_TAG),
 /* harmony export */   "XS": () => (/* binding */ WASTE_CHARACTERS),
 /* harmony export */   "du": () => (/* binding */ FILTERING_LOG),
 /* harmony export */   "gu": () => (/* binding */ ANTIBANNER_FILTERS_ID),
+/* harmony export */   "ih": () => (/* binding */ CUSTOM_FILTERS_START_ID),
 /* harmony export */   "nn": () => (/* binding */ SCROLLBAR_WIDTH),
 /* harmony export */   "oK": () => (/* binding */ MESSAGE_TYPES)
 /* harmony export */ });
-/* unused harmony exports CUSTOM_FILTERS_GROUP_DISPLAY_NUMBER, CUSTOM_FILTERS_START_ID */
 /**
  * Filter ids used in the code on the background page and filtering log page
  */

@@ -43,7 +43,8 @@
   height: 1px;
   margin: -1px;
   padding: 0px;
-  border: 0px; }
+  border: 0px;
+}
 
 :root {
   --background-color-error: #F7DDE1;
@@ -69,6 +70,9 @@
   --color-error: var(--color-brand-primary);
   --color-link: #0797E1;
   --color-info: #0797E1;
+  --color-premium: #EDA51E;
+  --color-premium-hover: #EB9B05;
+  --font-size-heavy: 20px;
   --font-size-big: 17px;
   --font-size-medium: 16px;
   --font-size-primary: 13px;
@@ -77,7 +81,8 @@
   --margin-secondary: calc(var(--margin-primary) / 2);
   --padding-primary: 16px;
   --padding-secondary: calc(var(--padding-primary) / 2);
-  --primary-outline: var(--border-color-outline) dotted 1px; }
+  --primary-outline: var(--border-color-outline) dotted 1px;
+}
 
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
@@ -101,7 +106,8 @@ io-steps {
   margin: 0;
   margin-top: 2rem;
   padding: 0;
-  justify-content: space-between; }
+  justify-content: space-between;
+}
 
 /* this element is used only to decorate via horizontal line */
 io-steps::before {
@@ -113,12 +119,14 @@ io-steps::before {
   background-color: #bcbcbc;
   font-size: 1px;
   line-height: 1px;
-  content: " "; }
+  content: " ";
+}
 
-html:not([dir="rtl"]) io-steps button,
-html[dir="rtl"] io-steps button {
+html:not([dir=rtl]) io-steps button,
+html[dir=rtl] io-steps button {
   margin: initial;
-  padding: initial; }
+  padding: initial;
+}
 
 io-steps button {
   min-width: 80px;
@@ -128,7 +136,8 @@ io-steps button {
   background: #f3f3f3;
   font-size: small;
   font-weight: initial;
-  text-transform: inherit; }
+  text-transform: inherit;
+}
 
 io-steps button::before {
   display: block;
@@ -142,26 +151,32 @@ io-steps button::before {
   font-size: 0.8rem;
   font-weight: 400;
   line-height: 24px;
-  content: attr(data-value); }
+  content: attr(data-value);
+}
 
 io-steps button:disabled::before {
-  background-color: #9b9b9b; }
+  background-color: #9b9b9b;
+}
 
 io-steps button:disabled {
-  color: #d8d8d8; }
+  color: #d8d8d8;
+}
 
 io-steps button.completed::before {
   content: "✔";
-  animation: io-steps-completed 0.3s ease-in-out; }
+  animation: io-steps-completed 0.3s ease-in-out;
+}
 
 @keyframes io-steps-completed {
   0% {
-    content: " "; }
+    content: " ";
+  }
   30% {
     font-size: 0;
     content: "✔";
-    transform: scale(0.5); } }
-
+    transform: scale(0.5);
+  }
+}
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
  * Copyright (C) 2006-present eyeo GmbH
@@ -182,23 +197,27 @@ io-highlighter,
 io-highlighter *,
 io-highlighter *::before,
 io-highlighter *::after {
-  box-sizing: border-box; }
+  box-sizing: border-box;
+}
 
 io-highlighter {
   display: block;
   position: relative;
-  border: 1px solid #979797; }
+  border: 1px solid #979797;
+}
 
 io-highlighter .split {
   display: flex;
-  height: 100%; }
+  height: 100%;
+}
 
 io-highlighter .options {
   width: 95px;
   padding: 12px;
   border-right: 1px solid #979797;
   color: #4A4A4A;
-  background-color: #f1f1f1; }
+  background-color: #f1f1f1;
+}
 
 io-highlighter canvas {
   width: 100%;
@@ -206,22 +225,28 @@ io-highlighter canvas {
   user-select: none;
   pointer-events: none;
   flex-grow: 1;
-  touch-action: none; }
+  touch-action: none;
+}
 
 io-highlighter[drawing] canvas {
-  pointer-events: all; }
+  pointer-events: all;
+}
 
 io-highlighter .options .highlight {
-  background-image: url(icons/highlight.svg?off#off); }
+  background-image: url(icons/highlight.svg?off#off);
+}
 
-io-highlighter[drawing="highlight"] .options .highlight {
-  background-image: url(icons/highlight.svg?on#on); }
+io-highlighter[drawing=highlight] .options .highlight {
+  background-image: url(icons/highlight.svg?on#on);
+}
 
 io-highlighter .options .hide {
-  background-image: url(icons/hide.svg?off#off); }
+  background-image: url(icons/hide.svg?off#off);
+}
 
-io-highlighter[drawing="hide"] .options .hide {
-  background-image: url(icons/hide.svg?on#on); }
+io-highlighter[drawing=hide] .options .hide {
+  background-image: url(icons/hide.svg?on#on);
+}
 
 io-highlighter .options .highlight,
 io-highlighter .options .hide {
@@ -237,12 +262,14 @@ io-highlighter .options .hide {
   background-repeat: no-repeat;
   background-position: center 12px;
   font-size: 0.7rem;
-  word-break: break-all; }
+  word-break: break-all;
+}
 
-io-highlighter[drawing="highlight"] .options .highlight,
-io-highlighter[drawing="hide"] .options .hide {
+io-highlighter[drawing=highlight] .options .highlight,
+io-highlighter[drawing=hide] .options .hide {
   color: #FFF;
-  background-color: #9b9b9b; }
+  background-color: #9b9b9b;
+}
 
 io-highlighter .closer {
   display: block;
@@ -252,11 +279,13 @@ io-highlighter .closer {
   border-radius: 24px;
   background-color: #4a4a4a;
   cursor: pointer;
-  transform: translateX(-12px) translateY(-12px); }
+  transform: translateX(-12px) translateY(-12px);
+}
 
 io-highlighter .closer img {
   width: 12px;
-  margin: 6px; }
+  margin: 6px;
+}
 
 /*
  * This file is part of Adblock Plus <https://adblockplus.org/>,
@@ -274,12 +303,14 @@ io-highlighter .closer img {
  * You should have received a copy of the GNU General Public License
  * along with Adblock Plus.  If not, see <http://www.gnu.org/licenses/>.
  */
-html:not([dir="rtl"]) io-highlighter .options button,
-html[dir="rtl"] io-highlighter .options button {
-  margin: 0; }
+html:not([dir=rtl]) io-highlighter .options button,
+html[dir=rtl] io-highlighter .options button {
+  margin: 0;
+}
 
 html {
-  font-size: 16px; }
+  font-size: 16px;
+}
 
 body {
   display: flex;
@@ -288,31 +319,37 @@ body {
   color: #494949;
   background-color: #F3F3F3;
   font-size: 1.25rem;
-  align-items: center; }
+  align-items: center;
+}
 
 input,
 button {
-  font-family: inherit; }
+  font-family: inherit;
+}
 
 header,
 main,
 footer {
-  width: 46.3rem; }
+  width: 46.3rem;
+}
 
 header {
   display: flex;
   flex-direction: column;
   margin-top: 1.2rem;
   margin-bottom: 2rem;
-  align-items: stretch; }
+  align-items: stretch;
+}
 
 header > .logo {
   display: flex;
   flex-direction: column;
-  align-items: center; }
+  align-items: center;
+}
 
 #logo {
-  height: 2.8rem; }
+  height: 2.8rem;
+}
 
 .logo > p {
   margin: 0;
@@ -321,79 +358,97 @@ header > .logo {
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.8rem;
-  text-transform: uppercase; }
+  text-transform: uppercase;
+}
 
 main {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   padding: 1.4rem;
-  flex-grow: 1; }
+  flex-grow: 1;
+}
 
 main,
 #other-issues,
 .modalContent {
   border: 1px solid #CDCDCD;
-  background-color: #FFF; }
+  background-color: #FFF;
+}
 
 .page:not([hidden]) {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; }
+  flex-grow: 1;
+}
 
 .page > p {
-  font-size: 0.9rem; }
+  font-size: 0.9rem;
+}
 
 main h1 {
   margin: 0;
   padding: 0;
-  font-size: 1.5rem; }
+  font-size: 1.5rem;
+}
 
 #typeSelectorGroup {
-  font-size: 1rem; }
+  font-size: 1rem;
+}
 
 #typeSelectorGroup > label {
-  font-weight: 700; }
+  font-weight: 700;
+}
 
 #typeSelectorGroup > p {
   margin-top: 0.5em;
   margin-bottom: 1em;
-  font-size: 0.9rem; }
+  font-size: 0.9rem;
+}
 
 #typeSelectorGroup > p:first-of-type {
-  margin-bottom: 30px; }
+  margin-bottom: 30px;
+}
 
-html:not([dir="rtl"]) #typeSelectorGroup > p {
-  margin-left: 30px; }
+html:not([dir=rtl]) #typeSelectorGroup > p {
+  margin-left: 30px;
+}
 
-html[dir="rtl"] #typeSelectorGroup > p {
-  margin-right: 30px; }
+html[dir=rtl] #typeSelectorGroup > p {
+  margin-right: 30px;
+}
 
 #anonymousSubmissionContainer {
-  margin-top: 0.5em; }
+  margin-top: 0.5em;
+}
 
 #anonymousSubmissionWarning,
 #error {
   margin-top: 0.3em;
   margin-bottom: 1em;
-  color: var(--color-error); }
+  color: var(--color-error);
+}
 
 #comment {
   min-height: 2em;
-  flex-grow: 1; }
+  flex-grow: 1;
+}
 
 #sendingProgressContainer:not([hidden]) {
   display: flex;
   flex-direction: row;
   margin-top: 2rem;
-  justify-content: center; }
+  justify-content: center;
+}
 
 #result {
   border-width: 0px;
-  flex-grow: 1; }
+  flex-grow: 1;
+}
 
 #showData {
-  margin: 0; }
+  margin: 0;
+}
 
 #showDataValue {
   overflow: auto;
@@ -403,56 +458,67 @@ html[dir="rtl"] #typeSelectorGroup > p {
   padding: 20px;
   border: 1px solid #CCC;
   font-size: 1rem;
-  flex-grow: 1; }
+  flex-grow: 1;
+}
 
 footer,
 footer > div {
   box-sizing: border-box;
-  padding-bottom: 16px; }
+  padding-bottom: 16px;
+}
 
 footer > div:not(#other-issues) {
   display: flex;
   flex-direction: row;
-  margin-top: 2rem; }
+  margin-top: 2rem;
+}
 
 footer > div:not(#other-issues) > div {
   flex-grow: 1;
-  align-self: flex-end; }
+  align-self: flex-end;
+}
 
 #privacyPolicy,
 #other-issues {
-  font-size: 1rem; }
+  font-size: 1rem;
+}
 
 #other-issues {
   margin-top: 1rem;
   padding-top: 16px;
   background-image: url(icons/info-big.svg);
-  background-repeat: no-repeat; }
+  background-repeat: no-repeat;
+}
 
-html[dir="ltr"] #other-issues {
+html[dir=ltr] #other-issues {
   padding-left: 72px;
-  background-position: 24px center; }
+  background-position: 24px center;
+}
 
-html[dir="rtl"] #other-issues {
+html[dir=rtl] #other-issues {
   padding-right: 72px;
-  background-position: calc(100% - 24px) center; }
+  background-position: calc(100% - 24px) center;
+}
 
 #other-issues a,
 #other-issues a:visited {
   font-weight: 600;
-  text-decoration: none; }
+  text-decoration: none;
+}
 
 #privacyPolicy,
 #privacyPolicy:visited,
 #other-issues a,
 #other-issues a:visited {
-  color: #0797E1; }
+  color: #0797E1;
+}
 
 /*
  * Generic styles
  */
-[data-invisible="true"] {
-  visibility: hidden; }
+[data-invisible=true] {
+  visibility: hidden;
+}
 
 button {
   padding: 0.8rem 1.2rem;
@@ -462,31 +528,39 @@ button {
   text-decoration: none;
   text-transform: uppercase;
   cursor: pointer;
-  flex-shrink: 0; }
+  flex-shrink: 0;
+}
 
-html:not([dir="rtl"]) button {
-  margin-left: 0.5rem; }
+html:not([dir=rtl]) button {
+  margin-left: 0.5rem;
+}
 
-html[dir="rtl"] button {
-  margin-right: 0.5rem; }
+html[dir=rtl] button {
+  margin-right: 0.5rem;
+}
 
 button.primary:not(.icon) {
   border: 0px;
   color: #FFF;
-  background-color: #0797E1; }
+  background-color: #0797E1;
+}
 
 button.primary:not([disabled]):not(.icon):hover {
-  box-shadow: inset 0 0 0 3px #005D80; }
+  box-shadow: inset 0 0 0 3px #005D80;
+}
 
 button.primary[disabled]:not(.icon) {
-  background-color: #5CBCE1; }
+  background-color: #5CBCE1;
+}
 
 button.secondary {
   border: 1px solid #0797E1;
-  color: #0797E1; }
+  color: #0797E1;
+}
 
 button.secondary:hover {
-  box-shadow: inset 0 0 0 2px #0797E1; }
+  box-shadow: inset 0 0 0 2px #0797E1;
+}
 
 button.link {
   padding: 0.2rem;
@@ -495,27 +569,32 @@ button.link {
   background-color: transparent;
   font-weight: 400;
   text-decoration: underline;
-  text-transform: none; }
+  text-transform: none;
+}
 
 button.link:hover {
-  color: #5CBCE1; }
+  color: #5CBCE1;
+}
 
 button.link:disabled,
 button.link:disabled:hover {
   color: #ccc;
-  cursor: default; }
+  cursor: default;
+}
 
-input[type="text"],
-input[type="email"],
+input[type=text],
+input[type=email],
 textarea {
   border: 2px solid #0797E1;
-  font-size: 1.25rem; }
+  font-size: 1.25rem;
+}
 
-input[type="email"]:invalid {
-  border-color: var(--color-error); }
+input[type=email]:invalid {
+  border-color: var(--color-error);
+}
 
-input[type="checkbox"],
-input[type="radio"] {
+input[type=checkbox],
+input[type=radio] {
   display: inline-block;
   width: 18px;
   height: 18px;
@@ -525,22 +604,28 @@ input[type="radio"] {
   background-color: transparent;
   background-repeat: no-repeat;
   -webkit-appearance: none;
-  -moz-appearance: none; }
+  -moz-appearance: none;
+}
 
-input[type="checkbox"] {
-  background-image: url(icons/checkbox.svg?off#off); }
+input[type=checkbox] {
+  background-image: url(icons/checkbox.svg?off#off);
+}
 
-input[type="checkbox"]:checked {
-  background-image: url(icons/checkbox.svg?on#on); }
+input[type=checkbox]:checked {
+  background-image: url(icons/checkbox.svg?on#on);
+}
 
-input[type="radio"] {
-  background-image: url(icons/radio.svg?normal#normal); }
+input[type=radio] {
+  background-image: url(icons/radio.svg?normal#normal);
+}
 
-input[type="radio"]:hover {
-  background-image: url(icons/radio.svg?hover#hover); }
+input[type=radio]:hover {
+  background-image: url(icons/radio.svg?hover#hover);
+}
 
-input[type="radio"]:checked {
-  background-image: url(icons/radio.svg?selected#selected); }
+input[type=radio]:checked {
+  background-image: url(icons/radio.svg?selected#selected);
+}
 
 .modal:not([hidden]) {
   display: flex;
@@ -551,7 +636,8 @@ input[type="radio"]:checked {
   bottom: 0;
   left: 0;
   padding: 5rem;
-  background-color: rgba(0, 0, 0, 0.5); }
+  background-color: rgba(0, 0, 0, 0.5);
+}
 
 .modalContent {
   display: flex;
@@ -559,10 +645,12 @@ input[type="radio"]:checked {
   flex-direction: column;
   padding: 2rem;
   flex-grow: 1;
-  align-items: flex-end; }
+  align-items: flex-end;
+}
 
-[aria-hidden="true"] {
-  display: none !important; }
+[aria-hidden=true] {
+  display: none !important;
+}
 
 #notification {
   display: flex;
@@ -572,46 +660,58 @@ input[type="radio"]:checked {
   opacity: 0.8;
   color: #4A4A4A;
   background-color: #d8d8d8;
-  font-size: 1rem; }
+  font-size: 1rem;
+}
 
 #notification-text {
   text-align: center;
-  flex: 1; }
+  flex: 1;
+}
 
 .icon {
   padding: 0px;
   border: 0px;
-  background-color: transparent; }
+  background-color: transparent;
+}
 
 .icon:hover {
-  box-shadow: none; }
+  box-shadow: none;
+}
 
 .icon::before {
   display: block;
   border: 0.2rem solid transparent;
   background-repeat: no-repeat;
-  content: ""; }
+  content: "";
+}
 
 .close.icon::before {
   width: 1rem;
-  height: 1rem; }
+  height: 1rem;
+}
 
 .icon.close.tertiary::before {
-  background-image: url(icons/close.svg?tertiary#tertiary); }
+  background-image: url(icons/close.svg?tertiary#tertiary);
+}
 
 .icon.close.tertiary:hover::before {
-  background-image: url(icons/close.svg?tertiary-hover#tertiary-hover); }
+  background-image: url(icons/close.svg?tertiary-hover#tertiary-hover);
+}
 
-body[data-page="commentPage"] #continue {
-  display: none; }
+body[data-page=commentPage] #continue {
+  display: none;
+}
 
 #commentPage > label {
   font-size: 1rem;
-  font-weight: 700; }
+  font-weight: 700;
+}
 
 #anonymousSubmissionContainer {
-  font-size: 0.9rem; }
+  font-size: 0.9rem;
+}
 
-input[type="checkbox"],
-input[type="radio"] {
-  vertical-align: top; }
+input[type=checkbox],
+input[type=radio] {
+  vertical-align: top;
+}

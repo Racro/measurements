@@ -1,7 +1,7 @@
 /*
  * NoScript Commons Library
  * Reusable building blocks for cross-browser security/privacy WebExtensions.
- * Copyright (C) 2020-2021 Giorgio Maone <https://maone.net>
+ * Copyright (C) 2020-2023 Giorgio Maone <https://maone.net>
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -22,17 +22,60 @@ var PlaceHolder = (() => {
   const HANDLERS = new Map();
   const CLASS_NAME = "__NoScript_PlaceHolder__ __NoScript_Theme__";
   const SELECTOR = `a.${CLASS_NAME.split(/\s+/).join('.')}`;
-  let checkStyle = async () => {
+
+  let checkStyle = () => {
     checkStyle = () => {};
     if (!ns.embeddingDocument) return;
     let replacement = document.querySelector(SELECTOR);
     if (!replacement) return;
     if (window.getComputedStyle(replacement, null).opacity !== "0.8") {
-      let sheets = ["/common/common.css", "/content/content.css"];
-      document.head.appendChild(createHTMLElement("style")).textContent =
-        ["/common/common.css", "/content/content.css"]
-          .map(async sheet => await (await fetch(browser.runtime.getURL(sheet))).text())
-          .join("\n");
+      for (let url of ["/common/themes.css", "/content/content.css"]) {
+        let l = createHTMLElement("link");
+        l.href = browser.runtime.getURL(url);
+        l.rel = "stylesheet";
+        l.type = "text/css";
+        document.head.appendChild(l);
+      }
+
+    }
+  };
+
+  var theme;
+  var chromiumBgStyle;
+  let updateTheme = replacement => {
+    let {style} = replacement;
+    if (theme === undefined) {
+      (async () => {
+        try {
+          theme = await Messages.send("getTheme");
+        } catch (e) {
+          theme = "";
+        }
+        style.backgroundImage = "";
+        updateTheme(replacement);
+      })();
+      return;
+    }
+    if (theme) {
+      replacement.classList.add(theme);
+    }
+    if (UA.isMozilla) {
+      replacement.classList.add("mozilla");
+    } else {
+      // Chromium doesn't resolve CSS URIs relative to the extension, but to the site.
+      // Let's fetch the bg image as a data URI and apply it in a <style> element.
+      if (!chromiumBgStyle) {
+        chromiumBgStyle = createHTMLElement("style");
+        const img = getComputedStyle(replacement).getPropertyValue("--img-logo");
+        if (img) {
+          (async () => {
+            const url = img.replace(/\\/g, '').replace(/.*(\/img\/[^'")]+).*/, "$1");
+            chromiumBgStyle.textContent =
+            `${SELECTOR} { background-image: url(${await Messages.send("fetchResource", {url})}) !important }`;
+            document.head.appendChild(chromiumBgStyle);
+          })();
+        }
+      }
     }
   };
 
@@ -190,6 +233,8 @@ var PlaceHolder = (() => {
       for (let e of replacement.querySelectorAll("*")) {
         e._placeHolderReplacement = replacement;
       }
+
+      updateTheme(replacement);
 
       element.replaceWith(replacement);
 

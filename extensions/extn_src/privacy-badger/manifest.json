@@ -1,12 +1,12 @@
 {
-  "version": "2021.11.23.1",
+  "version": "2023.5.10",
   "author": {
     "email": "eff.software.projects@gmail.com"
   },
   "applications": {
     "gecko": {
       "id": "jid1-MnnxcxisBPnSXQ@jetpack",
-      "strict_min_version": "52.0"
+      "strict_min_version": "60.0"
     }
   },
   "incognito": "spanning",
@@ -21,24 +21,7 @@
     "privacy"
   ],
   "background": {
-    "scripts": [
-      "js/bootstrap.js",
-      "js/constants.js",
-      "lib/publicSuffixList.js",
-      "lib/basedomain.js",
-      "data/surrogates.js",
-      "js/multiDomainFirstParties.js",
-      "js/utils.js",
-      "js/surrogates.js",
-      "js/incognito.js",
-      "js/storage.js",
-      "js/heuristicblocking.js",
-      "js/socialwidgetloader.js",
-      "js/migrations.js",
-      "js/firefoxandroid.js",
-      "js/webrequest.js",
-      "js/background.js"
-    ]
+    "page": "background.html"
   },
   "content_scripts": [
     {
@@ -464,8 +447,7 @@
         "js/contentscripts/clobbercookie.js",
         "js/contentscripts/clobberlocalstorage.js",
         "js/contentscripts/dnt.js",
-        "js/contentscripts/fingerprinting.js",
-        "js/contentscripts/floc.js"
+        "js/contentscripts/fingerprinting.js"
       ],
       "matches": [
         "<all_urls>"
@@ -499,9 +481,10 @@
     "128": "icons/badger-128.png"
   },
   "manifest_version": 2,
-  "minimum_chrome_version": "55.0",
+  "minimum_chrome_version": "61.0",
   "name": "__MSG_name__",
   "browser_action": {
+    "default_area": "navbar",
     "default_icon": {
       "19": "icons/badger-19-disabled.png",
       "38": "icons/badger-38-disabled.png"

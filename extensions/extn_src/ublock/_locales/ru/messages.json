@@ -116,7 +116,7 @@
     "description": "English: Click to open the dashboard"
   },
   "popupTipZapper": {
-    "message": "Войти в режим затирания элементов",
+    "message": "Режим мгновенного временного скрытия элемента",
     "description": "Tooltip for the element-zapper icon in the popup panel"
   },
   "popupTipPicker": {
@@ -176,11 +176,11 @@
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoRemoteFonts2": {
-    "message": "Кликните для отключения блокировки удаленных шрифтов на этом сайте",
+    "message": "Нажмите для отключения блокировки сторонних шрифтов на этом сайте",
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoScripting1": {
-    "message": "Кликните, чтобы отключить JavaScript на этом сайте",
+    "message": "Нажмите, чтобы отключить JavaScript на этом сайте",
     "description": "Tooltip for the no-scripting per-site switch"
   },
   "popupTipNoScripting2": {
@@ -192,7 +192,7 @@
     "description": "Caption for the no-popups per-site switch"
   },
   "popupNoLargeMedia_v2": {
-    "message": "Большие медиа элементы",
+    "message": "Большие медиа-элементы",
     "description": "Caption for the no-large-media per-site switch"
   },
   "popupNoCosmeticFiltering_v2": {
@@ -275,13 +275,13 @@
     "message": "Версия",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Подчеркивать строки, которые содержат 3rd-party скрипты",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "скрипт",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Подчеркивать строки, которые содержат 3rd-party фреймы",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "фрейм",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Создать",
@@ -352,7 +352,7 @@
     "description": ""
   },
   "settingsAdvancedUserPrompt": {
-    "message": "Я - опытный пользователь",
+    "message": "Я — опытный пользователь",
     "description": "Checkbox to let user access advanced, technical features"
   },
   "settingsPrefetchingDisabledPrompt": {
@@ -392,7 +392,7 @@
     "description": "The default state for the per-site no-scripting switch"
   },
   "settingsNoCSPReportsPrompt": {
-    "message": "Блокировать CSP отчеты",
+    "message": "Блокировать CSP-отчёты",
     "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
   },
   "settingsUncloakCnamePrompt": {
@@ -428,7 +428,7 @@
     "description": "Appears aside each filter list in the _3rd-party filters_ pane"
   },
   "3pAutoUpdatePrompt1": {
-    "message": "Автообновление списков фильтров.",
+    "message": "Автообновление списков фильтров",
     "description": "A checkbox in the _3rd-party filters_ pane"
   },
   "3pUpdateNow": {
@@ -440,7 +440,7 @@
     "description": "A button in the in the _3rd-party filters_ pane"
   },
   "3pParseAllABPHideFiltersPrompt1": {
-    "message": "Парсить и применять косметические фильтры.",
+    "message": "Парсить и применять косметические фильтры",
     "description": "English: Parse and enforce Adblock+ element hiding filters."
   },
   "3pParseAllABPHideFiltersInfo": {
@@ -448,7 +448,7 @@
     "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
   },
   "3pIgnoreGenericCosmeticFilters": {
-    "message": "Игнорировать общие косметические фильтры.",
+    "message": "Игнорировать общие косметические фильтры",
     "description": "This will cause uBO to ignore all generic cosmetic filters."
   },
   "3pIgnoreGenericCosmeticFiltersInfo": {
@@ -776,7 +776,7 @@
     "description": "Label for the type selector"
   },
   "loggerStaticFilteringHeader": {
-    "message": "Стат. фильтр",
+    "message": "Статич. фильтр",
     "description": "Small header to identify the static filtering section"
   },
   "loggerStaticFilteringSentence": {
@@ -912,19 +912,19 @@
     "description": "Header of 'Filter issues' section in Support pane"
   },
   "supportS3P1": {
-    "message": "Сообщайте о проблемах фильтрации на конкретных сайтах в раздел трекера <span data-url=\"https://github.com/uBlockOrigin/uAssets/issues?q=is%3Aissue\"><code>uBlockOrigin/uAssets</code></span>. <u>Требуется GitHub аккаунт.</u>",
+    "message": "Сообщайте о проблемах фильтрации на конкретных сайтах в раздел трекера <span data-url=\"https://github.com/uBlockOrigin/uAssets/issues?q=is%3Aissue\"><code>uBlockOrigin/uAssets</code></span>. <u>Требуется аккаунт GitHub.</u>",
     "description": "First paragraph of 'Filter issues' section in Support pane"
   },
   "supportS3P2": {
-    "message": "<b>Важно:</b> Избегайте использования других блокировщиков схожего назначения совместно с uBlock Origin , так как это может привести к проблемам с фильтрацией на определенных сайтах.",
+    "message": "<b>Важно:</b> Избегайте использования других блокировщиков схожего назначения совместно с uBlock Origin, так как это может привести к проблемам с фильтрацией на определенных сайтах.",
     "description": "Second paragraph of 'Filter issues' section in Support pane"
   },
   "supportS3P3": {
-    "message": "<b>Подсказки:</b> Убедитесь, что ваши списки фильтров обновлены. <span data-url=\"logger-ui.html#_\">Логгер</span> - основной инструмент диагностики проблем, связанных с фильтрами.",
+    "message": "<b>Советы:</b> убедитесь, что ваши списки фильтров обновлены. <span data-url=\"logger-ui.html#_\">Логгер</span> — основной инструмент диагностики проблем, связанных с фильтрами.",
     "description": "Third paragraph of 'Filter issues' section in Support pane"
   },
   "supportS4H": {
-    "message": "Баг репорт",
+    "message": "Отчет об ошибке",
     "description": "Header of 'Bug report' section in Support pane"
   },
   "supportS4P1": {
@@ -936,7 +936,7 @@
     "description": "Header of 'Troubleshooting Information' section in Support pane"
   },
   "supportS5P1": {
-    "message": "Ниже - техническая информация, которая может быть полезной волонтерам, помогающим вам решить проблему.",
+    "message": "Ниже представлена техническая информация, которая может быть полезна волонтерам, помогающим вам решить проблему.",
     "description": "First paragraph of 'Troubleshooting Information' section in Support pane"
   },
   "supportS5P2": {
@@ -1032,7 +1032,7 @@
     "description": "Shown in the About pane"
   },
   "aboutCDNs": {
-    "message": "Собственные списки фильтров uBO's свободно размещены на следующих <a href=\"https://wikipedia.org/wiki/Content_delivery_network\">CDN</a>:",
+    "message": "Собственные списки фильтров uBO свободно размещены на следующих <a href=\"https://wikipedia.org/wiki/Content_delivery_network\">CDN</a>:",
     "description": "Shown in the About pane"
   },
   "aboutCDNsInfo": {
@@ -1040,7 +1040,7 @@
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
-    "message": "Резервное копирование в файл...",
+    "message": "Резервное копирование в файл…",
     "description": "Text for button to create a backup of all settings"
   },
   "aboutBackupFilename": {
@@ -1115,6 +1115,10 @@
     "message": "выключен",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Страница заблокирована",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock Origin предотвратил загрузку следующей страницы:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Закрыть это окно",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Не предупреждать меня больше про этот сайт",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Отключить строгую блокировку для {{hostname}}",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Навсегда",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Продолжить",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Экспорт в облачное хранилище",
@@ -1203,6 +1215,10 @@
     "message": "Временно разрешить большие медиа-элементы",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "Показать исходный код...",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Введите сочетание",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Нажмите, чтобы загрузить",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Ошибки: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Не удалось выполнить фильтрацию при запуске браузера.\nПерезагрузите страницу, чтобы обеспечить фильтрацию.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "Эта запись должна быть последней",

@@ -1,7 +1,7 @@
 /*
  * NoScript - a Firefox extension for whitelist driven safe JavaScript execution
  *
- * Copyright (C) 2005-2021 Giorgio Maone <https://maone.net>
+ * Copyright (C) 2005-2023 Giorgio Maone <https://maone.net>
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -60,7 +60,7 @@ function onScriptDisabled() {
   addEventListener("keyup", ev => {
     if (!ev.isTrusted) return;
     let el = eraser.tapped;
-    if (el && ev.code === "Delete" || ev.code === "Backspace") {
+    if (el && (ev.code === "Delete" || ev.code === "Backspace")) {
       eraser.tapped = null;
       eraser.delKey = true;
       let doc = el.ownerDocument;

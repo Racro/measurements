@@ -19,14 +19,11 @@
     Home: https://github.com/gorhill/uBlock
 */
 
-/* global CodeMirror, uDom, uBlockDashboard */
+/* global CodeMirror, uBlockDashboard */
 
 'use strict';
 
-/******************************************************************************/
-
-{
-// >>>> Start of private namespace
+import { dom, qs$ } from './dom.js';
 
 /******************************************************************************/
 
@@ -69,15 +66,12 @@ CodeMirror.defineMode('raw-settings', function() {
     };
 });
 
-const cmEditor = new CodeMirror(
-    document.getElementById('advancedSettings'),
-    {
-        autofocus: true,
-        lineNumbers: true,
-        lineWrapping: false,
-        styleActiveLine: true
-    }
-);
+const cmEditor = new CodeMirror(qs$('#advancedSettings'), {
+    autofocus: true,
+    lineNumbers: true,
+    lineWrapping: false,
+    styleActiveLine: true
+});
 
 uBlockDashboard.patchCodeMirrorEditor(cmEditor);
 
@@ -123,22 +117,17 @@ const arrayFromString = function(s) {
 
 /******************************************************************************/
 
-// This is to give a visual hint that the content of user blacklist has changed.
-
 const advancedSettingsChanged = (( ) => {
-    let timer;
-
     const handler = ( ) => {
-        timer = undefined;
-        const changed =
-            hashFromAdvancedSettings(cmEditor.getValue()) !== beforeHash;
-        uDom.nodeFromId('advancedSettingsApply').disabled = !changed;
+        const changed = hashFromAdvancedSettings(cmEditor.getValue()) !== beforeHash;
+        qs$('#advancedSettingsApply').disabled = !changed;
         CodeMirror.commands.save = changed ? applyChanges : function(){};
     };
 
+    const timer = vAPI.defer.create(handler);
+
     return function() {
-        if ( timer !== undefined ) { clearTimeout(timer); }
-        timer = vAPI.setTimeout(handler, 100);
+        timer.offon(200);
     };
 })();
 
@@ -195,17 +184,11 @@ const applyChanges = async function() {
 
 /******************************************************************************/
 
-uDom.nodeFromId('advancedSettings').addEventListener(
-    'input',
-    advancedSettingsChanged
-);
-uDom.nodeFromId('advancedSettingsApply').addEventListener('click', ( ) => {
+dom.on('#advancedSettings', 'input', advancedSettingsChanged);
+dom.on('#advancedSettingsApply', 'click', ( ) => {
     applyChanges();
 });
 
 renderAdvancedSettings(true);
 
 /******************************************************************************/
-
-// <<<< End of private namespace
-}

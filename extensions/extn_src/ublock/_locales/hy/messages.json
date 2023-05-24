@@ -275,13 +275,13 @@
     "message": "Տարբերակ",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Ընդգծել 3-րդ կողմի սկրիպտներ ունեցող տողերը",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "սկրիպտ",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Ընդգծել 3-րդ կողմի շրջանակներ ունեցող տողերը",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "շրջանակ",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Ստեղծել",
@@ -336,15 +336,15 @@
     "description": "English: Color-blind friendly"
   },
   "settingsAppearance": {
-    "message": "Appearance",
+    "message": "Արտաքին տեսք",
     "description": "Section for controlling user interface appearance"
   },
   "settingsThemeLabel": {
-    "message": "Theme",
+    "message": "Թեմա",
     "description": "Label for checkbox to enable a custom dark theme"
   },
   "settingsThemeAccent0Label": {
-    "message": "Custom accent color",
+    "message": "Ընտրովի շեշտային գույն",
     "description": "Label for checkbox to pick an accent color"
   },
   "settingsCloudStorageEnabledPrompt": {
@@ -400,11 +400,11 @@
     "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
   },
   "settingsAdvanced": {
-    "message": "Advanced",
+    "message": "Ընդլայնված կարգավորումներ",
     "description": "Section for controlling advanced-user settings"
   },
   "settingsAdvancedSynopsis": {
-    "message": "Features suitable only for technical users",
+    "message": "Տեխնիկական օգտվողների համար նախատեսված գործառույթներ",
     "description": "Description of section controlling advanced-user settings"
   },
   "settingsAdvancedUserSettings": {
@@ -456,7 +456,7 @@
     "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
   },
   "3pSuspendUntilListsAreLoaded": {
-    "message": "Suspend network activity until all filter lists are loaded",
+    "message": "Կանգնեցնել ցանցային ակտիվությմւնը մինչև բեռնվեն զտիչների բոլոր ցուցակները",
     "description": "A checkbox in the 'Filter lists' pane"
   },
   "3pListsOfBlockedHostsHeader": {
@@ -1115,6 +1115,10 @@
     "message": "անջատված է",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Էջն արգելաբացվեց",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock Origin֊ը կանխել է հետևյալ էջի բեռնումը՝",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Փակել այս լուսամուտը",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Այլևս չզգուշացնե՛լ ինձ այս կայքի մասին",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Անջատեք խիստ արգելափակումը {{hostname}}-ի համար",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Մշտապես",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Շարունակել",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Արտահանել առ ամպային պահեստ",
@@ -1203,6 +1215,10 @@
     "message": "Ժամանակավորապես թույլ տալ խոշոր մեդիա տարրերը",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "Դիտել աղբյուրի կոդը…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Մուտքագրեք դյուրանցում",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1220,7 +1236,7 @@
     "description": "Label for buttons used to select all text in editor"
   },
   "toggleCosmeticFiltering": {
-    "message": "Toggle cosmetic filtering",
+    "message": "Փոխանջատել կոսմետիկ զտումը",
     "description": "Label for keyboard shortcut used to toggle cosmetic filtering"
   },
   "relaxBlockingMode": {
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Կտտացրեք՝ բեռնելու համար",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Սխալներ՝ {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "This entry must be the last one",

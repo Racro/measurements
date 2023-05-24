@@ -22,6 +22,8 @@
 
 // For background page or non-background pages
 
+/* global browser */
+
 'use strict';
 
 /******************************************************************************/
@@ -33,11 +35,124 @@ vAPI.T0 = Date.now();
 
 vAPI.setTimeout = vAPI.setTimeout || self.setTimeout.bind(self);
 
+vAPI.defer = {
+    create(callback) {
+        return new this.Client(callback);
+    },
+    once(delay, ...args) {
+        const delayInMs = vAPI.defer.normalizeDelay(delay);
+        return new Promise(resolve => {
+            vAPI.setTimeout(
+                (...args) => { resolve(...args); },
+                delayInMs,
+                ...args
+            );
+        });
+    },
+    Client: class {
+        constructor(callback) {
+            this.timer = null;
+            this.type = 0;
+            this.callback = callback;
+        }
+        on(delay, ...args) {
+            if ( this.timer !== null ) { return; }
+            const delayInMs = vAPI.defer.normalizeDelay(delay);
+            this.type = 0;
+            this.timer = vAPI.setTimeout(( ) => {
+                this.timer = null;
+                this.callback(...args);
+            }, delayInMs || 1);
+        }
+        offon(delay, ...args) {
+            this.off();
+            this.on(delay, ...args);
+        }
+        onvsync(delay, ...args) {
+            if ( this.timer !== null ) { return; }
+            const delayInMs = vAPI.defer.normalizeDelay(delay);
+            if ( delayInMs !== 0 ) {
+                this.type = 0;
+                this.timer = vAPI.setTimeout(( ) => {
+                    this.timer = null;
+                    this.onraf(...args);
+                }, delayInMs);
+            } else {
+                this.onraf(...args);
+            }
+        }
+        onidle(delay, options, ...args) {
+            if ( this.timer !== null ) { return; }
+            const delayInMs = vAPI.defer.normalizeDelay(delay);
+            if ( delayInMs !== 0 ) {
+                this.type = 0;
+                this.timer = vAPI.setTimeout(( ) => {
+                    this.timer = null;
+                    this.onric(options, ...args);
+                }, delayInMs);
+            } else {
+                this.onric(options, ...args);
+            }
+        }
+        off() {
+            if ( this.timer === null ) { return; }
+            switch ( this.type ) {
+            case 0:
+                self.clearTimeout(this.timer);
+                break;
+            case 1:
+                self.cancelAnimationFrame(this.timer);
+                break;
+            case 2:
+                self.cancelIdleCallback(this.timer);
+                break;
+            default:
+                break;
+            }
+            this.timer = null;
+        }
+        onraf(...args) {
+            if ( this.timer !== null ) { return; }
+            this.type = 1;
+            this.timer = requestAnimationFrame(( ) => {
+                this.timer = null;
+                this.callback(...args);
+            });
+        }
+        onric(options, ...args) {
+            if ( this.timer !== null ) { return; }
+            this.type = 2;
+            this.timer = self.requestIdleCallback(deadline => {
+                this.timer = null;
+                this.callback(deadline, ...args);
+            }, options);
+        }
+        ongoing() {
+            return this.timer !== null;
+        }
+    },
+    normalizeDelay(delay = 0) {
+        if ( typeof delay === 'object' ) {
+            if ( delay.sec !== undefined ) {
+                return delay.sec * 1000;
+            } else if ( delay.min !== undefined ) {
+                return delay.min * 60000;
+            } else if ( delay.hr !== undefined ) {
+                return delay.hr * 3600000;
+            }
+        }
+        return delay;
+    }
+};
+
 /******************************************************************************/
 
 vAPI.webextFlavor = {
     major: 0,
-    soup: new Set()
+    soup: new Set(),
+    get env() {
+        return Array.from(this.soup);
+    }
 };
 
 (( ) => {
@@ -86,6 +201,9 @@ vAPI.webextFlavor = {
         soup.add('chromium')
             .add('user_stylesheet');
         flavor.major = parseInt(match[1], 10) || 0;
+        if ( flavor.major >= 105 ) {
+            soup.add('native_css_has');
+        }
     }
 
     // Don't starve potential listeners
@@ -106,18 +224,6 @@ vAPI.download = function(details) {
 /******************************************************************************/
 
 vAPI.getURL = browser.runtime.getURL;
-
-/******************************************************************************/
-
-vAPI.i18n = browser.i18n.getMessage;
-
-// http://www.w3.org/International/questions/qa-scripts#directions
-document.body.setAttribute(
-    'dir',
-    ['ar', 'he', 'fa', 'ps', 'ur'].indexOf(vAPI.i18n('@@ui_locale')) !== -1
-        ? 'rtl'
-        : 'ltr'
-);
 
 /******************************************************************************/
 

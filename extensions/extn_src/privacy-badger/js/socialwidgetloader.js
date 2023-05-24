@@ -43,35 +43,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-/* globals log:false */
-
-require.scopes.widgetloader = (function () {
-
-let utils = require('utils');
-
-let exports = {
-  initializeWidgets,
-  loadWidgetsFromFile,
-};
+import { log } from "./bootstrap.js";
+import utils from "./utils.js";
 
 /**
- * Returns the contents of the file at filePath.
+ * Returns the contents of the file at given path.
  *
- * @param {String} filePath the path to the file
- * @param {Function} callback callback(responseText)
+ * @param {String} file_path the path to the file
+ * @param {Function} callback the callback
  */
-function getFileContents(filePath, callback) {
-  let url = chrome.runtime.getURL(filePath);
-  utils.xhrRequest(url, function (err, responseText) {
+function getFileContents(file_path, callback) {
+  let url = chrome.runtime.getURL(file_path);
+  utils.fetchResource(url, function (err, response_text) {
     if (err) {
-      console.error(
-        "Problem fetching contents of file at",
-        filePath,
-        err.status,
-        err.message
-      );
+      console.error(`Problem fetching contents of ${file_path}: ${err}`);
     } else {
-      callback(responseText);
+      callback(response_text);
     }
   });
 }
@@ -128,6 +115,7 @@ function SocialWidget(name, properties) {
   }
 }
 
-return exports;
-
-}()); //require scopes
+export default {
+  initializeWidgets,
+  loadWidgetsFromFile,
+};

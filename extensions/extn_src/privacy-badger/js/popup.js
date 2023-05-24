@@ -18,15 +18,28 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-env browser, jquery */
+
 window.POPUP_INITIALIZED = false;
 window.SLIDERS_DONE = false;
 
-let constants = require("constants");
-let FirefoxAndroid = require("firefoxandroid");
-let htmlUtils = require("htmlutils").htmlUtils;
-let utils = require("utils");
+import constants from "./constants.js";
+import FirefoxAndroid from "./firefoxandroid.js";
+import htmlUtils from "./htmlutils.js";
+import utils from "./utils.js";
 
 let POPUP_DATA = {};
+
+// domains with breakage notes,
+// along with corresponding i18n locale message keys
+let BREAKAGE_NOTE_DOMAINS = {
+  "accounts.google.com": "google_signin_tooltip" // Google Sign-In
+};
+
+const DOMAIN_TOOLTIP_CONF = {
+  maxWidth: 300,
+  side: 'bottom',
+};
 
 /* if they aint seen the comic*/
 function showNagMaybe() {
@@ -36,20 +49,14 @@ function showNagMaybe() {
 
   function _setSeenComic(cb) {
     chrome.runtime.sendMessage({
-      type: "seenComic"
+      type: "updateSettings",
+      data: { seenComic: true }
     }, cb);
   }
 
   function _setSeenLearningPrompt(cb) {
     chrome.runtime.sendMessage({
       type: "seenLearningPrompt"
-    }, cb);
-  }
-
-  function _setSeenWebRtcDeprecation(cb) {
-    chrome.runtime.sendMessage({
-      type: "seenWebRtcDeprecation",
-      tabId: POPUP_DATA.tabId
     }, cb);
   }
 
@@ -90,15 +97,28 @@ function showNagMaybe() {
 
   function _showError(error_text) {
     $('#instruction-text').hide();
-    $('#error-text').show().find('a')
-      .addClass('cta-button')
-      .css({
-        borderRadius: '3px',
-        padding: '5px',
-        display: 'inline-block',
-        width: 'auto',
-      });
-    $('#error-message').text(error_text);
+
+    // if error is the 'unexpected error occurred' Firefox issue commonly associated with low disk space, show special message
+    if (error_text == "An unexpected error occurred") {
+      // replace current error text with this special message
+      $('#error-text').show().html([
+        chrome.i18n.getMessage("popup_error_text_low_disk_space_issue", [error_text]),
+        chrome.i18n.getMessage("learn_more_link", ["<a href='https://privacybadger.org/#I-found-a-bug%21-What-do-I-do-now'>privacybadger.org</a>"]),
+      ].join(" "));
+
+    } else {
+      $('#error-message').text(error_text);
+
+      $('#error-text').show().find('a')
+        .addClass('cta-button')
+        .css({
+          borderRadius: '3px',
+          display: 'inline-block',
+          padding: '5px',
+          textDecoration: 'none',
+          width: 'auto',
+        });
+    }
 
     $('#fittslaw').on("click", function (e) {
       e.preventDefault();
@@ -133,23 +153,8 @@ function showNagMaybe() {
     $outer.show();
   }
 
-  function _showWebRtcDeprecationPrompt() {
-    $('#instruction-text').hide();
-
-    $("#webrtc-deprecation-ack-btn").on("click", function () {
-      _setSeenWebRtcDeprecation(function () {
-        _hideNag();
-      });
-    });
-
-    $('#webrtc-deprecation-div').show();
-    $('#fittslaw').hide();
-    $nag.show();
-    $outer.show();
-  }
-
-  if (POPUP_DATA.showWebRtcDeprecation) {
-    _showWebRtcDeprecationPrompt();
+  if (POPUP_DATA.criticalError) {
+    _showError(POPUP_DATA.criticalError);
 
   } else if (POPUP_DATA.showLearningPrompt) {
     _showLearningPrompt();
@@ -162,8 +167,6 @@ function showNagMaybe() {
       }
     });
 
-  } else if (POPUP_DATA.criticalError) {
-    _showError(POPUP_DATA.criticalError);
   }
 }
 
@@ -185,15 +188,8 @@ function init() {
     });
   });
 
-  let $overlay = $('#overlay');
-
-  // show error layout if the user was writing an error report
-  if (utils.hasOwn(POPUP_DATA, 'errorText') && POPUP_DATA.errorText) {
-    $overlay.toggleClass('active');
-  }
-
   $("#error").on("click", function() {
-    $overlay.toggleClass('active');
+    $('#overlay').toggleClass('active');
   });
   $("#report-cancel").on("click", function() {
     clearSavedErrorText();
@@ -209,6 +205,7 @@ function init() {
     clearSavedErrorText();
     closeOverlay();
   });
+
   $('#blockedResourcesContainer').on('change', 'input:radio', updateOrigin);
   $('#blockedResourcesContainer').on('click', '.userset .honeybadgerPowered', revertDomainControl);
 
@@ -256,6 +253,11 @@ function init() {
     $("#share_output").select();
     document.execCommand('copy');
     $(this).text(chrome.i18n.getMessage("copy_button_copied"));
+  });
+
+  $('html').css({
+    overflow: 'visible',
+    visibility: 'visible'
   });
 
   window.POPUP_INITIALIZED = true;
@@ -393,7 +395,7 @@ function activateOnSite() {
   $("#activate_site_btn").prop("disabled", true);
 
   chrome.runtime.sendMessage({
-    type: "activateOnSite",
+    type: "reenableOnSiteFromPopup",
     tabHost: POPUP_DATA.tabHost,
     tabId: POPUP_DATA.tabId,
     tabUrl: POPUP_DATA.tabUrl
@@ -411,7 +413,7 @@ function deactivateOnSite() {
   $("#deactivate_site_btn").prop("disabled", true);
 
   chrome.runtime.sendMessage({
-    type: "deactivateOnSite",
+    type: "disableOnSiteFromPopup",
     tabHost: POPUP_DATA.tabHost,
     tabId: POPUP_DATA.tabId,
     tabUrl: POPUP_DATA.tabUrl
@@ -528,6 +530,51 @@ function revertDomainControl(event) {
 }
 
 /**
+ * Tooltip that explains how to enable signing into websites with Google.
+ */
+function createBreakageNote(domain, i18n_message_key) {
+  let $slider_allow = $(`#blockedResourcesInner label[for="allow-${domain.replace(/\./g, '-')}"]`);
+
+  // first remove the Allow tooltip so that future tooltipster calls
+  // return the tooltip we want (the breakage note, not Allow)
+  $slider_allow.tooltipster('destroy').tooltipster({
+    autoClose: false,
+    content: chrome.i18n.getMessage(i18n_message_key),
+    functionReady: function (tooltip) {
+      // record that this breakage note was shown
+      chrome.runtime.sendMessage({
+        type: "seenBreakageNote",
+        domain
+      });
+
+      // close on tooltip click/tap
+      $(tooltip.elementTooltip()).on('click', function (e) {
+        e.preventDefault();
+        tooltip.hide();
+      });
+      // also when Report Broken Site or Share overlays get activated
+      $('#error, #share').off('click.breakage-note').on('click.breakage-note', function (e) {
+        e.preventDefault();
+        tooltip.hide();
+      });
+    },
+    interactive: true,
+    position: ['top'],
+    trigger: 'custom',
+    theme: 'tooltipster-badger-breakage-note'
+
+  // now restore the Allow tooltip
+  }).tooltipster(Object.assign({}, DOMAIN_TOOLTIP_CONF, {
+    content: chrome.i18n.getMessage('domain_slider_allow_tooltip'),
+    multiple: true
+  }));
+
+  if (POPUP_DATA.settings.seenComic && !POPUP_DATA.showLearningPrompt && !POPUP_DATA.criticalError) {
+    $slider_allow.tooltipster('show');
+  }
+}
+
+/**
  * Refresh the content of the popup window
  *
  * @param {Integer} tabId The id of the tab
@@ -573,10 +620,21 @@ function refreshPopup() {
   if (utils.hasOwn(POPUP_DATA, 'errorText')) {
     $("#error_input").val(POPUP_DATA.errorText);
   }
+  // show error layout if the user was writing an error report
+  if (utils.hasOwn(POPUP_DATA, 'errorText') && POPUP_DATA.errorText) {
+    $('#overlay').toggleClass('active');
+  }
 
-  // show sliders when sliders were shown last
+  // show sliders when sliders were shown last,
+  // or when there is a visible breakage note,
   // or when there is at least one breakage warning
   if (POPUP_DATA.settings.showExpandedTrackingSection || (
+    (POPUP_DATA.settings.seenComic && !POPUP_DATA.showLearningPrompt && !POPUP_DATA.criticalError) &&
+    Object.keys(BREAKAGE_NOTE_DOMAINS).some(d => (
+      (POPUP_DATA.origins[d] == constants.BLOCK ||
+        POPUP_DATA.origins[d] == constants.COOKIEBLOCK) &&
+      !POPUP_DATA.shownBreakageNotes.includes(d)))
+  ) || (
     POPUP_DATA.cookieblocked && Object.keys(POPUP_DATA.cookieblocked).some(
       d => POPUP_DATA.origins[d] == constants.USER_BLOCK)
   )) {
@@ -598,6 +656,7 @@ function refreshPopup() {
 
   if (!originsArr.length) {
     // show "no trackers" message
+    $('#blockedResources').hide();
     $("#instructions-no-trackers").show();
 
     if (POPUP_DATA.settings.learnLocally && POPUP_DATA.settings.showNonTrackingDomains) {
@@ -619,21 +678,30 @@ function refreshPopup() {
   let nonTracking = [];
   originsArr = htmlUtils.sortDomains(originsArr);
 
-  for (let origin of originsArr) {
-    let action = origins[origin];
+  for (let fqdn of originsArr) {
+    let action = origins[fqdn];
 
     if (action == constants.NO_TRACKING) {
-      nonTracking.push(origin);
+      nonTracking.push(fqdn);
     } else if (action == constants.ALLOW) {
-      unblockedTrackers.push(origin);
+      unblockedTrackers.push(fqdn);
     } else {
       let show_breakage_warning = (
         action == constants.USER_BLOCK &&
-        utils.hasOwn(POPUP_DATA.cookieblocked, origin)
+        utils.hasOwn(POPUP_DATA.cookieblocked, fqdn)
       );
-      let slider_html = htmlUtils.getOriginHtml(origin, action, show_breakage_warning);
+      let show_breakage_note = false;
+      if (!show_breakage_warning) {
+        show_breakage_note = (utils.hasOwn(BREAKAGE_NOTE_DOMAINS, fqdn) &&
+          !POPUP_DATA.shownBreakageNotes.includes(fqdn) &&
+          (action == constants.BLOCK || action == constants.COOKIEBLOCK));
+      }
+      let slider_html = htmlUtils.getOriginHtml(fqdn, action,
+        show_breakage_warning, show_breakage_note, POPUP_DATA.blockedFpScripts[fqdn]);
       if (show_breakage_warning) {
         printableWarningSliders.push(slider_html);
+      } else if (show_breakage_note) {
+        printableWarningSliders.unshift(slider_html);
       } else {
         printable.push(slider_html);
       }
@@ -673,11 +741,6 @@ function refreshPopup() {
     }
   }
 
-  if (printable.length) {
-    // get containing HTML for domain list along with toggle legend icons
-    $("#blockedResources")[0].innerHTML = htmlUtils.getTrackerContainerHtml();
-  }
-
   // activate tooltips
   $('.tooltip').tooltipster();
 
@@ -714,12 +777,19 @@ function refreshPopup() {
     $printable.appendTo('#blockedResourcesInner');
 
     // activate tooltips
-    $('#blockedResourcesInner .tooltip:not(.tooltipstered)').tooltipster(
-      htmlUtils.DOMAIN_TOOLTIP_CONF);
+    $printable.find('.tooltip:not(.tooltipstered)').tooltipster(DOMAIN_TOOLTIP_CONF);
+    if ($printable.hasClass('breakage-note')) {
+      let domain = $printable[0].dataset.origin;
+      if (!POPUP_DATA.shownBreakageNotes.includes(domain)) {
+        createBreakageNote(domain, BREAKAGE_NOTE_DOMAINS[domain]);
+      }
+    }
 
     if (printable.length) {
       requestAnimationFrame(renderDomains);
     } else {
+      $('#not-yet-blocked-header').tooltipster();
+      $('#non-trackers-header').tooltipster();
       window.SLIDERS_DONE = true;
     }
   }
@@ -763,7 +833,7 @@ function updateOrigin() {
   $clicker.find('.origin-inner').tooltipster('destroy');
   $clicker.find('.origin-inner').attr(
     'title', htmlUtils.getActionDescription(action, origin));
-  $clicker.find('.origin-inner').tooltipster(htmlUtils.DOMAIN_TOOLTIP_CONF);
+  $clicker.find('.origin-inner').tooltipster(DOMAIN_TOOLTIP_CONF);
 
   // persist the change
   saveToggle(origin, action);
@@ -801,15 +871,32 @@ function setPopupData(data) {
 $(function () {
   $.tooltipster.setDefaults(htmlUtils.TOOLTIPSTER_DEFAULTS);
 
-  getTab(function (tab) {
+  function getPopupData(tab) {
     chrome.runtime.sendMessage({
       type: "getPopupData",
       tabId: tab.id,
       tabUrl: tab.url
     }, (response) => {
+      if (!response) {
+        // event page/extension service worker is still starting up, retry
+        // async w/ non-zero delay to avoid locking up the messaging channel
+        setTimeout(function () {
+          getPopupData(tab);
+        }, 10);
+        return;
+      }
       setPopupData(response);
       refreshPopup();
       init();
     });
+  }
+
+  getTab(function (tab) {
+    getPopupData(tab);
   });
 });
+
+// expose certain functions to Selenium tests
+window.setPopupData = setPopupData;
+window.refreshPopup = refreshPopup;
+window.showNagMaybe = showNagMaybe;

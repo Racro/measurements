@@ -68,6 +68,8 @@ const TRANSLATIONS = {};
 // references to widget page elements
 const WIDGET_ELS = {};
 
+let doNotReplace = new WeakSet();
+
 /**
  * @param {Object} response response to checkWidgetReplacementEnabled
  */
@@ -195,6 +197,7 @@ function _createButtonReplacement(widget, callback) {
 
   // in place button type; replace the existing button with code
   // specified in the widgets JSON
+  // TODO only AddThis uses this code path, replace with a type 4 probably
   } else if (button_type == 2) {
     button.addEventListener("click", function (e) {
       if (!e.isTrusted) { return; }
@@ -290,6 +293,15 @@ function restoreWidget(widget) {
       });
       return;
     }
+
+    // if there are no matching script elements
+    if (!document.querySelectorAll(widget.scriptSelectors.join(',')).length) {
+      // we can't do "in-place" activation; reload the page instead
+      unblockTracker(name, function () {
+        location.reload();
+      });
+      return;
+    }
   }
 
   unblockTracker(name, function () {
@@ -297,6 +309,19 @@ function restoreWidget(widget) {
     WIDGET_ELS[name].forEach(data => {
       data.parent.replaceChild(data.widget, data.replacement);
       if (data.scriptSelectors) {
+        // This is part of "click-to-play" for third-party page widgets:
+        // https://privacybadger.org/#How-does-Privacy-Badger-handle-social-media-widgets
+        //
+        // This is the part where the user chooses to activate the widget.
+        // Some widgets are driven by JavaScript; their JavaScript needs
+        // to be reloaded in order for the widget to function.
+        //
+        // Privacy Badger empowers the user to load certain widgets on demand,
+        // instead of continuing to let them load by default, without a choice.
+        //
+        // Any script reinserted here is a script that would have
+        // run on the page anyway, had Privacy Badger not blocked it.
+        // This should not fall under remote code review considerations.
         reloadScripts(data.scriptSelectors);
       }
     });
@@ -306,6 +331,23 @@ function restoreWidget(widget) {
 
 /**
  * Find and replace script elements with their copies to trigger re-running.
+ *
+ * This is code for re-activating a previously blocked third-party widget
+ * (such as Google reCAPTCHA or Disqus comments).
+ *
+ * The scripts being run are third-party widget scripts that Privacy Badger
+ * previously blocked and the user chose to activate.
+ *
+ * For example:
+ *
+ * 1. The user visits a page with comments powered by Disqus.
+ * 2. Privacy Badger blocks the Disqus script and inserts a placeholder
+ * where the Disqus widget would have appeared.
+ * 3. If the user chooses to click "Allow" in the placeholder, Privacy Badger
+ * removes the placeholder and reinserts the Disqus script.
+ *
+ * Any script reinserted here is a script that would have
+ * run on the page anyway, had Privacy Badger not blocked it.
  */
 function reloadScripts(selectors) {
   let scripts = document.querySelectorAll(selectors.join(','));
@@ -329,6 +371,11 @@ function reloadScripts(selectors) {
 /**
  * Dumping scripts into innerHTML won't execute them, so replace them
  * with executable scripts.
+ *
+ * This is code for re-activating a previously blocked third-party widget.
+ *
+ * Any script reinserted here is a script that would have
+ * run on the page anyway, had Privacy Badger not blocked it.
  */
 function replaceScriptsRecurse(node) {
   if (node.nodeName && node.nodeName.toLowerCase() == 'script' &&
@@ -405,13 +452,42 @@ function createReplacementWidget(widget, elToReplace) {
     "min-width: 220px",
     "min-height: 210px",
     "max-height: 600px",
-    "z-index: 2147483647",
+    "pointer-events: all",
+    "z-index: 999",
   ];
-  if (elToReplace.offsetWidth > 0) {
-    styleAttrs.push(`width: ${elToReplace.offsetWidth - 2*border_width}px`);
-  }
-  if (elToReplace.offsetHeight > 0) {
-    styleAttrs.push(`height: ${elToReplace.offsetHeight - 2*border_width}px`);
+  // TODO shouldn't need this (nor !important, nor _make_id, nor ...) if we use shadow DOM
+  let elToReplaceStyles = window.getComputedStyle(elToReplace);
+  if (elToReplaceStyles.position == "absolute") {
+    styleAttrs.push("position: absolute");
+    for (let prop of ["width", "height", "top", "right", "bottom", "left"]) {
+      let val = elToReplaceStyles[prop];
+      if (!val) {
+        continue;
+      }
+      if (prop == "width" || prop == "height") {
+        if (elToReplaceStyles['box-sizing'] == 'content-box') {
+          if (Number.isInteger(val) || val.endsWith("px")) {
+            val = `${parseInt(val, 10) - 2*border_width}px`;
+          }
+        }
+      }
+      styleAttrs.push(prop + ": " + val);
+    }
+  } else {
+    if (elToReplace.offsetWidth > 0) {
+      if (elToReplaceStyles['box-sizing'] == 'content-box') {
+        styleAttrs.push(`width: ${elToReplace.offsetWidth - 2*border_width}px`);
+      } else {
+        styleAttrs.push(`width: ${elToReplace.offsetWidth}px`);
+      }
+    }
+    if (elToReplace.offsetHeight > 0) {
+      if (elToReplaceStyles['box-sizing'] == 'content-box') {
+        styleAttrs.push(`height: ${elToReplace.offsetHeight - 2*border_width}px`);
+      } else {
+        styleAttrs.push(`height: ${elToReplace.offsetHeight}px`);
+      }
+    }
   }
   widgetFrame.style = styleAttrs.join(" !important;") + " !important";
 
@@ -433,7 +509,6 @@ function createReplacementWidget(widget, elToReplace) {
 
   // child div styles
   styleAttrs = [
-    "color: #303030",
     "font-family: helvetica, arial, sans-serif",
     "font-size: 16px",
     "display: flex",
@@ -492,6 +567,12 @@ function createReplacementWidget(widget, elToReplace) {
     textDiv.appendChild(document.createTextNode(summary));
   }
 
+  let closeIcon = document.createElement('a'),
+    close_icon_id = _make_id("ico-close");
+  closeIcon.id = close_icon_id;
+  closeIcon.href = "javascript:void(0)"; // eslint-disable-line no-script-url
+  textDiv.appendChild(closeIcon);
+
   let infoIcon = document.createElement('a'),
     info_icon_id = _make_id("ico-help");
   infoIcon.id = info_icon_id;
@@ -523,7 +604,6 @@ function createReplacementWidget(widget, elToReplace) {
     "line-height: 16px",
     "padding: 10px",
     "margin: 4px",
-    "text-align: center",
     "width: 70%",
     "max-width: 280px",
   ];
@@ -560,7 +640,8 @@ function createReplacementWidget(widget, elToReplace) {
   // set up click handler
   widgetFrame.addEventListener('load', function () {
     let onceButton = widgetFrame.contentDocument.getElementById(button_id),
-      siteButton = widgetFrame.contentDocument.getElementById(site_button_id);
+      siteButton = widgetFrame.contentDocument.getElementById(site_button_id),
+      closeLink = widgetFrame.contentDocument.getElementById(close_icon_id);
 
     onceButton.addEventListener("click", function (e) {
       if (!e.isTrusted) { return; }
@@ -585,10 +666,21 @@ function createReplacementWidget(widget, elToReplace) {
       });
     }, { once: true });
 
+    closeLink.addEventListener("click", function (e) {
+      if (!e.isTrusted) {
+        return;
+      }
+      e.preventDefault();
+      WIDGET_ELS[name] = WIDGET_ELS[name].filter(d => d.replacement != widgetFrame);
+      doNotReplace.add(elToReplace);
+      widgetFrame.replaceWith(elToReplace);
+    }, { once: true });
+
   }, false); // end of click handler
 
   let head_styles = `
 html, body {
+  color: #303030 !important;
   height: 100% !important;
   overflow: hidden !important;
 }
@@ -610,14 +702,19 @@ html, body {
   background-color: #fefefe !important;
   border: 2px solid #f06a0a !important;
 }
-#${info_icon_id} {
+#${info_icon_id}, #${close_icon_id} {
   position: absolute;
   ${TRANSLATIONS.rtl ? "left" : "right"}: 4px;
   top: 4px;
   line-height: 12px;
+  text-align: center;
   text-decoration: none;
 }
-#${info_icon_id}:before {
+#${close_icon_id} {
+  ${TRANSLATIONS.rtl ? "right" : "left"}: 4px;
+  width: 20px;
+}
+#${info_icon_id}:before, #${close_icon_id}:before {
   border: 2px solid;
   border-radius: 50%;
   display: inline-block;
@@ -629,7 +726,12 @@ html, body {
   height: 1em;
   width: 1em;
 }
-#${info_icon_id}:hover:before {
+#${close_icon_id}:before {
+  border: 0;
+  content: '\u2715';
+  padding: 4px;
+}
+#${info_icon_id}:hover:before, #${close_icon_id}:hover:before {
   color: #ec9329;
 }
 a {
@@ -638,6 +740,33 @@ a {
 }
 a:hover {
   color: #ec9329;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+  body {
+    background-color: #333 !important;
+    color: #ddd !important;
+  }
+  a, a:visited {
+    color: #ddd !important;
+  }
+  a:hover {
+    color: #f06a0a !important;
+  }
+  #${info_icon_id}:before, #${close_icon_id}:before {
+    color: #aaa;
+  }
+  #${site_button_id} {
+    background-color: #333 !important;
+    border: solid 2px #ddd !important;
+    color: #ddd !important;
+  }
+  #${button_id}:hover, #${site_button_id}:hover {
+    background-color: #333 !important;
+    color: #ddd !important;
+  }
 }
   `.trim();
 
@@ -650,25 +779,17 @@ a:hover {
  * Replaces buttons/widgets in the DOM.
  */
 function replaceIndividualButton(widget) {
-  // for script type widgets,
-  // to avoid breaking lazy loaded widgets
-  // by replacing the DOM element too early
-  // first check whether a script is actually present
-  if (widget.replacementButton.type == 4) {
-    let script_selector = widget.scriptSelectors.join(',');
-    if (!document.querySelectorAll(script_selector).length) {
-      return;
-    }
-  }
-
   let selector = widget.buttonSelectors.join(','),
     elsToReplace = document.querySelectorAll(selector);
 
-  elsToReplace.forEach(function (el) {
+  for (let el of elsToReplace) {
+    if (doNotReplace.has(el)) {
+      continue;
+    }
     createReplacementElement(widget, el, function (replacementEl) {
       el.parentNode.replaceChild(replacementEl, el);
     });
-  });
+  }
 }
 
 /**

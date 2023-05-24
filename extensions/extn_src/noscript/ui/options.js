@@ -1,7 +1,7 @@
 /*
  * NoScript - a Firefox extension for whitelist driven safe JavaScript execution
  *
- * Copyright (C) 2005-2021 Giorgio Maone <https://maone.net>
+ * Copyright (C) 2005-2023 Giorgio Maone <https://maone.net>
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
@@ -155,8 +155,21 @@ document.querySelector("#version").textContent = _("Version",
   opt("showFullAddresses", "local");
 
   UI.wireChoice("theme", o => Themes.setup(o && o.value) );
-
   opt("vintageTheme", async o => await (o ? Themes.setVintage(o.checked) : Themes.isVintage()));
+  addEventListener("NoScriptThemeChanged", ({detail}) => {
+    if ("theme" in detail) {
+      for (let i of UI.getChoiceElements("theme")) {
+        if (i.value === detail.theme) {
+          i.checked = true;
+          break;
+        }
+      }
+    }
+    if (Themes.VINTAGE in detail) {
+      UI.getOptionElement("vintageTheme").checked = !!detail[Themes.VINTAGE];
+    }
+  });
+
 
   // PRESET CUSTOMIZER
   {

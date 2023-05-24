@@ -45,5 +45,16 @@ ext._EventTarget = class EventTarget
   }
 };
 
+// We only support a single response for message listeners. Therefore we need to
+// identify the first valid one, so that we can then return it.
+ext.getMessageResponse = responses =>
+{
+  for (let response of responses)
+  {
+    if (typeof response !== "undefined")
+      return response;
+  }
+};
+
 /* Message passing */
 ext.onMessage = new ext._EventTarget();

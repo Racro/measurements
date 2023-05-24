@@ -30,8 +30,8 @@
   "common_feature_circumvention_title": {
     "message": "ABP 回避対策フィルタリスト"
   },
-  "common_feature_cookies_title": {
-    "message": "Cookie 警告をブロック"
+  "common_feature_annoyances_title": {
+    "message": "さらに迷惑な要素をブロック"
   },
   "common_feature_malware_title": {
     "message": "マルウェアのブロック"
@@ -56,6 +56,9 @@
   },
   "composer_block": {
     "message": "ブロック"
+  },
+  "composer_block_reload": {
+    "message": "ブロックしてページを再読み込み"
   },
   "composer_cancel": {
     "message": "キャンセル"
@@ -178,6 +181,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "ベータ"
   },
   "options_builtin_filterList_add": {
     "message": "組み込みフィルターリストを追加"
@@ -372,6 +378,9 @@
   "options_footer_contribute": {
     "message": "ご寄付のお願い"
   },
+  "options_free_filters_header": {
+    "message": "無料機能"
+  },
   "options_general_description": {
     "message": "Adblock Plus がウェブサイトで表示・非表示にするものを特定します"
   },
@@ -445,6 +454,12 @@
   "options_page_title": {
     "message": "設定"
   },
+  "options_premium_manage": {
+    "message": "サブスクリプションの管理"
+  },
+  "options_premium_upgrade_description": {
+    "message": "広告ブロック体験をカスタマイズ・強化しましょう！<a0>詳しくはこちら</a0>"
+  },
   "options_privacy_header": {
     "message": "プライバシー & セキュリティー"
   },
@@ -457,20 +472,17 @@
   "options_rating_button": {
     "message": "評価する"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "このフィルターを追加することで、各ウェブサイトで Cookie の通知を受け取ったり、Cookie の設定を変更したりする権利を放棄することとなります。詳しくは<a0>https://adblockplus.org/block-cookie-warnings をご覧ください。</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "フローティング動画、ニュースレターポップアップ、アンケート依頼、サイト通知をブロックします。"
   },
-  "options_recommended_filters_header": {
-    "message": "お勧めのフィルター"
-  },
-  "options_recommended_notifications_tooltip": {
+  "options_recommended_notifications_description": {
     "message": "ウェブサイト上で、ユーザーのオンライン行動を追跡するプッシュ通知の許可を求められることがなくなります。"
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "訪問したウェブサイトでの行動を追跡することで知られる企業から個人情報を保護します。"
+  "options_recommended_privacy_description": {
+    "message": "アクセスしたウェブサイトでの行動を追跡することで知られる企業から、個人情報を保護します。"
   },
-  "options_recommended_social_tooltip": {
-    "message": "訪問したウェブサイトにソーシャルメディアのアイコンが表示される場合、アイコンをクリックしなくても、ソーシャルメディアネットワーク側で、ユーザーの閲覧習慣に基づいてプロファイルを構築することができます。アイコンを非表示にすると、プロファイルの保護が可能となります。"
+  "options_recommended_social_description": {
+    "message": "ユーザーの閲覧習慣に基づくソーシャルメディアによるプロファイル構築を防ぎます。"
   },
   "options_report_bug": {
     "message": "バグがあった場合<a>バグ報告を送信</a>してください"
@@ -533,6 +545,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "OK, わかりました"
   },
+  "options_upgrade_button": {
+    "message": "アップグレード"
+  },
   "devtools_action_block": {
     "message": "項目をブロック"
   },
@@ -555,6 +570,9 @@
       }
     }
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "CSSセレクターが短すぎます。この要素を非表示にするフィルターでは、セレクターを長くするか少なくとも1つのドメインを特定してください。"
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "有効なドメインが指定されていません。この拡張要素非表示フィルターには、少なくとも1つのドメインを指定してください。"
   },
@@ -570,6 +588,9 @@
   "filter_invalid_regexp": {
     "message": "正規表現が無効です（シンタックスが基準に準拠していません）。"
   },
+  "filter_slow": {
+    "message": "フィルターで遅延が発生します。パターンの長さを確かめ、正規表現が含まれていないことを確認してください。"
+  },
   "filter_snippet_nodomain": {
     "message": "有効なドメインが指定されていません。このスニペットフィルターには、少なくとも1つのドメインを指定してください。"
   },
@@ -581,6 +602,9 @@
         "example": "foo"
       }
     }
+  },
+  "filter_url_not_specific_enough": {
+    "message": "CSSパターンが短すぎます。このフィルターでは、パターンを長くするか少なくとも1つのドメインを特定してください。"
   },
   "line": {
     "message": "$number$ 行目: $message$",
@@ -594,6 +618,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "フィルターの数が上限に達しました。新しいフィルターを追加するには、同じ種類の他のフィルターを削除してください。"
   },
   "unexpected_filter_list_header": {
     "message": "フィルターリストヘッダーは、ダウンロード可能なフィルターリストでのみサポートされます。"
@@ -820,6 +847,9 @@
   "footer_social_description": {
     "message": "ご連絡ください。"
   },
+  "idle_header": {
+    "message": "このページでは、ブロックするものはありません！"
+  },
   "options_refresh": {
     "message": "更新"
   },
@@ -831,6 +861,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "通知の表示を停止"
+  },
+  "premium_upgrade": {
+    "message": "アップグレード"
   },
   "refresh_this_page": {
     "message": "このページをリフレッシュ"

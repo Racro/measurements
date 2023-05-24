@@ -65,9 +65,6 @@
   "options_tab_general": {
     "message": "Pangkalahatan"
   },
-  "filter_slow": {
-    "message": "Upang masiguro ang mabilis na filter, pakitignan ang haba ng pattern at siguraduhing wala itong regular expression."
-  },
   "line": {
     "message": "Linya $number$: $message$",
     "placeholders": {

@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "ABP 우회덤핑방지 필터 목록"
   },
-  "common_feature_cookies_title": {
-    "message": "쿠키 경고 차단"
+  "common_feature_annoyances_title": {
+    "message": "산만한 요소 차단 강화"
   },
   "common_feature_malware_title": {
     "message": "멀웨어 차단"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "차단"
+  },
+  "composer_block_reload": {
+    "message": "차단 및 페이지 다시 로딩"
   },
   "composer_cancel": {
     "message": "취소"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "베타"
   },
   "options_builtin_filterList_add": {
     "message": "기본 제공 필터 목록 추가"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "공헌"
   },
+  "options_free_filters_header": {
+    "message": "무료 기능"
+  },
   "options_general_description": {
     "message": "Adblock Plus가 웹사이트에서 표시하고 숨길 내용을 선택하세요"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "설정"
   },
+  "options_premium_manage": {
+    "message": "구독 관리"
+  },
+  "options_premium_upgrade_description": {
+    "message": "광고차단 경험을 편집하고 강화하세요! <a0>자세히 보기</a0>"
+  },
   "options_privacy_header": {
     "message": "개인 정보 보호 및 보안"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "평가하기"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "이 필터를 추가하면 귀하는 개별 웹사이트에 대해 쿠키 관련 알림을 받을 권리와 쿠키 설정을 편집할 권리를 포기하게 됩니다. 일부 웹사이트는 기본적으로 귀하를 추적할 수 있음을 참고해 주십시오. 더 자세한 정보는 다음에서 확인할 수 있습니다: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "플로팅 동영상, 뉴스레터 팝업, 설문 요청, 사이트 알림을 차단하세요."
   },
-  "options_recommended_filters_header": {
-    "message": "권장 필터"
+  "options_recommended_notifications_description": {
+    "message": "웹사이트가 귀하의 온라인 활동을 추적할 수 있는 푸시 알람 허용을 요청하는 것을 막으세요."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "웹사이트가 귀하의 온라인 활동을 추적할 수 있는 푸시 알림 허용을 요청하는 것을 막으십시오."
+  "options_recommended_privacy_description": {
+    "message": "방문한 웹사이트 전체의 온라인 활동을 추적할 수 있는 알려진 단체로부터 귀하의 프라이버시를 보호하세요."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "방문한 웹사이트 전체의 온라인 활동을 추적할 수 있다고 알려진 단체로부터 귀하의 프라이버시를 보호하세요."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "방문한 웹사이트의 소셜 미디어 아이콘은 귀하가 클릭하지 않은 경우에도 귀하의 브라우징 습관을 근거로 소셜 미디어 네트워크가 귀하의 프로필을 작성하도록 허용합니다. 이러한 아이콘을 숨겨 귀하의 프로필을 보호할 수 있습니다."
+  "options_recommended_social_description": {
+    "message": "소셜 미디어 네트워크가 브라우징 습관에 따라 귀하의 프로필을 구축하는 것을 예방하세요."
   },
   "options_report_bug": {
     "message": "버그를 찾으셨습니까? <a>버그 리포트 보내기</a>"
@@ -551,6 +563,9 @@
   },
   "options_tracking_warning_acknowledgment": {
     "message": "네. 이해했습니다"
+  },
+  "options_upgrade_button": {
+    "message": "업그레이드"
   },
   "devtools_action_block": {
     "message": "항목 차단"
@@ -613,6 +628,9 @@
   "devtools_type_title": {
     "message": "유형"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "CSS 선택기가 너무 짧습니다. 이 요소 숨김 필터를 위해 더 긴 선택기를 사용하거나 최소 하나의 도메인을 지정해 주십시오."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "지정된 활성 도메인이 없습니다. 확장 요소 숨김 필터에 최소 하나의 도메인을 지정해 주십시오."
   },
@@ -629,7 +647,7 @@
     "message": "유효하지 않은 정규 표현식(구문이 표준을 준수하지 않음)."
   },
   "filter_slow": {
-    "message": "필터를 빠르게 유지하려면 패턴의 길이와 정규 표현식이 포함되어 있지는 않은지 확인해보세요."
+    "message": "느린 필터. 패턴의 길이를 확인해 주시고 정규 표현을 포함하지 않도록 해주십시오."
   },
   "filter_snippet_nodomain": {
     "message": "지정된 활성 도메인이 없습니다. 스니펫 필터에 최소 하나의 도메인을 지정해 주십시오."
@@ -643,6 +661,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "URL 패턴이 너무 짧습니다. 이 필터를 위해 더 긴 패턴을 사용하거나 최소 하나의 도메인을 지정해 주십시오."
+  },
   "line": {
     "message": "$number$번째 줄: $message$",
     "placeholders": {
@@ -655,6 +676,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "필터 수 한도에 도달했습니다. 새로운 필터를 추가하기 전에 동일한 유형의 다른 필터를 제거해 주십시오."
   },
   "unexpected_filter_list_header": {
     "message": "필터 목록 헤더는 다운로드 가능한 필터 목록에서만 지원됩니다."
@@ -884,6 +908,9 @@
   "footer_social_description": {
     "message": "소식을 받아 보세요!"
   },
+  "idle_header": {
+    "message": "이 페이지에서 차단할 내용이 없습니다!"
+  },
   "options_refresh": {
     "message": "갱신"
   },
@@ -895,6 +922,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "알림 표시를 중지합니다"
+  },
+  "premium_upgrade": {
+    "message": "업그레이드"
   },
   "refresh_this_page": {
     "message": "이 페이지 새로 고침 하기"

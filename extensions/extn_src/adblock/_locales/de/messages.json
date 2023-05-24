@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "ABP-Filterliste für Umgehungsschutz"
   },
-  "common_feature_cookies_title": {
-    "message": "Cookie-Warnmeldungen blockieren"
+  "common_feature_annoyances_title": {
+    "message": "Mehr Ablenkungen blockieren"
   },
   "common_feature_malware_title": {
     "message": "Blockieren von Malware"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Blockieren"
+  },
+  "composer_block_reload": {
+    "message": "Blockieren & Seite neu laden"
   },
   "composer_cancel": {
     "message": "Abbrechen"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Beta"
   },
   "options_builtin_filterList_add": {
     "message": "Integrierte Filterlisten hinzufügen"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "BEITRAGEN"
   },
+  "options_free_filters_header": {
+    "message": "Kostenlose Funktionen"
+  },
   "options_general_description": {
     "message": "Bestimmen, was Adblock Plus auf Webseiten anzeigt und ausblendet"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Einstellungen"
   },
+  "options_premium_manage": {
+    "message": "Mein Abonnement verwalten"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Personalisiere und verbessere dein Werbeblockierungserlebnis! <a0>Mehr erfahren</a0>"
+  },
   "options_privacy_header": {
     "message": "DATENSCHUTZ UND SICHERHEIT"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Bewerte uns"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "Durch Hinzufügen dieses Filters verzichtest du auf das Recht, Benachrichtigungen über Cookies zu erhalten und Cookie-Einstellungen auf individuellen Websites zu bearbeiten. Bitte beachte, dass einige Websites dich standardmäßig nachverfolgen. Weitere Informationen hierzu unter: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Blockiere Bild-in-Bild-Videos, Newsletter-Pop-Ups, Umfragen und Benachrichtigungen von Websites."
   },
-  "options_recommended_filters_header": {
-    "message": "Empfohlene Filter"
+  "options_recommended_notifications_description": {
+    "message": "Verhindere, dass Websites dich darum bitten, Push-Benachrichtigungen zuzulassen, die deine Online-Aktivitäten nachverfolgen können."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Verhindere, das Websites dich darum bitten, Push-Benachrichtigungen zu gestatten, die deine Online-Aktivitäten nachverfolgen können."
+  "options_recommended_privacy_description": {
+    "message": "Schütze deine Privatsphäre vor bekannten Organisationen, die deine Online-Aktivitäten auf Websites, die du besuchst, möglicherweise nachverfolgen."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Schütze deine Daten von bekannten Organisationen, die möglicherweise deine Online-Aktivitäten bei den Webseiten, die du besuchst, nachverfolgen."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "Die Social Media-Symbole auf den Webseiten, die du besuchst, ermöglichen den Social Media-Netzwerken, ein Profil auf Grundlage deiner Browsing-Gewohnheiten zu erstellen, selbst wenn du nicht darauf klickst. Das Ausblenden dieser Symbole kann dein Profil beschützen."
+  "options_recommended_social_description": {
+    "message": "Verhindere, dass Social Media-Netzwerke ein Profil auf Grundlage deiner Browsing-Gewohnheiten erstellen."
   },
   "options_report_bug": {
     "message": "Hast du einen Fehler gefunden? <a>Sende uns einen Fehlerbericht</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "Alles klar"
   },
+  "options_upgrade_button": {
+    "message": "Upgrade"
+  },
   "devtools_action_block": {
     "message": "Element blockieren"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Typ"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "Der CSS-Selektor ist zu kurz. Nutze einen längeren Selektor oder gib mindestens eine Domain für diesen Ausblendefilter für Elemente an."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Keine aktive Domain angegeben. Bitte gib mindestens eine Domain für diesen erweiterten Ausblendefilter für Elemente an."
   },
@@ -638,7 +656,7 @@
     "message": "Ungültiger regulärer Ausdruck (Syntax entspricht nicht dem Standard)."
   },
   "filter_slow": {
-    "message": "Bitte überprüfe die Länge des Musters und dass der Filter keinen regulären Ausdruck enthält, um sicherzustellen, dass er schnell angewandt werden kann."
+    "message": "Langsamer Filter. Überprüfe die Länge des Musters und stelle sicher, dass es keinen regulären Ausdruck enthält."
   },
   "filter_snippet_nodomain": {
     "message": "Keine aktive Domain angegeben. Bitte gib mindestens eine Domain für diesen Snippet-Filter an."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "Das URL-Muster ist zu kurz. Nutze ein längeres Muster oder gib mindestens eine Domain für diesen Filter an."
+  },
   "line": {
     "message": "Zeile $number$: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Die maximale Anzahl der Filter wurde erreicht. Bitte entferne andere Filter dieser Art, bevor du neue hinzufügst."
   },
   "unexpected_filter_list_header": {
     "message": "Filterliste-Header werden nur in herunterladbaren Filterlisten unterstützt."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "Mit uns in Verbindung bleiben!"
   },
+  "idle_header": {
+    "message": "Auf dieser Seite muss nichts blockiert werden!"
+  },
   "options_refresh": {
     "message": "Aktualisieren"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Keine Benachrichtigungen mehr anzeigen"
+  },
+  "premium_upgrade": {
+    "message": "Upgrade"
   },
   "refresh_this_page": {
     "message": "Diese Seite aktualisieren"

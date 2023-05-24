@@ -29,6 +29,20 @@
             "type": 3
         }
     },
+    "BitChute": {
+        "domains": [
+            "www.bitchute.com"
+        ],
+        "buttonSelectors": [
+            "iframe[src^='https://www.bitchute.com/embed/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.bitchute.com"
+            ],
+            "type": 3
+        }
+    },
     "Coub Player": {
         "domain": "coub.com",
         "buttonSelectors": [
@@ -66,6 +80,23 @@
             "type": 0
         }
     },
+    "Discord": {
+        "domains": [
+            "discord.com",
+            "discordapp.com"
+        ],
+        "buttonSelectors": [
+            "iframe[src^='https://discord.com/widget?']",
+            "iframe[src^='https://discordapp.com/widget?']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "discord.com",
+                "discordapp.com"
+            ],
+            "type": 3
+        }
+    },
     "Disqus": {
         "domains": [
             "disqus.com",
@@ -85,18 +116,6 @@
             "type": 4
         }
     },
-    "Facebook Comments": {
-        "domain": "www.facebook.com",
-        "buttonSelectors": [
-            "div.fb-comments.fb_iframe_widget"
-        ],
-        "replacementButton": {
-            "unblockDomains": [
-                "www.facebook.com"
-            ],
-            "type": 3
-        }
-    },
     "Facebook Like": {
         "domain": "www.facebook.com",
         "buttonSelectors": [
@@ -112,6 +131,30 @@
             ],
             "imagePath": "FacebookLike.svg",
             "type": 1
+        }
+    },
+    "Facebook Page": {
+        "domain": "www.facebook.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.facebook.com/plugins/page.php?']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.facebook.com"
+            ],
+            "type": 3
+        }
+    },
+    "Facebook Post": {
+        "domain": "www.facebook.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.facebook.com/plugins/post.php?']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.facebook.com"
+            ],
+            "type": 3
         }
     },
     "Facebook Share": {
@@ -150,6 +193,7 @@
         ],
         "buttonSelectors": [
             "iframe[src^='https://maps.google.com/maps/']",
+            "iframe[src^='https://maps.google.com/maps?']",
             "iframe[src^='https://www.google.com/maps/']"
         ],
         "noDirectLink": true,
@@ -191,6 +235,18 @@
             "type": 4
         }
     },
+    "iHeart Player": {
+        "domain": "www.iheart.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.iheart.com/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.iheart.com"
+            ],
+            "type": 3
+        }
+    },
     "LinkedIn": {
         "domain": "platform.linkedin.com",
         "buttonSelectors": [
@@ -227,6 +283,33 @@
             "type": 0
         }
     },
+    "PodBean Player": {
+        "domain": "www.podbean.com",
+        "buttonSelectors": [
+            "iframe[src^='https://www.podbean.com/media/player/']",
+            "iframe[src^='https://www.podbean.com/player-v2/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "www.podbean.com"
+            ],
+            "type": 3
+        }
+    },
+    "Qualtrics": {
+        "domains": [
+            "*.qualtrics.com"
+        ],
+        "buttonSelectors": [
+            "iframe[src*='.qualtrics.com/jfe/form/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "*.qualtrics.com"
+            ],
+            "type": 3
+        }
+    },
     "Rumble Video Player": {
         "domain": "rumble.com",
         "buttonSelectors": [
@@ -235,6 +318,25 @@
         "replacementButton": {
             "unblockDomains": [
                 "rumble.com"
+            ],
+            "type": 3
+        }
+    },
+    "Rutube Player": {
+        "domains": [
+            "rutube.ru",
+            "www.rutube.ru"
+        ],
+        "buttonSelectors": [
+            "iframe[src^='https://rutube.ru/pl/']",
+            "iframe[src^='https://rutube.ru/embed/']",
+            "iframe[src^='https://rutube.ru/play/embed/']",
+            "iframe[src^='https://www.rutube.ru/play/embed/']"
+        ],
+        "replacementButton": {
+            "unblockDomains": [
+                "rutube.ru",
+                "www.rutube.ru"
             ],
             "type": 3
         }
@@ -254,16 +356,19 @@
     "Spotify Player": {
         "domains": [
             "embed.spotify.com",
-            "open.spotify.com"
+            "open.spotify.com",
+            "podcasters.spotify.com"
         ],
         "buttonSelectors": [
             "iframe[src^='https://embed.spotify.com/']",
-            "iframe[src^='https://open.spotify.com/embed']"
+            "iframe[src^='https://open.spotify.com/embed']",
+            "iframe[src^='https://podcasters.spotify.com/pod/']"
         ],
         "replacementButton": {
             "unblockDomains": [
                 "embed.spotify.com",
-                "open.spotify.com"
+                "open.spotify.com",
+                "podcasters.spotify.com"
             ],
             "type": 3
         }
@@ -271,7 +376,8 @@
     "Streamable Player": {
         "domain": "streamable.com",
         "buttonSelectors": [
-            "iframe[src^='https://streamable.com/']"
+            "iframe[src^='https://streamable.com/']",
+            "iframe[src^='//streamable.com/']"
         ],
         "replacementButton": {
             "unblockDomains": [
@@ -320,14 +426,19 @@
         }
     },
     "Vimeo": {
-        "domain": "player.vimeo.com",
+        "domains": [
+            "player.vimeo.com",
+            "vimeo.com"
+        ],
         "buttonSelectors": [
             "iframe[src^='https://player.vimeo.com/video/']:not([src*='background=1'])",
-            "iframe[src^='//player.vimeo.com/video/']:not([src*='background=1'])"
+            "iframe[src^='//player.vimeo.com/video/']:not([src*='background=1'])",
+            "iframe[src^='https://vimeo.com/showcase/']"
         ],
         "replacementButton": {
             "unblockDomains": [
-                "player.vimeo.com"
+                "player.vimeo.com",
+                "vimeo.com"
             ],
             "type": 3
         }
@@ -339,12 +450,14 @@
             "www.youtube-nocookie.com"
         ],
         "buttonSelectors": [
-            "iframe[src^='//www.youtube.com/embed/']",
-            "iframe[src^='http://www.youtube.com/embed/']",
-            "iframe[src^='https://www.youtube.com/embed/']",
-            "iframe[src^='https://youtube.com/embed/']",
-            "iframe[src^='//www.youtube-nocookie.com/embed/']",
-            "iframe[src^='https://www.youtube-nocookie.com/embed/']"
+            "iframe[src^='//youtube.com/embed']",
+            "iframe[src^='//www.youtube.com/embed']",
+            "iframe[src^='http://www.youtube.com/embed']",
+            "iframe[src^='https://www.youtube.com/embed']",
+            "iframe[src^='https://youtube.com/embed']",
+            "iframe[src^='https://www.youtube.com/v/']",
+            "iframe[src^='//www.youtube-nocookie.com/embed']",
+            "iframe[src^='https://www.youtube-nocookie.com/embed']"
         ],
         "replacementButton": {
             "unblockDomains": [

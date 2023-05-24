@@ -15,12 +15,13 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals badger:false, log:false, URI:false */
+/* globals badger:false */
 
-require.scopes.heuristicblocking = (function () {
+import { getBaseDomain, URI } from "../lib/basedomain.js";
 
-let constants = require("constants");
-let utils = require("utils");
+import { log } from "./bootstrap.js";
+import constants from "./constants.js";
+import utils from "./utils.js";
 
 /*********************** heuristicblocking scope **/
 // make heuristic obj with utils and storage properties and put the things on it
@@ -104,53 +105,53 @@ HeuristicBlocker.prototype = {
   heuristicBlockingAccounting: function (details) {
     // ignore requests that are outside a tabbed window
     if (details.tabId < 0 || !badger.isLearningEnabled(details.tabId)) {
-      return {};
+      return;
     }
 
-    let self = this,
-      request_host = (new URI(details.url)).host;
+    let self = this;
 
     // if this is a main window request, update tab data and quit
     if (details.type == "main_frame") {
-      self.tabOrigins[details.tabId] = window.getBaseDomain(request_host);
+      let request_host = (new URI(details.url)).host;
+      self.tabOrigins[details.tabId] = getBaseDomain(request_host);
       self.tabUrls[details.tabId] = details.url;
-      return {};
+      return;
     }
 
     let tab_base = self.tabOrigins[details.tabId];
     if (!tab_base) {
-      return {};
+      return;
     }
 
+    let request_host = (new URI(details.url)).host;
     // CNAME uncloaking
     if (utils.hasOwn(badger.cnameDomains, request_host)) {
       // TODO details.url is still wrong
       request_host = badger.cnameDomains[request_host];
     }
-
-    let request_base = window.getBaseDomain(request_host);
+    let request_base = getBaseDomain(request_host);
 
     // ignore first-party requests
     if (!utils.isThirdPartyDomain(request_base, tab_base)) {
-      return {};
+      return;
     }
 
     // short-circuit if we already observed this eTLD+1 tracking on this site
     let firstParties = self.storage.getStore('snitch_map').getItem(request_base);
-    if (firstParties && firstParties.indexOf(tab_base) > -1) {
-      return {};
+    if (firstParties && firstParties.includes(tab_base)) {
+      return;
     }
 
-    // abort if we already made a decision for this FQDN
+    // short-circuit if we already made a decision for this FQDN
     let action = self.storage.getAction(request_host);
     if (action != constants.NO_TRACKING && action != constants.ALLOW) {
-      return {};
+      return;
     }
 
     // check if there are tracking cookies
     if (hasCookieTracking(details)) {
       self._recordPrevalence(request_host, request_base, tab_base);
-      return {};
+      return;
     }
   },
 
@@ -162,7 +163,7 @@ HeuristicBlocker.prototype = {
    * @param {String} site_base Base domain of page where tracking occurred
    */
   updateTrackerPrevalence: function (tracker_fqdn, tracker_base, site_base) {
-    // abort if we already made a decision for this fqdn
+    // short-circuit if we already made a decision for this fqdn
     let action = this.storage.getAction(tracker_fqdn);
     if (action != constants.NO_TRACKING && action != constants.ALLOW) {
       return;
@@ -177,7 +178,7 @@ HeuristicBlocker.prototype = {
 
   /**
    * Record HTTP request prevalence. Block a tracker if seen on more
-   * than constants.TRACKING_THRESHOLD pages
+   * than constants.TRACKING_THRESHOLD pages.
    *
    * NOTE: This is a private function and should never be called directly.
    * All calls should be routed through heuristicBlockingAccounting for normal usage
@@ -202,7 +203,15 @@ HeuristicBlocker.prototype = {
 
     let self = this,
       firstParties = [],
+      actionMap = self.storage.getStore('action_map'),
       snitchMap = self.storage.getStore('snitch_map');
+
+    if (!actionMap.hasItem(tracker_fqdn)) {
+      self.storage.setupHeuristicAction(tracker_fqdn, constants.ALLOW);
+      if (!actionMap.hasItem(tracker_base)) {
+        self.storage.setupHeuristicAction(tracker_base, constants.ALLOW);
+      }
+    }
 
     if (snitchMap.hasItem(tracker_base)) {
       firstParties = snitchMap.getItem(tracker_base);
@@ -217,14 +226,9 @@ HeuristicBlocker.prototype = {
     firstParties.push(site_base);
     snitchMap.setItem(tracker_base, firstParties);
 
-    // ALLOW indicates this is a tracker still below TRACKING_THRESHOLD
-    // (vs. NO_TRACKING for resources we haven't seen perform tracking yet).
-    // see https://github.com/EFForg/privacybadger/pull/1145#discussion_r96676710
-    self.storage.setupHeuristicAction(tracker_fqdn, constants.ALLOW);
-    self.storage.setupHeuristicAction(tracker_base, constants.ALLOW);
-
-    // (cookie)block the tracker if it has been seen on multiple first party domains
-    if (firstParties.length >= constants.TRACKING_THRESHOLD) {
+    // (cookie)block if domain was seen tracking on enough first party domains
+    if (firstParties.length >=
+        self.storage.getStore('private_storage').getItem('blockThreshold')) {
       log("blocklisting", tracker_fqdn);
       self.blocklistOrigin(tracker_base, tracker_fqdn);
     }
@@ -535,7 +539,9 @@ function startListeners() {
     extraInfoSpec.push('extraHeaders');
   }
   chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
-    return badger.heuristicBlocking.heuristicBlockingAccounting(details);
+    if (badger.INITIALIZED) {
+      badger.heuristicBlocking.heuristicBlockingAccounting(details);
+    }
   }, {urls: ["<all_urls>"]}, extraInfoSpec);
 
   /**
@@ -545,28 +551,28 @@ function startListeners() {
   if (utils.hasOwn(chrome.webRequest.OnResponseStartedOptions, 'EXTRA_HEADERS')) {
     extraInfoSpec.push('extraHeaders');
   }
-  chrome.webRequest.onResponseStarted.addListener(function(details) {
-    var hasSetCookie = false;
-    for (var i = 0; i < details.responseHeaders.length; i++) {
+  chrome.webRequest.onResponseStarted.addListener(function (details) {
+    if (!badger.INITIALIZED) {
+      return;
+    }
+
+    // check for cookie tracking if there are any set-cookie headers
+    let has_setcookie_header = false;
+    for (let i = 0; i < details.responseHeaders.length; i++) {
       if (details.responseHeaders[i].name.toLowerCase() == "set-cookie") {
-        hasSetCookie = true;
+        has_setcookie_header = true;
         break;
       }
     }
-    if (hasSetCookie) {
-      return badger.heuristicBlocking.heuristicBlockingAccounting(details);
+    if (has_setcookie_header) {
+      badger.heuristicBlocking.heuristicBlockingAccounting(details);
     }
-  },
-  {urls: ["<all_urls>"]}, extraInfoSpec);
+
+  }, {urls: ["<all_urls>"]}, extraInfoSpec);
 }
 
-/************************************** exports */
-let exports = {
+export default {
   hasCookieTracking,
   HeuristicBlocker,
   startListeners,
 };
-return exports;
-/************************************** exports */
-
-}());

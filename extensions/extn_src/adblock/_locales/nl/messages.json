@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "ABP-filterlijst voor anti-omzeiling"
   },
-  "common_feature_cookies_title": {
-    "message": "Blokkeer cookie-waarschuwingen"
+  "common_feature_annoyances_title": {
+    "message": "Blokkeer meer afleidingen"
   },
   "common_feature_malware_title": {
     "message": "Malware blokkeren"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Blokkeer"
+  },
+  "composer_block_reload": {
+    "message": "Blokkeer en herlaad pagina"
   },
   "composer_cancel": {
     "message": "Annuleer"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Beta"
   },
   "options_builtin_filterList_add": {
     "message": "Ingebouwde filterlijsten toevoegen"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "Bijdragen"
   },
+  "options_free_filters_header": {
+    "message": "Gratis functies"
+  },
   "options_general_description": {
     "message": "Bepalen wat Adblock Plus op websites toont en verbergt"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Instellingen"
   },
+  "options_premium_manage": {
+    "message": "Beheer mijn abonnement"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Stel uw Adblock-ervaring af en verbeter deze! <a0>Kom meer te weten</a0>"
+  },
   "options_privacy_header": {
     "message": "Privacy en beveiliging"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Beoordeel ons"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "Door dit filter toe te voegen doet u afstand van uw recht om op de hoogte gesteld te worden over cookies en het wijzigen van cookie-instellingen op individuele websites. Houd er rekening mee dat sommige websites u standaard volgen. Hier vind u meer informatie: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Blokkeer zwevende videovensters, nieuwsbriefpop-ups, enquêteverzoeken en websitemeldingen"
   },
-  "options_recommended_filters_header": {
-    "message": "Aanbevolen filters"
+  "options_recommended_notifications_description": {
+    "message": "Voorkom dat websites u vragen om pushmeldingen toe te staan die uw online activiteit kunnen tracken."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Stop websites met vragen of u pushmeldingen toestaat die uw online-activiteit kunnen volgen."
+  "options_recommended_privacy_description": {
+    "message": "Bescherm uw privacy tegen bekende entiteiten die uw online activiteit mogelijk kunnen tracken wanneer u websites bezoekt."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Bescherm uw privacy tegen bekende entiteiten die uw online activiteiten kunnen volgen via alle websites die u bezoekt."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "De sociale media pictogrammen op de websites die u bezoekt laten toe dat sociale media netwerken een profiel van u bouwen op basis van uw browsinggedrag - zelfs als u er niet op klikt. Het verbergen van deze pictogrammen kan uw profiel beschermen."
+  "options_recommended_social_description": {
+    "message": "Voorkom dat sociale medianetwerken een profiel van u opbouwen op basis van uw surfgewoonten."
   },
   "options_report_bug": {
     "message": "Een bug gevonden? <a>Stuur ons een bugrapport</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "OK, begrepen"
   },
+  "options_upgrade_button": {
+    "message": "Upgraden"
+  },
   "devtools_action_block": {
     "message": "Item blokkeren"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Type"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "De CSS-kiezer is te kort. Gebruik een langere kiezer of specificeer minstens één domein voor deze element verbergende filter."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Geen actief domein aangegeven. Geef ten minste één domein op voor dit toegevoegde element om filters te verbergen."
   },
@@ -638,7 +656,7 @@
     "message": "Ongeldige reguliere expressie (de syntaxis voldoet niet aan de norm)."
   },
   "filter_slow": {
-    "message": "Controleer voor een snel filter de lengte van het patroon en zorg ervoor dat dit geen reguliere expressie gebruikt."
+    "message": "Trage filter. Controleer de lengte van het patroon en zorg ervoor dat het geen reguliere expressie bevat."
   },
   "filter_snippet_nodomain": {
     "message": "Geen actief domein aangegeven. Geef ten minste één domein op voor dit toegevoegde element om filters te verbergen."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "Het URL-patroon is te kort. Gebruik een langer patroon of specificeer minstens één domein voor deze filter."
+  },
   "line": {
     "message": "Regel $number$: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Maximum aantal filters bereikt. Verwijder andere filters van hetzelfde type voordat u nieuwe toevoegt."
   },
   "unexpected_filter_list_header": {
     "message": "De headers voor filterlijsten worden alleen ondersteund in downloadbare filterlijsten."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "Blijf verbonden met ons!"
   },
+  "idle_header": {
+    "message": "Er is niets te blokkeren op deze pagina!"
+  },
   "options_refresh": {
     "message": "Vernieuwen"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Tonen van meldingen stoppen"
+  },
+  "premium_upgrade": {
+    "message": "Upgraden"
   },
   "refresh_this_page": {
     "message": "Deze pagina vernieuwen"

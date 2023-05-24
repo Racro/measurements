@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "ABP 反规避过滤列表"
   },
-  "common_feature_cookies_title": {
-    "message": "拦截 Cookie 警告"
+  "common_feature_annoyances_title": {
+    "message": "拦截更多干扰内容"
   },
   "common_feature_malware_title": {
     "message": "屏蔽恶意软件"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "追踪"
+  },
+  "composer_block_reload": {
+    "message": "拦截并重新加载页面"
   },
   "composer_cancel": {
     "message": "取消"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "试用版"
   },
   "options_builtin_filterList_add": {
     "message": "添加内置过滤列表"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "协助"
   },
+  "options_free_filters_header": {
+    "message": "免费功能"
+  },
   "options_general_description": {
     "message": "确定 Adblock Plus 在网站上显示和隐藏的内容"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "设置"
   },
+  "options_premium_manage": {
+    "message": "管理我的订阅"
+  },
+  "options_premium_upgrade_description": {
+    "message": "定制并提升您的广告拦截体验！<a0>了解更多</a0>"
+  },
   "options_privacy_header": {
     "message": "隐私与安全"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "评价我们"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "添加此筛选器，即表示您放弃在各个网站上收到 Cookie 相关通知及编辑 Cookie 设置的权利。更多信息请参阅此处：<a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "拦截浮动视频、新闻通讯弹出窗口、调查请求和网站通知。"
   },
-  "options_recommended_filters_header": {
-    "message": "推荐的筛选器"
+  "options_recommended_notifications_description": {
+    "message": "阻止网站要求您允许可能跟踪您的在线活动的推送通知。"
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "阻止网站要求您允许可能追踪您的在线活动的推送通知。"
+  "options_recommended_privacy_description": {
+    "message": "针对已知可能会在您访问的网站上跟踪您的在线活动的实体保护您的隐私。"
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "针对已知会追踪您访问各网站的在线活动的实体保护您的隐私"
-  },
-  "options_recommended_social_tooltip": {
-    "message": "您访问的网站上的社交媒体图标可让社交媒体网络根据您的浏览习惯为您建立个人资料 - 即使您未点击它们。隐藏这些图标可以保护您的个人资料。"
+  "options_recommended_social_description": {
+    "message": "防止社交媒体网络根据您的浏览习惯建立您的个人档案。"
   },
   "options_report_bug": {
     "message": "发现错误？<a>向我们发送错误报告</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "好的，知道了"
   },
+  "options_upgrade_button": {
+    "message": "升级"
+  },
   "devtools_action_block": {
     "message": "拦截项目"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "类型"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "CSS 选择器太短。请使用更长的选择器，或为此要素隐藏筛选器指定至少一个域。"
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "未指定活动域。请为此扩展元素隐藏筛选器指定至少一个域。"
   },
@@ -638,7 +656,7 @@
     "message": "正则表达式无效（语言不符合标准）。"
   },
   "filter_slow": {
-    "message": "为确保快速过滤，请检查序列长度并确保不包含正则表达式。"
+    "message": "筛选器太慢。请检查模式的长度，确保其不包含正则表达式。"
   },
   "filter_snippet_nodomain": {
     "message": "未指定活动域。请为此代码段筛选器指定至少一个域。"
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "URL 模式太短。请使用更长的模式，或为此筛选器指定至少一个域。"
+  },
   "line": {
     "message": "第 $number$ 行：$message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "已达到筛选器最大数量。请移除其他同类筛选器，然后再添加新筛选器。"
   },
   "unexpected_filter_list_header": {
     "message": "筛选器列表标头仅在可下载筛选器列表中受支持。"
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "与我们保持联系！"
   },
+  "idle_header": {
+    "message": "此页面上没有需要拦截的内容！"
+  },
   "options_refresh": {
     "message": "刷新"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "停止显示通知"
+  },
+  "premium_upgrade": {
+    "message": "升级"
   },
   "refresh_this_page": {
     "message": "刷新此页面"

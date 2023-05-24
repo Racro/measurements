@@ -17,64 +17,9 @@
 
 "use strict";
 
+// This code is running in the global scope, so we need to encapsulate it
+// to avoid unexpected interference with code in other files
 {
-  let nonEmptyPageMaps = new Set();
-
-  ext.PageMap = class PageMap
-  {
-    constructor()
-    {
-      this._map = new Map();
-    }
-
-    _delete(id)
-    {
-      this._map.delete(id);
-
-      if (this._map.size == 0)
-        nonEmptyPageMaps.delete(this);
-    }
-
-    keys()
-    {
-      return Array.from(this._map.keys()).map(ext.getPage);
-    }
-
-    get(page)
-    {
-      return this._map.get(page.id);
-    }
-
-    set(page, value)
-    {
-      this._map.set(page.id, value);
-      nonEmptyPageMaps.add(this);
-    }
-
-    has(page)
-    {
-      return this._map.has(page.id);
-    }
-
-    clear()
-    {
-      this._map.clear();
-      nonEmptyPageMaps.delete(this);
-    }
-
-    delete(page)
-    {
-      this._delete(page.id);
-    }
-  };
-
-  function removeFromAllPageMaps(pageId)
-  {
-    for (let pageMap of nonEmptyPageMaps)
-      pageMap._delete(pageId);
-  }
-
-
   /* Pages */
 
   let Page = ext.Page = class Page
@@ -110,15 +55,18 @@
   ext.getPage = id => new Page({id: parseInt(id, 10)});
 
   ext.pages = {
-    onLoading: new ext._EventTarget(),
     onActivated: new ext._EventTarget(),
+    onLoaded: new ext._EventTarget(),
+    onLoading: new ext._EventTarget(),
     onRemoved: new ext._EventTarget()
   };
 
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) =>
   {
-    if (changeInfo.status == "loading")
+    if (changeInfo.status === "loading")
       ext.pages.onLoading._dispatch(new Page(tab));
+    else if (changeInfo.status === "complete")
+      ext.pages.onLoaded._dispatch(new Page(tab));
   });
 
   function createFrame(tabId, frameId)
@@ -147,8 +95,6 @@
     if (frameId == 0)
     {
       let page = new Page({id: tabId, url});
-
-      removeFromAllPageMaps(tabId);
 
       browser.tabs.get(tabId).catch(error =>
       {
@@ -312,7 +258,6 @@
   {
     ext.pages.onRemoved._dispatch(tabId);
 
-    removeFromAllPageMaps(tabId);
     framesOfTabs.delete(tabId);
   }
 
@@ -371,8 +316,61 @@
 
   /* Message passing */
 
-  browser.runtime.onMessage.addListener((message, rawSender, sendResponse) =>
+  const selfOrigin = new URL(browser.runtime.getURL("")).origin;
+  const trustedTypesByOrigin = new Map();
+
+  /**
+   * Specify message types that we allow only for certain origins.
+   *
+   * @param {string} origin - Sender origin (any if `null`)
+   * @param {string[]} types - Trusted message types for given origin
+   */
+  ext.addTrustedMessageTypes = (origin, types) =>
   {
+    if (!trustedTypesByOrigin.has(origin))
+      trustedTypesByOrigin.set(origin, []);
+
+    const trustedTypes = trustedTypesByOrigin.get(origin);
+    trustedTypes.push(...types);
+  };
+
+  function isTrustedMessageType(origin, type)
+  {
+    const trustedTypes = trustedTypesByOrigin.get(origin);
+    return !!trustedTypes && trustedTypes.includes(type);
+  }
+
+  function getSenderOrigin(sender)
+  {
+    // Firefox (at least up to version 105) doesn't support MessageSender.origin
+    if (sender.origin)
+      return sender.origin;
+
+    return new URL(sender.url).origin;
+  }
+
+  ext.isTrustedSender = sender => getSenderOrigin(sender) === selfOrigin;
+
+  browser.runtime.onMessage.addListener((message, rawSender) =>
+  {
+    // Ignore invalid messages
+    if (typeof message !== "object" || !message.type)
+      return;
+
+    // Ignore messages from EWE content scripts
+    if (message.type.startsWith("ewe:"))
+      return;
+
+    // Ignore messages from content scripts, unless we listed them as
+    // safe to use in the context they're running in
+    if (!ext.isTrustedSender(rawSender) &&
+        !isTrustedMessageType(getSenderOrigin(rawSender), message.type) &&
+        !isTrustedMessageType(null, message.type))
+    {
+      console.warn("Untrusted message received", message.type, rawSender.url);
+      return;
+    }
+
     let sender = {};
 
     // Add "page" and "frame" if the message was sent by a content script.
@@ -395,8 +393,7 @@
       };
     }
 
-    return ext.onMessage._dispatch(
-      message, sender, sendResponse
-    ).includes(true);
+    let responses = ext.onMessage._dispatch(message, sender);
+    return ext.getMessageResponse(responses);
   });
 }

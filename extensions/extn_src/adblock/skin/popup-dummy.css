@@ -38,6 +38,9 @@
   --color-error: var(--color-brand-primary);
   --color-link: #0797E1;
   --color-info: #0797E1;
+  --color-premium: #EDA51E;
+  --color-premium-hover: #EB9B05;
+  --font-size-heavy: 20px;
   --font-size-big: 17px;
   --font-size-medium: 16px;
   --font-size-primary: 13px;
@@ -46,7 +49,8 @@
   --margin-secondary: calc(var(--margin-primary) / 2);
   --padding-primary: 16px;
   --padding-secondary: calc(var(--padding-primary) / 2);
-  --primary-outline: var(--border-color-outline) dotted 1px; }
+  --primary-outline: var(--border-color-outline) dotted 1px;
+}
 
 /*
  * Absolute positioning of child elements behaves as if parent is
@@ -55,7 +59,8 @@
  */
 #page-info > div {
   transform: initial;
-  will-change: initial; }
+  will-change: initial;
+}
 
 .overlay {
   position: fixed;
@@ -63,7 +68,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.13)); }
+  background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.13));
+}
 
 #block-element,
 #block-element:hover,
@@ -71,4 +77,5 @@
   position: relative;
   z-index: 1;
   border: 3px solid var(--color-brand-primary);
-  cursor: default; }
+  cursor: default;
+}

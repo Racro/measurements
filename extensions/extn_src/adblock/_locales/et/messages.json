@@ -427,9 +427,6 @@
   "devtools_type_title": {
     "message": "Tüüp"
   },
-  "filter_slow": {
-    "message": "Kiire filtri tagamiseks palun kontrolli mustri pikkust ja veendu, et see ei sisalda regulaaravaldist."
-  },
   "line": {
     "message": "Rida $number$: $message$",
     "placeholders": {

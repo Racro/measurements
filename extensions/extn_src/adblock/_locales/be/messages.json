@@ -449,9 +449,6 @@
   "devtools_type_title": {
     "message": "Тып"
   },
-  "filter_slow": {
-    "message": "Каб забяспечыць хуткую працу фільтра, праверце даўжыню правіла, і пераканайцеся, што яно не ўтрымлівае рэгулярных выразаў."
-  },
   "line": {
     "message": "Радок $number$: $message$",
     "placeholders": {

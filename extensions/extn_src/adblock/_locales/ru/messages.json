@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "Список фильтров для антиобхода ABP"
   },
-  "common_feature_cookies_title": {
-    "message": "Заблокировать предупреждения о файлах cookie"
+  "common_feature_annoyances_title": {
+    "message": "Заблокируйте еще больше помех"
   },
   "common_feature_malware_title": {
     "message": "Блокировать вредоносные программы"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Заблокировать"
+  },
+  "composer_block_reload": {
+    "message": "Заблокировать и перезагрузить страницу"
   },
   "composer_cancel": {
     "message": "Отменить"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Бета-версия"
   },
   "options_builtin_filterList_add": {
     "message": "Добавить списки встроенных фильтров"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "УЧАСТИЕ"
   },
+  "options_free_filters_header": {
+    "message": "Бесплатные функции"
+  },
   "options_general_description": {
     "message": "Определите, что Adblock Plus показывает и скрывает на сайтах"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Настройки"
   },
+  "options_premium_manage": {
+    "message": "Управлять подпиской"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Настройте блокировку рекламы согласно вашим предпочтениям и повысьте ее эффективность! <a0>Узнать больше</a0>"
+  },
   "options_privacy_header": {
     "message": "КОНФИДЕНЦИАЛЬНОСТЬ И БЕЗОПАСНОСТЬ"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Оцените нас"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "Добавляя этот фильтр, вы отказываетесь от права получать уведомления о cookies и изменять настройки cookies на отдельных вебсайтах. Имейте в виду, что некоторые вебсайты могут отслеживать вашу деятельность по умолчанию. Подробная информация: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Блокируйте всплывающие видео, окна с информационными сообщениями, запросы на прохождение опросов и уведомления с сайта."
   },
-  "options_recommended_filters_header": {
-    "message": "Рекомендуемые фильтры"
+  "options_recommended_notifications_description": {
+    "message": "Не позволяйте веб-сайтам требовать от вас разрешать push-уведомления, которые могут отслеживать ваши действия в Интернете."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Не позволяйте вебсайтам просить вас включить push-уведомления, которые помогают отследить вашу активность в сети."
+  "options_recommended_privacy_description": {
+    "message": "Защитите свою конфиденциальность от известных организаций, которые могут отслеживать вашу активность в Интернете на сайтах, которые вы посещаете."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Защитите свою конфиденциальность от известных программ, которые могут отслеживать вашу активность на посещаемых вами сайтах."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "Значки социальных сетей на вебсайтах, которые вы посещаете, позволяют социальным сетям составить ваш профиль на основании вашей истории просмотра веб-страниц – даже если вы не кликаете по этим значкам. Скрытие этих значков может защитить ваш профиль."
+  "options_recommended_social_description": {
+    "message": "Не позволяйте социальным сетям формировать ваш профиль на основании ваших предпочтений по просмотру веб-страниц."
   },
   "options_report_bug": {
     "message": "Нашли ошибку? <a>Отправить нам отчет об ошибках</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "Все ясно"
   },
+  "options_upgrade_button": {
+    "message": "Сделать апгрейд"
+  },
   "devtools_action_block": {
     "message": "Заблокировать объект"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Тип"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "CSS-селектор слишком короткий. Пожалуйста, используйте более длинный селектор или укажите как минимум один домен для этого фильтра скрытия элементов."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Не указан активный домен. Укажите хотя бы один домен для данного расширенного фильтра скрытия элементов."
   },
@@ -638,7 +656,7 @@
     "message": "Недействительное регулярное выражение (синтаксис не соответствует стандарту)."
   },
   "filter_slow": {
-    "message": "Чтобы обеспечить быструю работу фильтра проверь длину правила, и убедись, что оно не содержит регулярного выражения."
+    "message": "Медленный фильтр. Пожалуйста, проверьте длину шаблона и убедитесь, что он не содержит регулярное выражение."
   },
   "filter_snippet_nodomain": {
     "message": "Не указан активный домен. Укажите хотя бы один домен для этого фильтра фрагмента."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "Шаблон URL слишком короткий. Пожалуйста, используйте более длинный шаблон или укажите как минимум один домен для этого фильтра."
+  },
   "line": {
     "message": "Строка $number$: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Достигнуто максимальное количество фильтров. Перед добавлением новых фильтров следует удалить другие фильтры того же типа."
   },
   "unexpected_filter_list_header": {
     "message": "Заголовки списка фильтров поддерживаются только в загружаемых списках фильтров."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "Оставайтесь на связи!"
   },
+  "idle_header": {
+    "message": "На этой странице нечего блокировать!"
+  },
   "options_refresh": {
     "message": "Обновить"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Запретить показ уведомлений"
+  },
+  "premium_upgrade": {
+    "message": "Сделать апгрейд"
   },
   "refresh_this_page": {
     "message": "Обновите данную страницу"

@@ -68,15 +68,15 @@
     "description": "Title for the advanced settings page"
   },
   "popupPowerSwitchInfo": {
-    "message": "Painallus: Poista uBlock₀ käytöstä/ota se käyttöön tällä sivustolla.\n\nCtrl+painallus: poista uBlock₀ käytöstä vain tällä sivulla.",
+    "message": "Painallus: poista uBlock₀ käytöstä/ota se käyttöön tällä sivustolla.\n\nCtrl+painallus: poista uBlock₀ käytöstä vain tällä sivulla.",
     "description": "English: Click: disable/enable uBlock₀ for this site.\n\nCtrl+click: disable uBlock₀ only on this page."
   },
   "popupPowerSwitchInfo1": {
-    "message": "Painallus poistaa uBlock₀;n käytöstä tällä sivustolla.\n\nCtrl+painallus poistaa uBlock₀:n käytöstä vain tällä sivulla.",
+    "message": "Poista uBlock₀ käytöstä tällä sivustolla painamalla tästä.\n\nCtrl+painallus poistaa uBlock₀:n käytöstä vain tällä sivulla.",
     "description": "Message to be read by screen readers"
   },
   "popupPowerSwitchInfo2": {
-    "message": "Paina ottaaksesi uBlock₀:n käyttöön tällä sivustolla.",
+    "message": "Ota uBlock₀ käyttöön tällä sivustolla painamalla tästä.",
     "description": "Message to be read by screen readers"
   },
   "popupBlockedRequestPrompt": {
@@ -116,7 +116,7 @@
     "description": "English: Click to open the dashboard"
   },
   "popupTipZapper": {
-    "message": "Avaa elementin piilotustila",
+    "message": "Avaa elementtien piilotustila",
     "description": "Tooltip for the element-zapper icon in the popup panel"
   },
   "popupTipPicker": {
@@ -136,11 +136,11 @@
     "description": "Tooltip for the no-popups per-site switch"
   },
   "popupTipNoPopups1": {
-    "message": "Paina estääksesi kaikki ponnahdukset tällä sivustolla",
+    "message": "Estä kaikki ponnahdukset tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-popups per-site switch"
   },
   "popupTipNoPopups2": {
-    "message": "Paina salliaksesi kaikki ponnahdukset tällä sivustolla",
+    "message": "Salli kaikki ponnahdukset tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-popups per-site switch"
   },
   "popupTipNoLargeMedia": {
@@ -148,11 +148,11 @@
     "description": "Tooltip for the no-large-media per-site switch"
   },
   "popupTipNoLargeMedia1": {
-    "message": "Paina estääksesi suuret mediaelementit tällä sivustolla",
+    "message": "Estä suuret mediaelementit tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-large-media per-site switch"
   },
   "popupTipNoLargeMedia2": {
-    "message": "Paina salliaksesi suuret mediaelementit tällä sivustolla",
+    "message": "Salli suuret mediaelementit tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-large-media per-site switch"
   },
   "popupTipNoCosmeticFiltering": {
@@ -160,11 +160,11 @@
     "description": "Tooltip for the no-cosmetic-filtering per-site switch"
   },
   "popupTipNoCosmeticFiltering1": {
-    "message": "Paina poistaaksesi kosmeettisen suodatuksen käytöstä tällä sivustolla",
+    "message": "Poista kosmeettinen suodatus käytöstä tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-cosmetic-filtering per-site switch"
   },
   "popupTipNoCosmeticFiltering2": {
-    "message": "Paina käyttääksesi kosmeettista suodatusta tällä sivustolla",
+    "message": "Ota kosmeettinen suodatus käyttöön tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-cosmetic-filtering per-site switch"
   },
   "popupTipNoRemoteFonts": {
@@ -172,19 +172,19 @@
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoRemoteFonts1": {
-    "message": "Paina estääksesi ulkoisten fonttien latauksen tällä sivustolla",
+    "message": "Estä ulkoisten fonttien lataus tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoRemoteFonts2": {
-    "message": "Paina salliaksesi ulkoisten fonttien latauksen tällä sivustolla",
+    "message": "Salli ulkoisten fonttien lataus tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoScripting1": {
-    "message": "Paina estääksesi JavaScriptin tällä sivustolla",
+    "message": "Estä JavaScript tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-scripting per-site switch"
   },
   "popupTipNoScripting2": {
-    "message": "Paina salliaksesi JavaScriptin tällä sivustolla",
+    "message": "Salli JavaScript tällä sivustolla painamalla tästä",
     "description": "Tooltip for the no-scripting per-site switch"
   },
   "popupNoPopups_v2": {
@@ -216,19 +216,19 @@
     "description": "Label to be used to hide popup panel sections"
   },
   "popupTipGlobalRules": {
-    "message": "Yleiset säännöt: sarake säännöille, joita käytetään kaikilla sivustoilla.",
+    "message": "Yleiset säännöt: Sarake säännöille, joita käytetään kaikilla sivustoilla.",
     "description": "Tooltip when hovering the top-most cell of the global-rules column."
   },
   "popupTipLocalRules": {
-    "message": "Paikalliset säännöt: sarake säännöille, joita käytetään vain nykyisellä sivustolla.\nPaikalliset säännöt ohittavat yleiset säännöt.",
+    "message": "Paikalliset säännöt: Sarake säännöille, joita käytetään vain nykyisellä sivustolla.\nPaikalliset säännöt ohittavat yleiset säännöt.",
     "description": "Tooltip when hovering the top-most cell of the local-rules column."
   },
   "popupTipSaveRules": {
-    "message": "Paina tehdäksesi muutoksistasi pysyviä.",
+    "message": "Tee muutoksistasi pysyviä painamalla tästä.",
     "description": "Tooltip when hovering over the padlock in the dynamic filtering pane."
   },
   "popupTipRevertRules": {
-    "message": "Paina kumotaksesi muutoksesi.",
+    "message": "Kumoa muutoksesi painamalla tästä.",
     "description": "Tooltip when hovering over the eraser in the dynamic filtering pane."
   },
   "popupAnyRulePrompt": {
@@ -275,13 +275,13 @@
     "message": "Versio",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Korosta rivit, joilla on kolmannen osapuolen komentosarjoja",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "komentosarja",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Korosta rivit, joilla on kolmannen osapuolen kehyksiä",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "kehys",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Luo",
@@ -320,7 +320,7 @@
     "description": "English: Hide placeholders of blocked elements"
   },
   "settingsIconBadgePrompt": {
-    "message": "Näytä estettyjen pyyntöjen määrä työkalupalkin kuvakkeessa",
+    "message": "Näytä estettyjen pyyntöjen määrä",
     "description": "English: Show the number of blocked requests on the icon"
   },
   "settingsTooltipsPrompt": {
@@ -460,7 +460,7 @@
     "description": "A checkbox in the 'Filter lists' pane"
   },
   "3pListsOfBlockedHostsHeader": {
-    "message": "Luettelo estetyistä osoitteista",
+    "message": "Lista estetyistä osoitteista",
     "description": "English: Lists of blocked hosts"
   },
   "3pApplyChanges": {
@@ -516,7 +516,7 @@
     "description": "used as a tooltip for eye icon beside a list"
   },
   "3pLastUpdate": {
-    "message": "Viimeisin päivitys: {{ago}}.\nPaina pakottaaksesi päivityksen.",
+    "message": "Viimeisin päivitys: {{ago}}.\nPakota päivitys painamalla tästä.",
     "description": "used as a tooltip for the clock icon beside a list"
   },
   "3pUpdating": {
@@ -536,7 +536,7 @@
     "description": "English: Import and append"
   },
   "1pExport": {
-    "message": "Vie tiedostoon",
+    "message": "Vie tiedostoon...",
     "description": "English: Export"
   },
   "1pExportFilename": {
@@ -580,7 +580,7 @@
     "description": ""
   },
   "rulesExport": {
-    "message": "Vie tiedostoon",
+    "message": "Vie tiedostoon...",
     "description": ""
   },
   "rulesDefaultFileName": {
@@ -620,7 +620,7 @@
     "description": "English: Import and append"
   },
   "whitelistExport": {
-    "message": "Vie tiedostoon",
+    "message": "Vie tiedostoon...",
     "description": "English: Export"
   },
   "whitelistExportFilename": {
@@ -1040,7 +1040,7 @@
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
-    "message": "Varmuuskopioi tiedostoon",
+    "message": "Varmuuskopioi tiedostoon…",
     "description": "Text for button to create a backup of all settings"
   },
   "aboutBackupFilename": {
@@ -1056,7 +1056,7 @@
     "description": "English: Reset to default settings..."
   },
   "aboutRestoreDataConfirm": {
-    "message": "Kaikki asetuksesi korvataan {{time}} varmuuskopioiduilla tiedoilla, jonka jälkeen uBlock₀ käynnistyy uudelleen.\n\nKorvataanko kaikki nykyiset asetukset varmuuskopion tiedoilla?",
+    "message": "Kaikki asetuksesi korvataan {{time}} varmuuskopioiduilla tiedoilla ja uBlock₀ käynnistyy uudelleen.\n\nKorvataanko kaikki nykyiset asetukset varmuuskopioduilla tiedoilla?",
     "description": "Message asking user to confirm restore"
   },
   "aboutRestoreDataError": {
@@ -1115,6 +1115,10 @@
     "message": "ei käytössä",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Sivu estetty",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock₀ on estänyt seuraavan sivun latauksen:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Sulje tämä ikkuna",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Älä varoita tästä sivustosta uudelleen",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Älä käytä tiukkaa estoa osoitteelle {{hostname}}",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Pysyvästi",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Jatka",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Vie pilvitallennustilaan",
@@ -1164,7 +1176,7 @@
     "description": "tooltip"
   },
   "cloudNoData": {
-    "message": "...\n...",
+    "message": "…\n…",
     "description": ""
   },
   "cloudDeviceNamePrompt": {
@@ -1203,6 +1215,10 @@
     "message": "Salli suuret mediaelementit tilapäisesti",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "Näytä lähdekoodi…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Syötä näppäinyhdistelmä",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1220,7 +1236,7 @@
     "description": "Label for buttons used to select all text in editor"
   },
   "toggleCosmeticFiltering": {
-    "message": "Kytke kosmeettinen suodatus päälle/pois",
+    "message": "Kytke kosmeettinen suodatus",
     "description": "Label for keyboard shortcut used to toggle cosmetic filtering"
   },
   "relaxBlockingMode": {
@@ -1247,8 +1263,16 @@
     "message": "Lataa painamalla tästä",
     "description": "Message used in frame placeholders"
   },
+  "linterMainReport": {
+    "message": "Virheitä: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Suodatus ei onnistunut selaimen käynnistyessä kunnolla.\nLataa sivu uudelleen varmistaaksesi kunnollisen suodatuksen.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
+  },
   "dummy": {
-    "message": "Tämän täytyy olla viimeinen merkintä",
+    "message": "Tämän on oltava viimeinen merkintä",
     "description": "so we dont need to deal with comma for last entry"
   }
 }

@@ -172,7 +172,7 @@
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoRemoteFonts1": {
-    "message": "Kattints a távoli betűtípusok blokkolásához ezen a webhelyen",
+    "message": "Kattints a távoli fontok blokkolásához ezen a webhelyen",
     "description": "Tooltip for the no-remote-fonts per-site switch"
   },
   "popupTipNoRemoteFonts2": {
@@ -275,13 +275,13 @@
     "message": "Verzió",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Harmadik féltől származó szkripteket tartalmazó sorok kiemelése",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "script",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Harmadik féltől származó kereteket tartalmazó sorok kiemelése",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "frame",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Létrehoz",
@@ -344,7 +344,7 @@
     "description": "Label for checkbox to enable a custom dark theme"
   },
   "settingsThemeAccent0Label": {
-    "message": "Custom accent color",
+    "message": "Egyedi akcentus szín",
     "description": "Label for checkbox to pick an accent color"
   },
   "settingsCloudStorageEnabledPrompt": {
@@ -400,11 +400,11 @@
     "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
   },
   "settingsAdvanced": {
-    "message": "Advanced",
+    "message": "Haladó",
     "description": "Section for controlling advanced-user settings"
   },
   "settingsAdvancedSynopsis": {
-    "message": "Features suitable only for technical users",
+    "message": "Funkciók csak haladó felhasználóknak ",
     "description": "Description of section controlling advanced-user settings"
   },
   "settingsAdvancedUserSettings": {
@@ -1040,7 +1040,7 @@
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
-    "message": "Biztonsági mentés fájlba...",
+    "message": "Biztonsági mentés fájlba",
     "description": "Text for button to create a backup of all settings"
   },
   "aboutBackupFilename": {
@@ -1115,6 +1115,10 @@
     "message": "kikapcsolva",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Oldal blokkolva",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock Origin nem engedte a következő lap betöltését:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Ablak bezárása",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Ne figyelmeztessen újra ennél az oldalnál",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Kapcsolja ki a szigorú tiltást a(z) {{hostname}} részére",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Véglegesen",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Továbblépés",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Exportálás a felhőszolgáltatásba",
@@ -1203,6 +1215,10 @@
     "message": "Nagyméretű média elemek ideiglenes engedélyezése",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "View source code…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Billentyűkombináció megadása",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1220,7 +1236,7 @@
     "description": "Label for buttons used to select all text in editor"
   },
   "toggleCosmeticFiltering": {
-    "message": "Toggle cosmetic filtering",
+    "message": "Kozmetikai szűrés kapcsolása",
     "description": "Label for keyboard shortcut used to toggle cosmetic filtering"
   },
   "relaxBlockingMode": {
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Kattints a betöltéshez",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Errors: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "Ez a bejegyzés utolsó kell hogy legyen",

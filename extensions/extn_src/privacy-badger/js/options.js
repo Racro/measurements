@@ -18,20 +18,30 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-env browser, jquery */
+
+import { getBaseDomain } from "../lib/basedomain.js";
+import { getOriginsArray } from "../lib/options.js";
+
+import constants from "./constants.js";
+import htmlUtils from "./htmlutils.js";
+import utils from "./utils.js";
+
 window.OPTIONS_INITIALIZED = false;
 window.SLIDERS_DONE = false;
 
 const TOOLTIP_CONF = {
   maxWidth: 400
 };
-const USER_DATA_EXPORT_KEYS = ["action_map", "snitch_map", "settings_map"];
+const USER_DATA_EXPORT_KEYS = [
+  "action_map",
+  "snitch_map",
+  "settings_map",
+  "tracking_map",
+  "fp_scripts",
+];
 
 let i18n = chrome.i18n;
-
-let constants = require("constants");
-let { getOriginsArray } = require("optionslib");
-let htmlUtils = require("htmlutils").htmlUtils;
-let utils = require("utils");
 
 let OPTIONS_DATA = {};
 
@@ -55,7 +65,7 @@ function loadOptions() {
   $('#widget-site-exceptions-remove-button').on("click", removeWidgetSiteExceptions);
 
   // Set up input for searching through tracking domains.
-  $("#trackingDomainSearch").on("input", filterTrackingDomains);
+  $("#trackingDomainSearch").on("input", utils.debounce(filterTrackingDomains, 500));
   $("#tracking-domains-type-filter").on("change", filterTrackingDomains);
   $("#tracking-domains-status-filter").on("change", filterTrackingDomains);
   $("#tracking-domains-show-not-yet-blocked").on("change", filterTrackingDomains);
@@ -75,13 +85,20 @@ function loadOptions() {
   });
   $('#blockedResourcesContainer').on('click', '.userset .honeybadgerPowered', revertDomainControl);
   $('#blockedResourcesContainer').on('click', '.removeOrigin', removeOrigin);
+  $('#blockedResourcesInner').on('scroll', function () {
+    activateDomainListTooltips();
+  });
 
   // Display jQuery UI elements
   $("#tabs").tabs({
-    activate: function (event, ui) {
+    activate: function (_, ui) {
+      let tab_id = ui.newPanel.attr('id');
+      if (tab_id == 'tab-tracking-domains') {
+        activateDomainListTooltips();
+      }
       // update options page URL fragment identifier
       // to preserve selected tab on page reload
-      history.replaceState(null, null, "#" + ui.newPanel.attr('id'));
+      history.replaceState(null, null, "#" + tab_id);
     }
   });
   $("button").button();
@@ -153,30 +170,18 @@ function loadOptions() {
       });
   }
 
-  // only show the FLoC override if browser supports it
-  if (document.interestCohort) {
-    $("#disable-floc").show();
-    $("#disable-floc-checkbox")
-      .prop("checked", OPTIONS_DATA.settings.disableFloc)
+  // only show the Topics API override if browser supports it
+  if (document.browsingTopics) {
+    $("#disable-topics").show();
+    $("#disable-topics-checkbox")
+      .prop("checked", OPTIONS_DATA.settings.disableTopics)
       .on("click", function () {
-        const disableFloc = $("#disable-floc-checkbox").prop("checked");
+        const disableTopics = $("#disable-topics-checkbox").prop("checked");
 
         chrome.runtime.sendMessage({
           type: "updateSettings",
-          data: { disableFloc }
+          data: { disableTopics }
         });
-      });
-  }
-
-  if (OPTIONS_DATA.webRTCAvailable && OPTIONS_DATA.legacyWebRtcProtectionUser) {
-    $("#webRTCToggle").show();
-    $("#toggle_webrtc_mode")
-      .prop("checked", OPTIONS_DATA.settings.preventWebRTCIPLeak)
-      .on("click", function () {
-        updatePrivacyOverride(
-          "preventWebRTCIPLeak",
-          $("#toggle_webrtc_mode").prop("checked")
-        );
       });
   }
 
@@ -266,7 +271,7 @@ function loadOptions() {
     width: '100%'
   });
   OPTIONS_DATA.widgets.forEach(function (key) {
-    const isSelected = OPTIONS_DATA.settings.widgetReplacementExceptions.includes(key);
+    const isSelected = OPTIONS_DATA.settings.widgetReplacementExceptions && OPTIONS_DATA.settings.widgetReplacementExceptions.includes(key);
     const option = new Option(key, key, false, isSelected);
     $widgetExceptions.append(option).trigger("change");
   });
@@ -322,22 +327,22 @@ function importTrackerList() {
  * @param {String} storageMapsList data from JSON file that user provided
  */
 function parseUserDataFile(storageMapsList) {
-  let lists;
+  let data;
 
   try {
-    lists = JSON.parse(storageMapsList);
+    data = JSON.parse(storageMapsList);
   } catch (e) {
     return alert(i18n.getMessage("invalid_json"));
   }
 
-  // validate by checking we have the same keys in the import as in the export
-  if (JSON.stringify(Object.keys(lists).sort()) != JSON.stringify(USER_DATA_EXPORT_KEYS.sort())) {
+  // validate keys ("action_map" and "snitch_map" are required)
+  if (!['action_map', 'snitch_map'].every(i => utils.hasOwn(data, i))) {
     return alert(i18n.getMessage("invalid_json"));
   }
 
   chrome.runtime.sendMessage({
     type: "mergeUserData",
-    data: lists
+    data
   }, () => {
     alert(i18n.getMessage("import_successful"));
     location.reload();
@@ -520,6 +525,8 @@ function updateDNTCheckboxClicked() {
 function updateCheckingDNTPolicy() {
   const enabled = $("#check_dnt_policy_checkbox").prop("checked");
 
+  // TODO toggling DNT checking should updateSliders() probably
+  // TODO as any DNT-declared domains will be shown incorrectly
   chrome.runtime.sendMessage({
     type: "updateSettings",
     data: {
@@ -553,7 +560,7 @@ function addDisabledSite(event) {
   }
 
   chrome.runtime.sendMessage({
-    type: "disablePrivacyBadgerForOrigin",
+    type: "disableOnSite",
     domain
   }, (response) => {
     OPTIONS_DATA.settings.disabledSites = response.disabledSites;
@@ -572,7 +579,7 @@ function removeDisabledSite(event) {
   }
 
   chrome.runtime.sendMessage({
-    type: "enablePrivacyBadgerForOriginList",
+    type: "reenableOnSites",
     domains
   }, (response) => {
     OPTIONS_DATA.settings.disabledSites = response.disabledSites;
@@ -584,7 +591,7 @@ function removeDisabledSite(event) {
  * Updates the Site Exceptions form on the Widget Replacement tab.
  */
 function reloadWidgetSiteExceptions() {
-  let sites = Object.keys(OPTIONS_DATA.settings.widgetSiteAllowlist),
+  let sites = Object.keys(OPTIONS_DATA.settings.widgetSiteAllowlist || {}),
     $select = $('#widget-site-exceptions-select');
 
   // sort widget exemptions sites the same way other options page domains lists are
@@ -643,12 +650,11 @@ function updateSummary() {
   // if there are no tracking domains
   let allTrackingDomains = Object.keys(OPTIONS_DATA.origins);
   if (!allTrackingDomains || !allTrackingDomains.length) {
-    // hide the number of trackers and slider instructions message
+    // hide the number of trackers message
     $("#options_domain_list_trackers").hide();
 
     // show "no trackers" message
     $("#options_domain_list_no_trackers").show();
-    $("#blockedResources").html('');
     $("#tracking-domains-div").hide();
 
     // activate tooltips
@@ -663,7 +669,7 @@ function updateSummary() {
 
   // count unique (cookie)blocked tracking base domains
   let blockedDomains = getOriginsArray(OPTIONS_DATA.origins, null, "-dnt", null, false);
-  let baseDomains = new Set(blockedDomains.map(d => window.getBaseDomain(d)));
+  let baseDomains = new Set(blockedDomains.map(d => getBaseDomain(d)));
   $("#options_domain_list_trackers").html(i18n.getMessage(
     "options_domain_list_trackers", [
       baseDomains.size,
@@ -678,22 +684,22 @@ function updateSummary() {
 function reloadTrackingDomainsTab() {
   updateSummary();
 
-  // Get containing HTML for domain list along with toggle legend icons.
-  $("#blockedResources")[0].innerHTML = htmlUtils.getTrackerContainerHtml();
-
   // activate tooltips
   $('.tooltip:not(.tooltipstered)').tooltipster(TOOLTIP_CONF);
 
-  // Display tracking domains.
-  showTrackingDomains(
-    getOriginsArray(
-      OPTIONS_DATA.origins,
-      $("#trackingDomainSearch").val(),
-      $('#tracking-domains-type-filter').val(),
-      $('#tracking-domains-status-filter').val(),
-      $('#tracking-domains-show-not-yet-blocked').prop('checked')
-    )
-  );
+  // reloading the page should reapply search filters
+  let searchFilters = sessionStorage.getItem('domain-list-filters');
+  if (searchFilters) {
+    for (let filter of JSON.parse(searchFilters)) {
+      if (filter.type == 'checkbox') {
+        $(filter.sel).prop('checked', filter.val);
+      } else {
+        $(filter.sel).val(filter.val);
+      }
+    }
+  }
+
+  filterTrackingDomains();
 }
 
 /**
@@ -702,7 +708,8 @@ function reloadTrackingDomainsTab() {
 function filterTrackingDomains() {
   const $searchFilter = $('#trackingDomainSearch'),
     $typeFilter = $('#tracking-domains-type-filter'),
-    $statusFilter = $('#tracking-domains-status-filter');
+    $statusFilter = $('#tracking-domains-status-filter'),
+    $notYetBlockedFilter = $('#tracking-domains-show-not-yet-blocked');
 
   if ($typeFilter.val() == "dnt") {
     $statusFilter.prop("disabled", true).val("");
@@ -710,46 +717,47 @@ function filterTrackingDomains() {
     $statusFilter.prop("disabled", false);
   }
 
-  let search_update = (this == $searchFilter[0]),
-    initial_search_text = $searchFilter.val().toLowerCase(),
-    time_to_wait = 0,
-    callback = function () {};
+  let filteredOrigins = getOriginsArray(
+    OPTIONS_DATA.origins,
+    $searchFilter.val().toLowerCase(),
+    $typeFilter.val(),
+    $statusFilter.val(),
+    $notYetBlockedFilter.prop('checked')
+  );
 
-  // If we are here because the search filter got updated,
-  // wait a short period of time and see if search text has changed.
-  // If so it means user is still typing so hold off on filtering.
-  if (search_update) {
-    time_to_wait = 500;
+  let callback = function () {};
+  if (this == $searchFilter[0]) {
     callback = function () {
       $searchFilter.focus();
     };
   }
 
-  setTimeout(function () {
-    // check search text
-    let search_text = $searchFilter.val().toLowerCase();
-    if (search_text != initial_search_text) {
-      return;
-    }
+  // reloading the page should reapply search filters
+  sessionStorage.setItem('domain-list-filters', JSON.stringify([
+    {
+      sel: '#trackingDomainSearch',
+      val: $searchFilter.val()
+    }, {
+      sel: '#tracking-domains-show-not-yet-blocked',
+      val: $notYetBlockedFilter.prop('checked'),
+      type: 'checkbox'
+    }, {
+      sel: '#tracking-domains-status-filter',
+      val: $statusFilter.val()
+    }, {
+      sel: '#tracking-domains-type-filter',
+      val: $typeFilter.val()
+    },
+  ]));
 
-    // show filtered origins
-    let filteredOrigins = getOriginsArray(
-      OPTIONS_DATA.origins,
-      search_text,
-      $typeFilter.val(),
-      $statusFilter.val(),
-      $('#tracking-domains-show-not-yet-blocked').prop('checked')
-    );
-    showTrackingDomains(filteredOrigins, callback);
-
-  }, time_to_wait);
+  showTrackingDomains(filteredOrigins, callback);
 }
 
 /**
  * Renders the list of tracking domains.
  *
  * @param {Array} domains
- * @param {Function} cb callback
+ * @param {Function} [cb] callback
  */
 function showTrackingDomains(domains, cb) {
   if (!cb) {
@@ -757,7 +765,8 @@ function showTrackingDomains(domains, cb) {
   }
 
   window.SLIDERS_DONE = false;
-  $('#tracking-domains-div').css('visibility', 'hidden');
+  $('#tracking-domains-filters').hide();
+  $('#blockedResources').hide();
   $('#tracking-domains-loader').show();
 
   domains = htmlUtils.sortDomains(domains);
@@ -781,16 +790,17 @@ function showTrackingDomains(domains, cb) {
 
     $printable.appendTo('#blockedResourcesInner');
 
-    // activate tooltips
-    // TODO disabled for performance reasons
-    //$('#blockedResourcesInner .tooltip:not(.tooltipstered)').tooltipster(
-    //  htmlUtils.DOMAIN_TOOLTIP_CONF);
-
     if (out.length) {
       requestAnimationFrame(renderDomains);
     } else {
       $('#tracking-domains-loader').hide();
-      $('#tracking-domains-div').css('visibility', 'visible');
+      $('#tracking-domains-filters').show();
+      $('#blockedResources').show();
+
+      if ($('#blockedResourcesInner').is(':visible')) {
+        activateDomainListTooltips();
+      }
+
       window.SLIDERS_DONE = true;
       cb();
     }
@@ -802,10 +812,77 @@ function showTrackingDomains(domains, cb) {
     requestAnimationFrame(renderDomains);
   } else {
     $('#tracking-domains-loader').hide();
-    $('#tracking-domains-div').css('visibility', 'visible');
+    $('#tracking-domains-filters').show();
     window.SLIDERS_DONE = true;
     cb();
   }
+}
+
+/**
+ * Activates fancy tooltips for each visible row
+ * in the list of tracking domains.
+ *
+ * The tooltips over domain names are constructed dynamically
+ * for fetching and showing extra information
+ * that wasn't prefetched on options page load.
+ */
+function activateDomainListTooltips() {
+  let container = document.getElementById('blockedResourcesInner');
+
+  // keep not-yet-tooltipstered, visible in scroll container elements only
+  let $rows = $('#blockedResourcesInner div.clicker').filter((_, el) => {
+    if (htmlUtils.isScrolledIntoView(el, container)) {
+      if (el.querySelector('.tooltipstered')) {
+        return false;
+      }
+      return el;
+    }
+    return false;
+  });
+
+  $rows.find('.origin-inner.tooltip').tooltipster({
+    functionBefore: function (tooltip, ev) {
+      let $domainEl = $(ev.origin).parents('.clicker').first();
+      if ($domainEl.data('tooltip-fetched')) {
+        return;
+      }
+      tooltip.content($('<span class="ui-icon ui-icon-loading-status-circle rotate"></span>'));
+      chrome.runtime.sendMessage({
+        type: "getOptionsDomainTooltip",
+        domain: $domainEl.data('origin')
+      }, function (response) {
+        if (!response || !response.base || !response.snitchMap) {
+          tooltip.content($domainEl.data('origin'));
+          $domainEl.data('tooltip-fetched', '1');
+          return;
+        }
+        let $tip = $("<span>" +
+          i18n.getMessage('options_domain_list_sites', [response.base]) +
+          "<ul><li>" +
+          response.snitchMap.sort().map(site => {
+            if (response.trackingMap && utils.hasOwn(response.trackingMap, site)) {
+              if (response.trackingMap[site].includes("canvas")) {
+                site += ` (${i18n.getMessage('canvas_fingerprinting')})`;
+              }
+            }
+            return site;
+          }).join("</li><li>") +
+          "</li></ul>" +
+          i18n.getMessage('learn_more_link', ['<a target=_blank href="https://privacybadger.org/#How-does-Privacy-Badger-work">privacybadger.org</a>']) +
+          "</span>");
+        tooltip.content($tip);
+        $domainEl.data('tooltip-fetched', '1');
+      });
+    },
+    interactive: true,
+    theme: 'tooltipster-badger-domain-more-info',
+    trigger: 'click',
+    updateAnimation: false
+  });
+
+  $rows.find('.breakage-warning.tooltip').tooltipster();
+  $rows.find('.switch-toggle > label.tooltip').tooltipster();
+  $rows.find('.honeybadgerPowered.tooltip').tooltipster();
 }
 
 /**
@@ -847,13 +924,6 @@ function updateOrigin(origin, action, userset) {
   );
 
   htmlUtils.toggleBlockedStatus($clicker, userset, show_breakage_warning);
-
-  // reinitialize the domain tooltip
-  // TODO disabled for performance reasons
-  //$clicker.find('.origin-inner').tooltipster('destroy');
-  //$clicker.find('.origin-inner').attr(
-  //  'title', htmlUtils.getActionDescription(action, origin));
-  //$clicker.find('.origin-inner').tooltipster(htmlUtils.DOMAIN_TOOLTIP_CONF);
 }
 
 /**
@@ -942,6 +1012,8 @@ function removeOrigin(event) {
     OPTIONS_DATA.origins = response.origins;
     // if we removed domains, the summary text may have changed
     updateSummary();
+    // and we probably now have new visible rows in the tracking domains list
+    activateDomainListTooltips();
   });
 }
 
@@ -959,10 +1031,22 @@ function updateWidgetReplacementExceptions() {
 $(function () {
   $.tooltipster.setDefaults(htmlUtils.TOOLTIPSTER_DEFAULTS);
 
-  chrome.runtime.sendMessage({
-    type: "getOptionsData",
-  }, (response) => {
-    OPTIONS_DATA = response;
-    loadOptions();
-  });
+  function getOptionsData() {
+    chrome.runtime.sendMessage({
+      type: "getOptionsData",
+    }, (response) => {
+      if (!response) {
+        // event page/extension service worker is still starting up, retry
+        // async w/ non-zero delay to avoid locking up the messaging channel
+        setTimeout(function () {
+          getOptionsData();
+        }, 10);
+        return;
+      }
+      OPTIONS_DATA = response;
+      loadOptions();
+    });
+  }
+
+  getOptionsData();
 });

@@ -292,14 +292,13 @@ class DynamicHostRuleFiltering {
         this.y = '*';
 
         // Specific party
-        // TODO: equate `object` as `sub_frame`
         if ( thirdParty ) {
             // 3rd-party, specific type
             if ( type === 'script' ) {
                 if ( this.evaluateCellZ(srcHostname, '*', '3p-script') !== 0 ) {
                     return this.r;
                 }
-            } else if ( type === 'sub_frame' ) {
+            } else if ( type === 'sub_frame' || type === 'object' ) {
                 if ( this.evaluateCellZ(srcHostname, '*', '3p-frame') !== 0 ) {
                     return this.r;
                 }
@@ -319,6 +318,11 @@ class DynamicHostRuleFiltering {
         if ( supportedDynamicTypes[type] !== undefined ) {
             if ( this.evaluateCellZ(srcHostname, '*', type) !== 0 ) {
                 return this.r;
+            }
+            if ( type.startsWith('3p-') ) {
+                if ( this.evaluateCellZ(srcHostname, '*', '3p') !== 0 ) {
+                    return this.r;
+                }
             }
         }
 

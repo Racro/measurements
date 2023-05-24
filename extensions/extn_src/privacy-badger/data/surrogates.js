@@ -15,8 +15,6 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require.scopes.surrogatedb = (function () {
-
 const MATCH_SUFFIX = 'suffix',
   MATCH_PREFIX = 'prefix',
   MATCH_PREFIX_WITH_PARAMS = 'prefix_params',
@@ -54,6 +52,12 @@ const hostnames = {
       '/ga.js',
     ]
   },
+  'www.googletagmanager.com': {
+    match: MATCH_SUFFIX,
+    tokens: [
+      '/gtm.js',
+    ]
+  },
   'www.googletagservices.com': {
     match: MATCH_SUFFIX,
     tokens: [
@@ -64,6 +68,13 @@ const hostnames = {
     match: MATCH_SUFFIX,
     tokens: [
       '/tag/js/gpt.js',
+    ]
+  },
+  'pagead2.googlesyndication.com': {
+    match: MATCH_SUFFIX,
+    tokens: [
+      '/tag/js/gpt.js',
+      '/omweb-v1.js',
     ]
   },
   'api.youneeq.ca': {
@@ -120,6 +131,22 @@ const hostnames = {
     ],
     widgetName: "Google reCAPTCHA"
   },
+  'www.youtube.com': {
+    match: MATCH_PREFIX,
+    tokens: [
+      '/iframe_api',
+      '/player_api',
+    ],
+    widgetName: "YouTube"
+  },
+  'cdn.jsdelivr.net': {
+    match: MATCH_SUFFIX,
+    tokens: [
+      '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.js',
+      '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js',
+      '/npm/@fingerprintjs/fingerprintjs@3.3.2/dist/fp.js',
+    ]
+  },
 };
 
 /**
@@ -142,6 +169,8 @@ const surrogates = {
   // http://www.dplay.se/ett-jobb-for-berg/ (videos)
   '/c2/plugins/streamsense_plugin_html5.js': 'noop.js',
 
+  '/gtm.js': 'googletagmanager_gtm.js',
+
   // https://github.com/EFForg/privacybadger/issues/993
   '/gpt.js': 'googletagservices_gpt.js',
   '/tag/js/gpt.js': 'googletagservices_gpt.js',
@@ -160,6 +189,15 @@ const surrogates = {
   '/recaptcha/api.js': 'grecaptcha.js',
   '/recaptcha/enterprise.js': 'grecaptcha_enterprise.js',
 
+  '/iframe_api': 'youtube.js',
+  '/player_api': 'youtube.js',
+
+  '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.js': 'fingerprintjs3.js',
+  '/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js': 'fingerprintjs3.js',
+  '/npm/@fingerprintjs/fingerprintjs@3.3.2/dist/fp.js': 'fingerprintjs3.js',
+
+  '/omweb-v1.js': 'noop.js',
+
   'noopjs': 'noop.js'
 };
 
@@ -169,7 +207,7 @@ Object.keys(surrogates).forEach(key => {
   surrogates[key] = chrome.runtime.getURL(path);
 });
 
-const exports = {
+export default {
   MATCH_ANY,
   MATCH_PREFIX,
   MATCH_PREFIX_WITH_PARAMS,
@@ -177,6 +215,3 @@ const exports = {
   hostnames,
   surrogates,
 };
-
-return exports;
-})();

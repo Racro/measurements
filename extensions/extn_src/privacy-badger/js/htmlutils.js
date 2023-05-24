@@ -15,10 +15,13 @@
  * along with Privacy Badger.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require.scopes.htmlutils = (function () {
+/* eslint-env browser, jquery */
+
+import { isIPv4, isIPv6, getBaseDomain } from "../lib/basedomain.js";
+
+import constants from "./constants.js";
 
 const i18n = chrome.i18n;
-const constants = require("constants");
 
 function escape_html(unsafe) {
   return unsafe
@@ -33,6 +36,7 @@ let htmlUtils = {
 
   // default Tooltipster config
   TOOLTIPSTER_DEFAULTS: {
+    delay: 100,
     // allow per-instance option overriding
     functionInit: function (instance, helper) {
       let dataOptions = helper.origin.dataset.tooltipster;
@@ -51,56 +55,65 @@ let htmlUtils = {
     },
   },
 
-  // Tooltipster config for domain list tooltips
-  DOMAIN_TOOLTIP_CONF: {
-    delay: 100,
-    side: 'bottom',
-  },
-
   /**
-   * Gets localized description for given action and origin.
+   * Gets localized description for given domain and action.
    *
-   * @param {String} action The action to get description for.
-   * @param {String} origin The origin to get description for.
-   * @returns {String} Localized action description with origin.
+   * @param {String} action the action to get description for
+   * @param {String} fqdn the domain to get description for
+   * @param {?Array} [blockedFpScripts]
+   *
+   * @returns {String} the description
    */
   getActionDescription: (function () {
+
     const messages = {
       block: i18n.getMessage('badger_status_block', "XXX"),
       cookieblock: i18n.getMessage('badger_status_cookieblock', "XXX"),
+      blockedScripts: i18n.getMessage('badger_status_blocked_scripts', "XXX"),
       noaction: i18n.getMessage('badger_status_noaction', "XXX"),
       allow: i18n.getMessage('badger_status_allow', "XXX"),
       dntTooltip: i18n.getMessage('dnt_tooltip')
     };
-    return function (action, origin) {
+
+    return function (action, fqdn, blockedFpScripts) {
+      if (action.startsWith('user')) {
+        action = action.slice(5);
+      }
+
       if (action == constants.DNT) {
         return messages.dntTooltip;
+      }
+
+      if (blockedFpScripts) {
+        return messages.blockedScripts.replace("XXX", fqdn);
       }
 
       const rv_action = messages[action];
 
       if (!rv_action) {
-        return origin;
+        return fqdn;
       }
 
-      return rv_action.replace("XXX", origin);
+      return rv_action.replace("XXX", fqdn);
     };
+
   }()),
 
   /**
-   * Gets HTML for origin action toggle switch (block, block cookies, allow).
+   * Gets HTML for domain action toggle switch.
    *
-   * @param {String} origin Origin to get toggle for.
-   * @param {String} action Current action of given origin.
-   * @returns {String} HTML for toggle switch.
+   * @param {String} fqdn the domain to get toggle for
+   * @param {String} action the current action of given domain
+   *
+   * @returns {String} the HTML for toggle switch
    */
   getToggleHtml: (function () {
 
-    function is_checked(input_action, origin_action) {
-      if ((origin_action == constants.NO_TRACKING) || (origin_action == constants.DNT)) {
-        origin_action = constants.ALLOW;
+    function is_checked(input_action, action) {
+      if (action == constants.NO_TRACKING || action == constants.DNT) {
+        action = constants.ALLOW;
       }
-      return (input_action === origin_action ? 'checked' : '');
+      return (input_action === action ? 'checked' : '');
     }
 
     let tooltips = {
@@ -109,18 +122,17 @@ let htmlUtils = {
       allow: i18n.getMessage('domain_slider_allow_tooltip')
     };
 
-    return function (origin, action) {
-      let origin_id = origin.replace(/\./g, '-');
-
+    return function (fqdn, action) {
+      let id = fqdn.replace(/\./g, '-');
       return `
 <div class="switch-container ${action}">
   <div class="switch-toggle switch-3 switch-candy">
-    <input id="block-${origin_id}" name="${origin}" value="${constants.BLOCK}" type="radio" aria-label="${tooltips.block}" ${is_checked(constants.BLOCK, action)}>
-    <label title="${tooltips.block}" class="tooltip" for="block-${origin_id}"></label>
-    <input id="cookieblock-${origin_id}" name="${origin}" value="${constants.COOKIEBLOCK}" type="radio" aria-label="${tooltips.cookieblock}" ${is_checked(constants.COOKIEBLOCK, action)}>
-    <label title="${tooltips.cookieblock}" class="tooltip" for="cookieblock-${origin_id}"></label>
-    <input id="allow-${origin_id}" name="${origin}" value="${constants.ALLOW}" type="radio" aria-label="${tooltips.allow}" ${is_checked(constants.ALLOW, action)}>
-    <label title="${tooltips.allow}" class="tooltip" for="allow-${origin_id}"></label>
+    <input id="block-${id}" name="${fqdn}" value="${constants.BLOCK}" type="radio" aria-label="${tooltips.block}" ${is_checked(constants.BLOCK, action)}>
+    <label title="${tooltips.block}" class="tooltip" for="block-${id}"></label>
+    <input id="cookieblock-${id}" name="${fqdn}" value="${constants.COOKIEBLOCK}" type="radio" aria-label="${tooltips.cookieblock}" ${is_checked(constants.COOKIEBLOCK, action)}>
+    <label title="${tooltips.cookieblock}" class="tooltip" for="cookieblock-${id}"></label>
+    <input id="allow-${id}" name="${fqdn}" value="${constants.ALLOW}" type="radio" aria-label="${tooltips.allow}" ${is_checked(constants.ALLOW, action)}>
+    <label title="${tooltips.allow}" class="tooltip" for="allow-${id}"></label>
     <a></a>
   </div>
 </div>
@@ -130,49 +142,41 @@ let htmlUtils = {
   }()),
 
   /**
-   * Get HTML for tracker container.
+   * Generates HTML for given FQDN.
    *
-   * @returns {String} HTML for empty tracker container.
-   */
-  getTrackerContainerHtml: function() {
-    return `
-<div class="keyContainer">
-  <div class="key">
-    <img src="/icons/UI-icons-red.svg" class="tooltip" title="${i18n.getMessage("tooltip_block")}"><img src="/icons/UI-icons-yellow.svg" class="tooltip" title="${i18n.getMessage("tooltip_cookieblock")}"><img src="/icons/UI-icons-green.svg" class="tooltip" title="${i18n.getMessage("tooltip_allow")}">
-  </div>
-</div>
-<div id="blockedResourcesInner" class="clickerContainer"></div>
-    `.trim();
-  },
-
-  /**
-   * Generates HTML for given origin.
+   * @param {String} fqdn the FQDN to get HTML for
+   * @param {String} action the action for given FQDN
+   * @param {Boolean} [show_breakage_warning]
+   * @param {Boolean} [show_breakage_note]
+   * @param {?Array} [blockedFpScripts]
    *
-   * @param {String} origin Origin to get HTML for.
-   * @param {String} action Action for given origin.
-   * @param {Boolean} show_breakage_warning
-   * @returns {String} Origin HTML.
+   * @returns {String} the slider HTML for the FQDN
    */
+  // TODO origin --> domain/FQDN
   getOriginHtml: (function () {
 
     const breakage_warning_tooltip = i18n.getMessage('breakage_warning_tooltip'),
       undo_arrow_tooltip = i18n.getMessage('feed_the_badger_title'),
       dnt_icon_url = chrome.runtime.getURL('/icons/dnt-16.png');
 
-    return function (origin, action, show_breakage_warning) {
+    return function (fqdn, action, show_breakage_warning, show_breakage_note, blockedFpScripts) {
       action = escape_html(action);
-      origin = escape_html(origin);
+      fqdn = escape_html(fqdn);
 
       // Get classes for main div.
       let classes = ['clicker'];
-      if (action.startsWith('user')) {
-        classes.push('userset');
-        action = action.slice(5);
-      }
       // show warning when manually blocking a domain
       // that would have been cookieblocked otherwise
       if (show_breakage_warning) {
         classes.push('show-breakage-warning');
+      }
+      if (show_breakage_note) {
+        classes.push('breakage-note');
+      }
+      // manually-set sliders get an undo arrow
+      if (action.startsWith('user')) {
+        classes.push('userset');
+        action = action.slice(5);
       }
 
       // show the DNT icon for DNT-compliant domains
@@ -185,16 +189,22 @@ let htmlUtils = {
         `.trim();
       }
 
+      let shield_icon = '';
+      if (blockedFpScripts) {
+        shield_icon = '<span class="ui-icon ui-icon-shield"></span>';
+      }
+
       // construct HTML for domain
-      let origin_tooltip = htmlUtils.getActionDescription(action, origin);
+      let domain_tooltip = htmlUtils.getActionDescription(action, fqdn, blockedFpScripts);
+
       return `
-<div class="${classes.join(' ')}" data-origin="${origin}">
+<div class="${classes.join(' ')}" data-origin="${fqdn}">
   <div class="origin" role="heading" aria-level="4">
     <span class="ui-icon ui-icon-alert tooltip breakage-warning" title="${breakage_warning_tooltip}"></span>
-    <span class="origin-inner tooltip" title="${origin_tooltip}">${dnt_html}${origin}</span>
+    <span class="origin-inner tooltip" title="${domain_tooltip}">${dnt_html}${shield_icon}${fqdn}</span>
   </div>
   <a href="" class="removeOrigin">&#10006</a>
-  ${htmlUtils.getToggleHtml(origin, action)}
+  ${htmlUtils.getToggleHtml(fqdn, action, blockedFpScripts)}
   <a href="" class="honeybadgerPowered tooltip" title="${undo_arrow_tooltip}"></a>
 </div>
       `.trim();
@@ -236,6 +246,7 @@ let htmlUtils = {
    * @returns {Array} Sorted domains.
    */
   sortDomains: (domains) => {
+    domains = domains || [];
     // optimization: cache makeSortable output by walking the array once
     // to extract the actual values used for sorting into a temporary array
     return domains.map((domain, i) => {
@@ -263,7 +274,7 @@ let htmlUtils = {
    * @returns {String} The 'reversed' domain
    */
   makeSortable: (domain) => {
-    let base = window.getBaseDomain(domain),
+    let base = getBaseDomain(domain),
       base_minus_tld = base,
       dot_index = base.indexOf('.'),
       rest_of_it_reversed = '';
@@ -274,20 +285,43 @@ let htmlUtils = {
         .split('.').reverse().join('.');
     }
 
-    if (dot_index > -1 && !window.isIPv4(domain) && !window.isIPv6(domain)) {
+    if (dot_index > -1 && !isIPv4(domain) && !isIPv6(domain)) {
       base_minus_tld = base.slice(0, dot_index);
     }
 
     return (base_minus_tld + '.' + rest_of_it_reversed);
   },
 
+  /**
+   * Checks whether an element is at least partially visible
+   * within its scrollable container.
+   *
+   * @param {Element} elm
+   * @param {Element} container
+   *
+   * @returns {Boolean}
+   */
+  isScrolledIntoView: (elm, container) => {
+    let ctop = container.scrollTop,
+      cbot = ctop + container.clientHeight,
+      etop = elm.offsetTop,
+      ebot = etop + elm.clientHeight;
+
+    // completely in view
+    if (etop >= ctop && ebot <= cbot) {
+      return true;
+    }
+
+    // partially in view
+    if ((etop < ctop && ebot > ctop) || (ebot > cbot && etop < cbot)) {
+      return true;
+    }
+
+    return false;
+  },
+
 };
 
 htmlUtils.escape = escape_html;
 
-let exports = {
-  htmlUtils,
-};
-return exports;
-
-})();
+export default htmlUtils;

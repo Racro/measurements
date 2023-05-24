@@ -27,8 +27,8 @@
   "common_feature_circumvention_title": {
     "message": "Λίστα φίλτρων έναντι παράκαμψης ABP"
   },
-  "common_feature_cookies_title": {
-    "message": "Αποκλεισμός προειδοποιήσεων περί cookies"
+  "common_feature_annoyances_title": {
+    "message": "Αποκλείστε περισσότερους περισπασμούς"
   },
   "common_feature_notifications_title": {
     "message": "Αποκλεισμός ειδοποιήσεων push"
@@ -44,6 +44,9 @@
   },
   "composer_block": {
     "message": "Αποκλεισμός"
+  },
+  "composer_block_reload": {
+    "message": "Αποκλεισμός και επαναφόρτωση σελίδας"
   },
   "composer_cancel": {
     "message": "Ακύρωση"
@@ -163,6 +166,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Beta"
   },
   "options_builtin_filterList_add": {
     "message": "Προσθήκη ενσωματωμένων λιστών φίλτρων"
@@ -354,6 +360,9 @@
   "options_footer_contribute": {
     "message": "ΣΥΝΕΙΣΦΟΡΑ"
   },
+  "options_free_filters_header": {
+    "message": "Δωρεάν χαρακτηριστικά"
+  },
   "options_general_description": {
     "message": "Καθορίστε τι προβάλλει και αποκρύπτει το Adblock Plus σε ιστότοπους"
   },
@@ -414,6 +423,12 @@
   "options_page_title": {
     "message": "Ρυθμίσεις"
   },
+  "options_premium_manage": {
+    "message": "Διαχείριση της συνδρομής μου"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Προσαρμόστε και βελτιώστε την εμπειρία αποκλεισμού διαφημίσεων! <a0>Μάθετε περισσότερα</a0>"
+  },
   "options_privacy_header": {
     "message": "ΑΠΟΡΡΗΤΟΥ & ΑΣΦΑΛΕΙΑ"
   },
@@ -426,20 +441,17 @@
   "options_rating_button": {
     "message": "Βαθμολογήστε μας"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "Με την προσθήκη αυτού του φίλτρου παραιτείστε από το δικαίωμά ειδοποίησης περί cookies και επεξεργασίας των ρυθμίσεων cookies σε μεμονωμένες ιστοσελίδες. Σημειώστε ότι μερικές ιστοσελίδες ενδέχεται να παρακολουθούν τη δραστηριότητά σας από προεπιλογή. Για περισσότερες πληροφορίες πατήστε εδώ: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Αποκλεισμός κινούμενων βίντεο, αναδυόμενων ενημερωτικών δελτίων, αιτημάτων έρευνας και ειδοποιήσεων ιστότοπου."
   },
-  "options_recommended_filters_header": {
-    "message": "Προτεινόμενα φίλτρα"
+  "options_recommended_notifications_description": {
+    "message": "Μην αφήνετε τους ιστότοπους να σας ζητούν να επιτρέπετε ειδοποιήσεις push που θα μπορούσαν να παρακολουθούν τη δραστηριότητά σας στο διαδίκτυο."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Αποφύγετε τις ειδοποιήσεις push που μπορούν να παρακολουθούν τη διαδικτυακή σας δραστηριότητα σε ιστοσελίδες."
+  "options_recommended_privacy_description": {
+    "message": "Προστατέψτε το ιδιωτικό απόρρητό σας από γνωστές οντότητες που ενδέχεται να παρακολουθούν τη διαδικτυακή σας δραστηριότητα σε ιστότοπους που επισκέπτεστε."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Προστατέψτε το ιδιωτικό σας απόρρητο από γνωστές οντότητες που ενδέχεται να παρακολουθούν τη διαδικτυακή σας δραστηριότητα στις ιστοσελίδες που επισκέπτεστε."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "Τα εικονίδια των μέσων κοινωνικής δικτύωσης στις ιστοσελίδες που επισκέπτεστε επιτρέπουν στα δίκτυα κοινωνικής δικτύωσης να χτίσουν ένα προφίλ για εσάς βασιζόμενο στις συνήθειες αναζήτησής σας, ακόμα κι όταν δεν τα επιλέγετε. Η απόκρυψη αυτών των εικονιδίων μπορούν να προστατέψει το προφίλ σας."
+  "options_recommended_social_description": {
+    "message": "Αποτρέψτε τα κοινωνικά δίκτυα από το να δημιουργήσουν ένα προφίλ σας με βάση τις συνήθειες περιήγησής σας."
   },
   "options_report_bug": {
     "message": "Βρήκατε σφάλμα; <a>Στείλτε μας μια αναφορά σφάλματος</a>"
@@ -477,6 +489,9 @@
   "options_tracking_warning_2": {
     "message": "Πρέπει να γνωρίζετε ότι <strong>ενδεχομένως</strong> να υπάρχει παρακολούθηση με τις αποδεκτές διαφημίσεις. Με αυτόν τον τρόπο οι διαφημιστές μπορούν να σας παρουσιάζουν σχετικότερες διαφημίσεις."
   },
+  "options_upgrade_button": {
+    "message": "Αναβάθμιση"
+  },
   "devtools_header_state_allowlisted": {
     "message": "που επιτρέπεται"
   },
@@ -493,6 +508,9 @@
       }
     }
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "Ο επιλογέας CSS είναι πολύ μικρός. Χρησιμοποιήστε έναν μεγαλύτερο επιλογέα ή καθορίστε τουλάχιστον έναν τομέα για αυτό το φίλτρο απόκρυψης στοιχείων."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Κανένας ενεργός επιλεγμένος τομέας. Επιλέξτε τουλάχιστον έναν τομέα για το συγκεκριμένο εκτεταμένο φίλτρο απόκρυψης στοιχείων."
   },
@@ -508,6 +526,9 @@
   "filter_invalid_regexp": {
     "message": "Μη έγκυρη τακτική έκφραση (η σύνταξη δεν συμφωνεί με τα πρότυπα)."
   },
+  "filter_slow": {
+    "message": "Αργό φίλτρο. Ελέγξτε το μήκος του μοτίβου και βεβαιωθείτε ότι δεν περιέχει κανονική έκφραση."
+  },
   "filter_snippet_nodomain": {
     "message": "Κανένας ενεργός επιλεγμένος τομέας. Επιλέξτε τουλάχιστον έναν τομέα για αυτό το φίλτρο τμήματος κώδικα."
   },
@@ -519,6 +540,9 @@
         "example": "foo"
       }
     }
+  },
+  "filter_url_not_specific_enough": {
+    "message": "Το μοτίβο διεύθυνσης URL είναι πολύ μικρό. Χρησιμοποιήστε ένα μεγαλύτερο μοτίβο ή καθορίστε τουλάχιστον έναν τομέα για αυτό το φίλτρο."
   },
   "line": {
     "message": "Γραμμή $number$: $message$",
@@ -532,6 +556,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Συμπληρώθηκε η μέγιστη ποσότητα φίλτρων. Αφαιρέστε άλλα φίλτρα του ίδιου τύπου πριν προσθέσετε νέα."
   },
   "unexpected_filter_list_header": {
     "message": "Η κεφαλίδα της λίστας φίλτρων υποστηρίζεται μόνο σε λίστες φίλτρων με δυνατότητα λήψης."
@@ -707,11 +734,17 @@
   "footer_social_description": {
     "message": "Μείνετε συνδεδεμένοι μαζί μας!"
   },
+  "idle_header": {
+    "message": "Δεν υπάρχει τίποτα για αποκλεισμό σε αυτή τη σελίδα!"
+  },
   "options_short": {
     "message": "Επιλογές"
   },
   "overlay_notification_closing_button_optout": {
     "message": "Διακοπή εμφάνισης ειδοποιήσεων"
+  },
+  "premium_upgrade": {
+    "message": "Αναβάθμιση"
   },
   "refresh_this_page": {
     "message": "Ανανέωση αυτής της σελίδας"

@@ -275,13 +275,13 @@
     "message": "Version",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Fremhæv rækker med tredjeparts-scripts",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "script",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Fremhæv rækker med tredjeparts-rammer",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "frame",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Opret",
@@ -344,7 +344,7 @@
     "description": "Label for checkbox to enable a custom dark theme"
   },
   "settingsThemeAccent0Label": {
-    "message": "Tilpasset accentfarve",
+    "message": "Tilpasset fremhævningsfarve",
     "description": "Label for checkbox to pick an accent color"
   },
   "settingsCloudStorageEnabledPrompt": {
@@ -1040,7 +1040,7 @@
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
-    "message": "Sikkerhedskopiér til fil",
+    "message": "Sikkerhedskopiér til fil...",
     "description": "Text for button to create a backup of all settings"
   },
   "aboutBackupFilename": {
@@ -1115,6 +1115,10 @@
     "message": "Slået fra",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Side blokeret",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock Origins har blokeret flg. side fra at hente:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Luk dette vindue",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Advar ikke igen om dette websted",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Deaktivér stringent blokering for {{hostname}}",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Permanent",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Fortsæt",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Eksportér til Skylager",
@@ -1203,6 +1215,10 @@
     "message": "Tillad midlertidigt store medieelementer",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "Vis kildekode…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Angiv en genvej",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Klik for at indlæse",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Fejl: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Kunne ikke filtrere korrekt ved browserstart.\nGenindlæs siden for at sikre korrekt filtrering",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "Denne post skal være den sidste",

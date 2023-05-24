@@ -208,7 +208,7 @@
     "description": "Caption for the no-scripting per-site switch"
   },
   "popupMoreButton_v2": {
-    "message": "Khác",
+    "message": "Mở rộng",
     "description": "Label to be used to show popup panel sections"
   },
   "popupLessButton_v2": {
@@ -275,13 +275,13 @@
     "message": "Phiên bản",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Nhấn mạnh các hàng có tập lệnh của bên thứ 3",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "script",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Nhấn mạnh các hàng có khung của bên thứ ba",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "frame",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Tạo",
@@ -504,7 +504,7 @@
     "description": "The label for the checkbox used to import external filter lists"
   },
   "3pExternalListsHint": {
-    "message": "Một URL cho mỗi dòng. Các URL không hợp lệ sẽ được bỏ qua âm thầm.",
+    "message": "Một URL cho mỗi dòng. URL không hợp lệ sẽ âm thầm bị bỏ qua.",
     "description": "Short information about how to use the textarea to import external filter lists by URL"
   },
   "3pExternalListObsolete": {
@@ -612,7 +612,7 @@
     "description": "English: a sort option for list of rules."
   },
   "whitelistPrompt": {
-    "message": "Danh sách tên các máy chủ mà uBlock Origin sẽ bị chặn. Một mục nhập trên mỗi dòng. Tên máy chủ không hợp lệ sẽ được tự động bỏ qua.",
+    "message": "Các chỉ thị trang web đáng tin cậy ra lệnh trên đó các trang web uBlock Origin sẽ bị vô hiệu hóa. Một mục nhập cho mỗi dòng. Chỉ thị không hợp lệ sẽ được âm thầm bỏ qua và nhận xét ra.",
     "description": "A concise description of the 'Trusted sites' pane."
   },
   "whitelistImport": {
@@ -1115,6 +1115,10 @@
     "message": "tắt",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Trang bị chặn",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBloc Origin đã chặn tải trang sau:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Đóng cửa sổ này",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Đừng cảnh báo tôi lần nữa về trang web này",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Vô hiệu chặn nghiêm ngặt cho {{hostname}}",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Vĩnh viễn",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Tiến hành",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Xuất ra lưu trữ trực tuyến",
@@ -1203,6 +1215,10 @@
     "message": "Tạm thời cho phép yếu tố đa phương tiện lớn",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "View source code…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Nhập phím tắt",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Bấm để tải",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Errors: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "Đây là mục cuối",

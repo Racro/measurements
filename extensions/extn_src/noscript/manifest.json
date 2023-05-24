@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "default_locale": "en",
   "name": "NoScript",
-  "version": "11.4.12",
+  "version": "11.4.18",
   "description": "__MSG_Description__",
   "incognito": "spanning",
 
@@ -111,16 +111,10 @@
     },
     {
       "run_at": "document_start",
-      "matches": ["ftp://*/*"],
-      "js": [
-        "content/ftp.js"
-      ]
-    },
-    {
-      "run_at": "document_start",
       "matches": ["file://*/*", "ftp://*/*"],
       "all_frames": true,
       "js": [
+        "content/ftp.js",
         "lib/DocumentFreezer.js",
         "content/syncFetchPolicy.js"
       ]
@@ -141,16 +135,17 @@
   },
 
   "commands": {
-    "_execute_browser_action": {
-      "description": "NoScript UI",
+    "openPageUI": {
+      "description": "__MSG_pagePermissionsUI__",
       "suggested_key": {
         "default": "Alt+Shift+N"
       }
     },
-    "togglePermissions": {
-      "description": "Toggle permissions",
+    "toggleEnforcementForTab": {
+      "description": "__MSG_toggleEnforcementForTab__",
       "suggested_key": {
-        "default": "Ctrl+Shift+T"
+        "default": "Alt+Shift+Space",
+        "windows": "Alt+Shift+Comma"
       }
     }
   }

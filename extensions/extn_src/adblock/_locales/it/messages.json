@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "Elenco di filtri anti circonvenzione di ABP"
   },
-  "common_feature_cookies_title": {
-    "message": "Blocca avvisi sui cookie"
+  "common_feature_annoyances_title": {
+    "message": "Blocca altre distrazioni"
   },
   "common_feature_malware_title": {
     "message": "Bloccare il Malware"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Blocca"
+  },
+  "composer_block_reload": {
+    "message": "Blocca e ricarica la pagina"
   },
   "composer_cancel": {
     "message": "Annulla"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Beta"
   },
   "options_builtin_filterList_add": {
     "message": "Aggiungere elenchi di filtri integrati"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "CONTRIBUIRE"
   },
+  "options_free_filters_header": {
+    "message": "Funzionalità gratuite"
+  },
   "options_general_description": {
     "message": "Definisci cosa viene mostrato e nascosto sui siti da Adblock Plus"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Impostazioni"
   },
+  "options_premium_manage": {
+    "message": "Gestisci il mio abbonamento"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Personalizza e migliora la tua esperienza di blocco degli annunci! <a0>Scopri di più</a0>"
+  },
   "options_privacy_header": {
     "message": "PRIVACY E SICUREZZA"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Dacci un voto"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "Aggiungendo questo filtro rinunci al diritto di essere informato/a sui cookie e di modificare le impostazioni dei cookie sui singoli siti web. Tieni presente che alcuni siti web possono tracciarti di default. Maggiori informazioni qui: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Blocca i video fluttuanti, i pop-up delle newsletter, le richieste di sondaggi e le notifiche dei siti."
   },
-  "options_recommended_filters_header": {
-    "message": "Filtri consigliati"
+  "options_recommended_notifications_description": {
+    "message": "Impedisci ai siti web di chiederti di autorizzare le notifiche push che potrebbero tracciare la tua attività online."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Impedisci ai siti web di chiederti di consentire le notifiche push che potrebbero tracciare la tua attività online."
-  },
-  "options_recommended_privacy_tooltip": {
+  "options_recommended_privacy_description": {
     "message": "Proteggi la tua privacy da entità note che possono tracciare la tua attività online sui siti web che visiti."
   },
-  "options_recommended_social_tooltip": {
-    "message": "Le icone dei social media sui siti web che visiti consentono alle reti dei social media di costruire un profilo di te basato sulle tue abitudini di navigazione, anche se non ci fai clic. Nascondendo queste icone puoi proteggere il tuo profilo."
+  "options_recommended_social_description": {
+    "message": "Impedisci ai social network di creare un tuo profilo in base alle tue abitudini di navigazione."
   },
   "options_report_bug": {
     "message": "Hai trovato un bug? <a>Inviaci un bug report</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "Ok, capito"
   },
+  "options_upgrade_button": {
+    "message": "Aggiorna"
+  },
   "devtools_action_block": {
     "message": "Blocca elemento"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Tipo"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "Il selettore CSS è troppo breve. Si prega di utilizzare un selettore più lungo o di specificare almeno un dominio per questo filtro nascondi-elementi."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Nessun dominio attivo specificato. Specificare almeno un dominio per questo filtro nascondi-elementi esteso."
   },
@@ -638,7 +656,7 @@
     "message": "Espressione regolare non valida (la sintassi non aderisce allo standard)."
   },
   "filter_slow": {
-    "message": "Per ottenere un filtro veloce, controlla la lunghezza dello schema e fai in modo che non contenga un'espressione regolare."
+    "message": "Filtro lento. Si prega di controllare la lunghezza del pattern e verificare che non contenga un'espressione regolare."
   },
   "filter_snippet_nodomain": {
     "message": "Nessun dominio attivo specificato. Specificare almeno un dominio per questo filtro frammenti."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "Il pattern URL è troppo breve. Si prega di utilizzare un pattern più lungo o di specificare almeno un dominio per questo filtro."
+  },
   "line": {
     "message": "Riga $number$: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "È stato raggiunto il numero massimo di filtri. Rimuovi gli altri filtri dello stesso tipo prima di aggiungerne di nuovi."
   },
   "unexpected_filter_list_header": {
     "message": "Le intestazioni degli elenchi filtri sono supportate solo negli elenchi filtri scaricabili."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "Resta in contatto con noi!"
   },
+  "idle_header": {
+    "message": "Non c'è nulla da bloccare in questa pagina!"
+  },
   "options_refresh": {
     "message": "Aggiorna"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Non mostrare più notifiche"
+  },
+  "premium_upgrade": {
+    "message": "Aggiorna"
   },
   "refresh_this_page": {
     "message": "Aggiorna questa pagina"

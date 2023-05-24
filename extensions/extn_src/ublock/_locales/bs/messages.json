@@ -4,7 +4,7 @@
     "description": "extension name."
   },
   "extShortDesc": {
-    "message": "Konačno, efikasan bloker. Lagan na procesor i memoriju.",
+    "message": "Konačno, efikasan bloker. Štedljiv na procesoru i memoriji.",
     "description": "this will be in the Chrome web store: must be 132 characters or less"
   },
   "dashboardName": {
@@ -275,13 +275,13 @@
     "message": "Verzija",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "↑: Naglasi redove koji imaju skripte trećih strana",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "script",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "↑: Naglasi redove koji imaju okvire trećih strana",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "frame",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Kreiraj",
@@ -312,7 +312,7 @@
     "description": "English: Click, Ctrl-click"
   },
   "pickerContextMenuEntry": {
-    "message": "Blokiraj elemenat...",
+    "message": "Blokiraj elemenat…",
     "description": "An entry in the browser's contextual menu"
   },
   "settingsCollapseBlockedPrompt": {
@@ -336,15 +336,15 @@
     "description": "English: Color-blind friendly"
   },
   "settingsAppearance": {
-    "message": "Appearance",
+    "message": "Izgled",
     "description": "Section for controlling user interface appearance"
   },
   "settingsThemeLabel": {
-    "message": "Theme",
+    "message": "Tema",
     "description": "Label for checkbox to enable a custom dark theme"
   },
   "settingsThemeAccent0Label": {
-    "message": "Custom accent color",
+    "message": "Prilagođena prikazna boja",
     "description": "Label for checkbox to pick an accent color"
   },
   "settingsCloudStorageEnabledPrompt": {
@@ -400,11 +400,11 @@
     "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
   },
   "settingsAdvanced": {
-    "message": "Advanced",
+    "message": "Napredno",
     "description": "Section for controlling advanced-user settings"
   },
   "settingsAdvancedSynopsis": {
-    "message": "Features suitable only for technical users",
+    "message": "Funkcije prikladne samo za napredne korisnike",
     "description": "Description of section controlling advanced-user settings"
   },
   "settingsAdvancedUserSettings": {
@@ -456,7 +456,7 @@
     "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
   },
   "3pSuspendUntilListsAreLoaded": {
-    "message": "Suspend network activity until all filter lists are loaded",
+    "message": "Obustavite mrežnu aktivnost dok se ne učitaju svi popisi filtera",
     "description": "A checkbox in the 'Filter lists' pane"
   },
   "3pListsOfBlockedHostsHeader": {
@@ -500,7 +500,7 @@
     "description": "English: Custom"
   },
   "3pImport": {
-    "message": "Uvezi...",
+    "message": "Uvezi…",
     "description": "The label for the checkbox used to import external filter lists"
   },
   "3pExternalListsHint": {
@@ -520,7 +520,7 @@
     "description": "used as a tooltip for the clock icon beside a list"
   },
   "3pUpdating": {
-    "message": "Ažuriranje u toku...",
+    "message": "Ažuriranje u toku…",
     "description": "used as a tooltip for the spinner icon beside a list"
   },
   "3pNetworkError": {
@@ -576,7 +576,7 @@
     "description": "Will discard manually-edited content and exit manual-edit mode"
   },
   "rulesImport": {
-    "message": "Uvezi iz datoteke...",
+    "message": "Uvezi iz datoteke…",
     "description": ""
   },
   "rulesExport": {
@@ -612,7 +612,7 @@
     "description": "English: a sort option for list of rules."
   },
   "whitelistPrompt": {
-    "message": "Direktive pouzdanih sajtova kažu na kojim sajtovima bi uBlock Origin trebao biti isključen. Jedna stavka po redu. Netočne direktive će biti ignorisane i odkomentirane.",
+    "message": "Direktive pouzdanih sajtova kažu na kojim sajtovima bi uBlock Origin trebao biti isključen. Jedna stavka po redu.",
     "description": "A concise description of the 'Trusted sites' pane."
   },
   "whitelistImport": {
@@ -956,7 +956,7 @@
     "description": "Label for the URL of the page"
   },
   "supportS6Select1": {
-    "message": "Web stranica...",
+    "message": "Web stranica…",
     "description": "Label for widget to select type of issue"
   },
   "supportS6Select1Option0": {
@@ -1048,11 +1048,11 @@
     "description": "English: my-ublock-backup_{{datetime}}.txt"
   },
   "aboutRestoreDataButton": {
-    "message": "Vrati iz datoteke...",
+    "message": "Vrati iz datoteke…",
     "description": "English: Restore from file..."
   },
   "aboutResetDataButton": {
-    "message": "Vrati na izvorne postavke...",
+    "message": "Vrati na izvorne postavke…",
     "description": "English: Reset to default settings..."
   },
   "aboutRestoreDataConfirm": {
@@ -1115,6 +1115,10 @@
     "message": "isključen",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Stranica je blokirana",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "uBlock Origin je onemogućio učitavanje sljedeće stranice:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Zatvori ovaj prozor",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Ne upozoravaj me ponovo za ovu stranicu",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Isključi strogo blokiranje za {{hostname}}",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Trajno",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Nastavi",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Izvezi u cloud pohranu",
@@ -1192,16 +1204,20 @@
     "description": ""
   },
   "contextMenuBlockElementInFrame": {
-    "message": "Blokiraj element u okviru...",
+    "message": "Blokiraj elemenat u okviru…",
     "description": "An entry in the browser's contextual menu"
   },
   "contextMenuSubscribeToList": {
-    "message": "Pretplatite se na popis filtera...",
+    "message": "Pretplatite se na popis filtera…",
     "description": "An entry in the browser's contextual menu"
   },
   "contextMenuTemporarilyAllowLargeMediaElements": {
     "message": "Privremeno omogući velike medijske elemente",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
+  },
+  "contextMenuViewSource": {
+    "message": "View source code…",
+    "description": "A context menu entry, to view the source code of the target resource"
   },
   "shortcutCapturePlaceholder": {
     "message": "Upišite prečicu",
@@ -1220,7 +1236,7 @@
     "description": "Label for buttons used to select all text in editor"
   },
   "toggleCosmeticFiltering": {
-    "message": "Toggle cosmetic filtering",
+    "message": "Uključi/isključi estetsko filtriranje",
     "description": "Label for keyboard shortcut used to toggle cosmetic filtering"
   },
   "relaxBlockingMode": {
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Kliknite za učitavanje",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Errors: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "Ova stavka mora biti posljednja",

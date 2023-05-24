@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "Lista de filtros antielusión de ABP"
   },
-  "common_feature_cookies_title": {
-    "message": "Bloquear avisos de cookies"
+  "common_feature_annoyances_title": {
+    "message": "Bloquear más distracciones"
   },
   "common_feature_malware_title": {
     "message": "Bloquear \"malware\""
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Bloquear"
+  },
+  "composer_block_reload": {
+    "message": "Bloquear y volver a cargar la página"
   },
   "composer_cancel": {
     "message": "Cancelar"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Beta"
   },
   "options_builtin_filterList_add": {
     "message": "Añadir listas de filtros integradas"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "CONTRIBUIR"
   },
+  "options_free_filters_header": {
+    "message": "Funciones gratuitas"
+  },
   "options_general_description": {
     "message": "Determina qué muestra y oculta Adblock Plus en páginas web"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Ajustes"
   },
+  "options_premium_manage": {
+    "message": "Gestionar mi suscripción"
+  },
+  "options_premium_upgrade_description": {
+    "message": "¡Personaliza y mejora tu experiencia de bloqueo de anuncios! <a0>Más información</a0>"
+  },
   "options_privacy_header": {
     "message": "PRIVACIDAD Y SEGURIDAD"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Valóranos"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "Al agregar este filtro estás renunciando a tu derecho de ser notificado acerca de las cookies y de editar la configuración de cookies en sitios web individuales. Ten en cuenta que algunos sitios web pueden hacerte un seguimiento de forma predeterminada. Más información aquí: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Bloquear vídeos flotantes, ventanas emergentes de boletines de noticias, solicitudes de encuestas y notificaciones de sitios."
   },
-  "options_recommended_filters_header": {
-    "message": "Filtros recomendados"
+  "options_recommended_notifications_description": {
+    "message": "Haz que los sitios web dejen de preguntarte si deseas permitir la recepción de notificaciones que podrían realizar un seguimiento de tu actividad en Internet."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Haz que los sitios web dejen de preguntarte si deseas permitir la recepción de notificaciones que podrían hacer un seguimiento de tu actividad en Internet."
+  "options_recommended_privacy_description": {
+    "message": "Protege tu privacidad frente a entidades conocidas que pueden rastrear tu actividad en Internet en los sitios web que visitas."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Protege tu privacidad frente a entidades conocidas que pueden realizar un seguimiento de tu actividad en Internet en los sitios web que visitas."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "Los iconos de redes sociales de los sitios web que visitas permiten a las redes sociales construir un perfil tuyo basado en tus hábitos de navegación, aunque no hagas clic en ellos. Ocultar estos iconos puede proteger tu perfil."
+  "options_recommended_social_description": {
+    "message": "Evita que las redes sociales construyan un perfil tuyo basado en tus hábitos de navegación."
   },
   "options_report_bug": {
     "message": "¿Encontraste un error? <a>Envíanos un informe de error</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "Entendido"
   },
+  "options_upgrade_button": {
+    "message": "Actualizar"
+  },
   "devtools_action_block": {
     "message": "Bloquear elemento"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Tipo"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "El selector CSS es demasiado corto. Utiliza un selector más largo o, al menos, especifica un dominio para este filtro de ocultación de elementos."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "No se ha especificado dominio activo. Especifica, al menos, un dominio para este filtro de ocultación de elementos ampliado."
   },
@@ -638,7 +656,7 @@
     "message": "Expresión regular no válida (la sintaxis no sigue la norma)."
   },
   "filter_slow": {
-    "message": "Para conseguir que un filtro sea rápido, comprueba la longitud de la secuencia de elementos y asegúrate de que no contiene ninguna expresión regular."
+    "message": "Filtro lento. Comprueba la longitud del patrón y asegúrate que no contiene una expresión regular."
   },
   "filter_snippet_nodomain": {
     "message": "No se ha especificado un dominio activo. Especifica, al menos, un dominio para este filtro de fragmento de código."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "El patrón de URL es demasiado corto. Utiliza un patrón más largo o, al menos, especifica un dominio para este filtro."
+  },
   "line": {
     "message": "Línea $number$: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Se ha alcanzado el número máximo de filtros. Elimina otros filtros del mismo tipo antes de añadir otros nuevos."
   },
   "unexpected_filter_list_header": {
     "message": "Los encabezados de las listas de filtros solo están habilitados para las listas de filtros descargables."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "¡Sigue en contacto con nosotros!"
   },
+  "idle_header": {
+    "message": "¡No hay nada que bloquear en esta página!"
+  },
   "options_refresh": {
     "message": "Actualizar"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Dejar de mostrar avisos"
+  },
+  "premium_upgrade": {
+    "message": "Actualizar"
   },
   "refresh_this_page": {
     "message": "Actualizar esta página"

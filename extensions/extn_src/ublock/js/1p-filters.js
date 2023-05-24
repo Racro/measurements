@@ -19,17 +19,17 @@
     Home: https://github.com/gorhill/uBlock
 */
 
-/* global CodeMirror, uDom, uBlockDashboard */
+/* global CodeMirror, uBlockDashboard */
 
 'use strict';
 
-/******************************************************************************/
-
+import { i18n$ } from './i18n.js';
+import { dom, qs$ } from './dom.js';
 import './codemirror/ubo-static-filtering.js';
 
 /******************************************************************************/
 
-const cmEditor = new CodeMirror(document.getElementById('userFilters'), {
+const cmEditor = new CodeMirror(qs$('#userFilters'), {
     autoCloseBrackets: true,
     autofocus: true,
     extraKeys: {
@@ -37,7 +37,10 @@ const cmEditor = new CodeMirror(document.getElementById('userFilters'), {
         'Tab': 'toggleComment',
     },
     foldGutter: true,
-    gutters: [ 'CodeMirror-linenumbers', 'CodeMirror-foldgutter' ],
+    gutters: [
+        'CodeMirror-linenumbers',
+        { className: 'CodeMirror-lintgutter', style: 'width: 11px' },
+    ],
     lineNumbers: true,
     lineWrapping: true,
     matchBrackets: true,
@@ -53,12 +56,17 @@ let cachedUserFilters = '';
 
 /******************************************************************************/
 
-// Add auto-complete ability to the editor.
+// Add auto-complete ability to the editor. Polling is used as the suggested
+// hints also depend on the tabs currently opened.
 
 {
     let hintUpdateToken = 0;
 
-    const responseHandler = function(response) {
+    const getHints = async function() {
+        const response = await vAPI.messaging.send('dashboard', {
+            what: 'getAutoCompleteDetails',
+            hintUpdateToken
+        });
         if ( response instanceof Object === false ) { return; }
         if ( response.hintUpdateToken !== undefined ) {
             const mode = cmEditor.getMode();
@@ -70,15 +78,12 @@ let cachedUserFilters = '';
             }
             hintUpdateToken = response.hintUpdateToken;
         }
-        vAPI.setTimeout(getHints, 2503);
+        timer.on(2503);
     };
 
-    const getHints = function() {
-        vAPI.messaging.send('dashboard', {
-            what: 'getAutoCompleteDetails',
-            hintUpdateToken
-        }).then(responseHandler);
-    };
+    const timer = vAPI.defer.create(( ) => {
+        getHints();
+    });
 
     getHints();
 }
@@ -102,8 +107,8 @@ const userFiltersChanged = function(changed) {
     if ( typeof changed !== 'boolean' ) {
         changed = self.hasUnsavedData();
     }
-    uDom.nodeFromId('userFiltersApply').disabled = !changed;
-    uDom.nodeFromId('userFiltersRevert').disabled = !changed;
+    qs$('#userFiltersApply').disabled = !changed;
+    qs$('#userFiltersRevert').disabled = !changed;
 };
 
 /******************************************************************************/
@@ -221,7 +226,7 @@ const handleImportFilePicker = function() {
 /******************************************************************************/
 
 const startImportFilePicker = function() {
-    const input = document.getElementById('importFilePicker');
+    const input = qs$('#importFilePicker');
     // Reset to empty string, this will ensure an change event is properly
     // triggered if the user pick a file, even if it is the same as the last
     // one picked.
@@ -234,7 +239,7 @@ const startImportFilePicker = function() {
 const exportUserFiltersToFile = function() {
     const val = getEditorText();
     if ( val === '' ) { return; }
-    const filename = vAPI.i18n('1pExportFilename')
+    const filename = i18n$('1pExportFilename')
         .replace('{{datetime}}', uBlockDashboard.dateNowToSensibleString())
         .replace(/ +/g, '_');
     vAPI.download({
@@ -289,11 +294,11 @@ self.hasUnsavedData = function() {
 /******************************************************************************/
 
 // Handle user interaction
-uDom('#importUserFiltersFromFile').on('click', startImportFilePicker);
-uDom('#importFilePicker').on('change', handleImportFilePicker);
-uDom('#exportUserFiltersToFile').on('click', exportUserFiltersToFile);
-uDom('#userFiltersApply').on('click', ( ) => { applyChanges(); });
-uDom('#userFiltersRevert').on('click', revertChanges);
+dom.on('#importUserFiltersFromFile', 'click', startImportFilePicker);
+dom.on('#importFilePicker', 'change', handleImportFilePicker);
+dom.on('#exportUserFiltersToFile', 'click', exportUserFiltersToFile);
+dom.on('#userFiltersApply', 'click', ( ) => { applyChanges(); });
+dom.on('#userFiltersRevert', 'click', revertChanges);
 
 (async ( ) => {
     await renderUserFilters();
@@ -303,8 +308,7 @@ uDom('#userFiltersRevert').on('click', revertChanges);
     // https://github.com/gorhill/uBlock/issues/3706
     //   Save/restore cursor position
     {
-        const line =
-            await vAPI.localStorage.getItemAsync('myFiltersCursorPosition');
+        const line = await vAPI.localStorage.getItemAsync('myFiltersCursorPosition');
         if ( typeof line === 'number' ) {
             cmEditor.setCursor(line, 0);
         }
@@ -314,15 +318,14 @@ uDom('#userFiltersRevert').on('click', revertChanges);
     //   Save/restore cursor position
     {
         let curline = 0;
-        let timer;
         cmEditor.on('cursorActivity', ( ) => {
-            if ( timer !== undefined ) { return; }
+            if ( timer.ongoing() ) { return; }
             if ( cmEditor.getCursor().line === curline ) { return; }
-            timer = vAPI.setTimeout(( ) => {
-                timer = undefined;
-                curline = cmEditor.getCursor().line;
-                vAPI.localStorage.setItem('myFiltersCursorPosition', curline);
-            }, 701);
+            timer.on(701);
+        });
+        const timer = vAPI.defer.create(( ) => {
+            curline = cmEditor.getCursor().line;
+            vAPI.localStorage.setItem('myFiltersCursorPosition', curline);
         });
     }
 

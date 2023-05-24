@@ -275,13 +275,13 @@
     "message": "Έκδοση",
     "description": "Example of use: Version 1.26.4"
   },
-  "popup3pScriptFilterTip": {
-    "message": "Τόνισε τις εγγραφές που έχουν κώδικα τρίτων",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party scripts' cell"
+  "popup3pScriptFilter": {
+    "message": "δέσμη ενεργειών",
+    "description": "Appears as an option to filter out firewall rows"
   },
-  "popup3pFrameFilterTip": {
-    "message": "Τόνισε τις εγγραφές που έχουν πλαίσια τρίτων",
-    "description": "Tooltip shown when hovering small filtering widget in '3rd-party frames' cell"
+  "popup3pFrameFilter": {
+    "message": "πλαίσιο",
+    "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
     "message": "Δημιουργία",
@@ -1040,7 +1040,7 @@
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
-    "message": "Δημιουργία αντιγράφου ασφαλείας",
+    "message": "Δημιουργία αρχείου αντιγράφου ασφαλείας",
     "description": "Text for button to create a backup of all settings"
   },
   "aboutBackupFilename": {
@@ -1115,6 +1115,10 @@
     "message": "απενεργοποιημένο",
     "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
   },
+  "docblockedTitle": {
+    "message": "Η σελίδα αποκλείστηκε",
+    "description": "Used as a title for the document-blocked page"
+  },
   "docblockedPrompt1": {
     "message": "Το uBlock₀ έχει αποτρέψει τη φόρτωση της παρακάτω σελίδας:",
     "description": "Used in the strict-blocking page"
@@ -1139,6 +1143,10 @@
     "message": "Κλείσιμο του παραθύρου",
     "description": "English: Close this window"
   },
+  "docblockedDontWarn": {
+    "message": "Να μην προειδοποιηθώ ξανά για αυτόν τον ιστότοπο",
+    "description": "Label for checkbox in document-blocked page"
+  },
   "docblockedProceed": {
     "message": "Απενεργοποίηση αυστηρής φραγής για το {{hostname}}",
     "description": "English: Disable strict blocking for {{hostname}} ..."
@@ -1150,6 +1158,10 @@
   "docblockedDisablePermanent": {
     "message": "Μόνιμα",
     "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Συνέχεια",
+    "description": "Button text to navigate to the blocked page"
   },
   "cloudPush": {
     "message": "Εξαγωγή στο cloud storage",
@@ -1203,6 +1215,10 @@
     "message": "Να επιτρέπονται προσωρινά μεγάλα στοιχεία πολυμέσων",
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
+  "contextMenuViewSource": {
+    "message": "Προβολή πηγαίου κώδικα…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
   "shortcutCapturePlaceholder": {
     "message": "Πληκτρολογήστε μια συντόμευση",
     "description": "Placeholder string for input field used to capture a keyboard shortcut"
@@ -1246,6 +1262,14 @@
   "clickToLoad": {
     "message": "Κάντε κλικ για φόρτωση",
     "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Σφάλματα: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Δεν ήταν δυνατό το σωστό φιλτράρισμα κατά την εκκίνηση του προγράμματος περιήγησης.\nΦορτώστε ξανά τη σελίδα για να διασφαλίσετε το σωστό φιλτράρισμα",
+    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
   },
   "dummy": {
     "message": "Αυτή η καταχώρηση θα πρέπει να είναι τελευταία",

@@ -29,8 +29,8 @@
   "common_feature_circumvention_title": {
     "message": "ABP Megkerülésvédelem szűrőlista"
   },
-  "common_feature_cookies_title": {
-    "message": "Süti figyelmeztetések blokkolása"
+  "common_feature_annoyances_title": {
+    "message": "Blokkoljon még több figyelmet elvonó tartalmat"
   },
   "common_feature_malware_title": {
     "message": "Kártékony szoftverek blokkolása"
@@ -61,6 +61,9 @@
   },
   "composer_block": {
     "message": "Blokkolás"
+  },
+  "composer_block_reload": {
+    "message": "Blokkolás és oldal újratöltése"
   },
   "composer_cancel": {
     "message": "Mégse"
@@ -183,6 +186,9 @@
         "content": "www.example.com"
       }
     }
+  },
+  "options_beta_label": {
+    "message": "Beta"
   },
   "options_builtin_filterList_add": {
     "message": "Hirdetések beépített szűrőlistái"
@@ -400,6 +406,9 @@
   "options_footer_contribute": {
     "message": "Közreműködés"
   },
+  "options_free_filters_header": {
+    "message": "Ingyenes funkciók"
+  },
   "options_general_description": {
     "message": "Az Adblock Plus által elrejtett és megjelenített elemek meghatározása"
   },
@@ -473,6 +482,12 @@
   "options_page_title": {
     "message": "Beállítások"
   },
+  "options_premium_manage": {
+    "message": "Előfizetés kezelése"
+  },
+  "options_premium_upgrade_description": {
+    "message": "Szabja személyre és bővítse a reklámblokkolás élményét! <a0>További részletek</a0>"
+  },
   "options_privacy_header": {
     "message": "Adatvédelem és biztonság"
   },
@@ -485,20 +500,17 @@
   "options_rating_button": {
     "message": "Értékeljen bennünket"
   },
-  "options_recommended_cookies_tooltip": {
-    "message": "A szűrő hozzáadásával lemond a sütikre vonatkozó értesítésekről és a sütik szerkesztéséről az egyes weboldalakon. További információk találhatóak a következő címen: <a0>https://adblockplus.org/block-cookie-warnings</a0>"
+  "options_recommended_annoyances_description": {
+    "message": "Blokkolja a lebegő videókat, felugró hírleveleket, felmérés kérelmeket és webhely értesítéseket."
   },
-  "options_recommended_filters_header": {
-    "message": "Ajánlott szűrők"
+  "options_recommended_notifications_description": {
+    "message": "Tiltsa le a webhelyek leküldéses értesítéseinek kérelmeit, amelyekkel online tevékenységét követhetik."
   },
-  "options_recommended_notifications_tooltip": {
-    "message": "Akadályozza meg, hogy a weboldalak olyan leküldéses értesítésekre vonatkozó engedélyeket kérjenek, amelyekkel nyomon követhető az online tevékenysége."
+  "options_recommended_privacy_description": {
+    "message": "Védje meg adatait olyan entitásoktól, amelyek követhetik az online tevékenységét a meglátogatott webhelyeken."
   },
-  "options_recommended_privacy_tooltip": {
-    "message": "Védje adatait olyan entitásoktól, amelyek követhetik online tevékenységét a meglátogatott weboldalakon."
-  },
-  "options_recommended_social_tooltip": {
-    "message": "A meglátogatott weboldalakon található közösségi média ikonok lehetővé teszik a közösségi felületek számára, hogy profilt hozzanak létre a felhasználókról a böngészési szokásaik alapján, akkor is, ha nem kattint rájuk. Az ikonok elrejtésével védelmet biztosíthat a profiljának."
+  "options_recommended_social_description": {
+    "message": "Akadályozza meg, hogy a közösségi média hálózatok profilt készíthessenek a böngészési szokásai alapján."
   },
   "options_report_bug": {
     "message": "Hibát talált? <a>Küldjön hibajelentést nekünk</a>"
@@ -561,6 +573,9 @@
   "options_tracking_warning_acknowledgment": {
     "message": "Ok, értem"
   },
+  "options_upgrade_button": {
+    "message": "Magasabb verzióra frissítés"
+  },
   "devtools_action_block": {
     "message": "Elem blokkolása"
   },
@@ -622,6 +637,9 @@
   "devtools_type_title": {
     "message": "Típus"
   },
+  "filter_elemhide_not_specific_enough": {
+    "message": "A CSS-kiválasztó túl rövid. Használjon hosszabb kiválasztót, vagy határozzon meg legalább egy tartományt ehhez az elem elrejtő szűrőhöz."
+  },
   "filter_elemhideemulation_nodomain": {
     "message": "Nincs aktív domain meghatározva. Adjon meg legalább egy domain-t e kiterjesztett elem elrejtő szűrő számára."
   },
@@ -638,7 +656,7 @@
     "message": "Érvénytelen reguláris kifejezés (a szintaxis nem felel meg a szabványnak)."
   },
   "filter_slow": {
-    "message": "A gyors szűrő biztosítása érdekében, ellenőrizze a minta hosszát, és győződjön meg arról, hogy nem tartalmaz szabályos kifejezést."
+    "message": "Lassú szűrő. Ellenőrizze a minta hosszát, és ügyeljen arra, hogy ne tartalmazzon szokásos kifejezést."
   },
   "filter_snippet_nodomain": {
     "message": "Nincs aktív domain meghatározva. Adjon meg legalább egy domain-t e kódrészlet szűrő számára."
@@ -652,6 +670,9 @@
       }
     }
   },
+  "filter_url_not_specific_enough": {
+    "message": "Az URL-minta túl rövid. Használjon hosszabb mintát, vagy határozzon meg legalább egy tartományt ehhez a szűrőhöz."
+  },
   "line": {
     "message": "$number$. sor: $message$",
     "placeholders": {
@@ -664,6 +685,9 @@
         "example": "42"
       }
     }
+  },
+  "too_many_filters": {
+    "message": "Elérte a maximális szűrőszámot. Távolítson el azonos típusú más szűrőket, mielőtt újakat adna hozzá."
   },
   "unexpected_filter_list_header": {
     "message": "Kizárólag letölthető szűrőlistákban támogatottak a szűrőlista fejlécek."
@@ -899,6 +923,9 @@
   "footer_social_description": {
     "message": "Maradj velünk kapcsolatban!"
   },
+  "idle_header": {
+    "message": "Nincs mit blokkolni ezen az oldalon!"
+  },
   "options_refresh": {
     "message": "Frissítés"
   },
@@ -910,6 +937,9 @@
   },
   "overlay_notification_closing_button_optout": {
     "message": "Ne jelenjenek meg értesítések"
+  },
+  "premium_upgrade": {
+    "message": "Magasabb verzióra frissítés"
   },
   "refresh_this_page": {
     "message": "Oldal frissítése"

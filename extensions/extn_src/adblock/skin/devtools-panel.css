@@ -38,6 +38,9 @@
   --color-error: var(--color-brand-primary);
   --color-link: #0797E1;
   --color-info: #0797E1;
+  --color-premium: #EDA51E;
+  --color-premium-hover: #EB9B05;
+  --font-size-heavy: 20px;
   --font-size-big: 17px;
   --font-size-medium: 16px;
   --font-size-primary: 13px;
@@ -46,71 +49,87 @@
   --margin-secondary: calc(var(--margin-primary) / 2);
   --padding-primary: 16px;
   --padding-secondary: calc(var(--padding-primary) / 2);
-  --primary-outline: var(--border-color-outline) dotted 1px; }
+  --primary-outline: var(--border-color-outline) dotted 1px;
+}
 
 * {
   box-sizing: border-box;
   font-family: "Lucida Grande", "Segoe UI", Ubuntu, Tahoma, Arial, sans-serif;
-  font-size: 11px; }
+  font-size: 11px;
+}
 
 html {
   overflow: hidden;
-  height: 100%; }
+  height: 100%;
+}
 
 a {
-  color: inherit; }
+  color: inherit;
+}
 
 body {
   display: flex;
   flex-direction: column;
   height: 100%;
   margin: 0;
-  color: #303942; }
+  color: #303942;
+}
 
 body.default {
-  background-color: var(--background-color-primary); }
+  background-color: var(--background-color-primary);
+}
 
 body.dark {
-  color: #fff; }
+  color: #fff;
+}
 
 table {
   table-layout: fixed;
   width: 100%;
-  border-collapse: collapse; }
+  border-collapse: collapse;
+}
 
 table * {
   overflow: hidden;
-  text-overflow: ellipsis; }
+  text-overflow: ellipsis;
+}
 
 td {
   padding: 3px;
   border-left: 1px solid #cdcdcd;
-  white-space: nowrap; }
+  white-space: nowrap;
+}
 
 td:first-child {
-  border-left-style: none; }
+  border-left-style: none;
+}
 
 col:nth-child(2) {
-  width: 115px; }
+  width: 115px;
+}
 
 col:nth-child(3) {
-  width: 50%; }
+  width: 50%;
+}
 
 header {
   overflow-y: scroll;
   border-bottom: 1px solid #cdcdcd;
-  flex-shrink: 0; }
+  flex-shrink: 0;
+}
 
 /*
  * We have to add a scrollbar to the header to have the columns there aligned
  * with the table below. But we don't want the scrollbar to be visible there.
  */
 header::-webkit-scrollbar {
-  visibility: hidden; }
+  visibility: hidden;
+}
 
 #items {
   overflow-y: scroll;
-  flex-grow: 1; }
+  flex-grow: 1;
+}
 
 #items table {
   line-height: 17px;
@@ -119,57 +138,72 @@ header::-webkit-scrollbar {
    * However, we can't do it that way, since some rows might be hidden.
    */
   background-image: url(data:image/gif;base64,R0lGODdhAQBQAIABAO7u7v///ywAAAAAAQBQAAACC4SPqcsYD6OctMYCADs=);
-  background-repeat: repeat; }
+  background-repeat: repeat;
+}
 
 body.dark #items table {
-  background-image: url(data:image/gif;base64,R0lGODdhAQBQAIACACQkJExMTCwAAAAAAQBQAAACC4yPqcsID6OctMYCADs=); }
+  background-image: url(data:image/gif;base64,R0lGODdhAQBQAIACACQkJExMTCwAAAAAAQBQAAACC4yPqcsID6OctMYCADs=);
+}
 
 #items tr {
-  height: 40px; }
+  height: 40px;
+}
 
 #items tr[data-state=blocked] {
-  color: var(--color-brand-primary); }
+  color: var(--color-brand-primary);
+}
 
 body.dark #items tr[data-state=blocked] {
-  color: #ff3a3a; }
+  color: #ff3a3a;
+}
 
 #items tr[data-state=allowlisted] {
-  color: #080; }
+  color: #080;
+}
 
 body.dark #items tr[data-state=allowlisted] {
-  color: #389c22; }
+  color: #389c22;
+}
 
 #items[data-filter-state=blocked] tr:not([data-state=blocked]),
 #items[data-filter-state=allowlisted] tr:not([data-state=allowlisted]) {
-  display: none; }
+  display: none;
+}
 
 .changed,
 .unnamed {
-  font-style: italic; }
+  font-style: italic;
+}
 
 .request-wrapper,
 .filter-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%; }
+  height: 100%;
+}
 
 tr:not(:hover) .action {
-  display: none; }
+  display: none;
+}
 
 .url {
-  width: 100%; }
+  width: 100%;
+}
 
 .url > a,
 .url-rewritten > a {
-  text-decoration: none; }
+  text-decoration: none;
+}
 
 .url > a:hover,
 .url-rewritten > a:hover {
-  text-decoration: underline; }
+  text-decoration: underline;
+}
 
 .action-wrapper {
   display: flex;
-  width: 100%; }
+  width: 100%;
+}
 
 .action {
   flex-shrink: 0;
@@ -180,20 +214,23 @@ tr:not(:hover) .action {
   font-style: 400;
   color: #fff;
   background: #555;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 .filter-wrapper,
 .filter,
 .origin,
 .domain {
-  flex-grow: 1; }
+  flex-grow: 1;
+}
 
 .domain,
 .origin,
 .changed .request-wrapper,
 .changed .filter-wrapper,
 .changed .type {
-  opacity: 0.6; }
+  opacity: 0.6;
+}
 
 footer {
   width: 100%;
@@ -201,19 +238,24 @@ footer {
   margin-bottom: -23px;
   padding: 4px 3px;
   border-top: 1px solid #cdcdcd;
-  flex-shrink: 0; }
+  flex-shrink: 0;
+}
 
 .has-changes + footer {
   margin-bottom: 0;
-  transition: margin-bottom 0.5s; }
+  transition: margin-bottom 0.5s;
+}
 
 footer > a {
   color: #00f;
   text-decoration: underline;
-  cursor: pointer; }
+  cursor: pointer;
+}
 
 .filtered-by-search {
-  display: none; }
+  display: none;
+}
 
 body.dark #reload {
-  color: #2a67e7; }
+  color: #2a67e7;
+}
