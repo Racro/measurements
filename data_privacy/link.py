@@ -102,7 +102,7 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-chunks_list = list(divide_chunks(sites, 100000))
+chunks_list = list(divide_chunks(sites, 5000))
 threads = []
 lock = threading.Lock()
 print(chunks_list)
