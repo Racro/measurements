@@ -21,7 +21,6 @@ from selenium.webdriver.chrome.options import Options
 def is_loaded(webdriver):
     return webdriver.execute_script("return document.readyState") == "complete"
 
-
 def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
     start_time = time.time()
     mustend = time.time() + timeout

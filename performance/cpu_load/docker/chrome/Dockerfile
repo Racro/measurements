@@ -3,7 +3,7 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
-ENV CHROMEDRIVER_VERSION=111.0.5563.64
+ENV CHROMEDRIVER_VERSION=114.0.5735.90
 
 # Google Chrome
 # =============
@@ -45,6 +45,10 @@ ADD run.py \
     stats.py \
     /home/seluser/measure/
 
+# ADD fingerprint.py \
+#     stats.py \
+#     /home/seluser/measure/
+
 RUN chown seluser:seluser -R /home/seluser/measure
 
 USER seluser
@@ -52,3 +56,4 @@ USER seluser
 WORKDIR /home/seluser/measure
 
 ENTRYPOINT ["python3", "/home/seluser/measure/run.py"]
+# ENTRYPOINT ["python3", "/home/seluser/measure/fingerprint.py"]

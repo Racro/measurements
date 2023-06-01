@@ -21,17 +21,19 @@ import subprocess
 from threading import Timer
 import os
 
-extn_lst = ['adblock', 'control', 'ublock', 'privacy-badger',
-       "decentraleyes",
-       "disconnect",
-       "ghostery",
-       "https",
-       "noscript",
-       "scriptsafe",
-       "canvas-antifp",
-       "adguard"]
+extn_lst = [
+    # 'adblock', 'control', 'ublock', 'privacy-badger',
+    #    "decentraleyes",
+    #    "disconnect",
+    #    "ghostery",
+    #    "https",
+    #    "noscript",
+    #    "scriptsafe",
+    #    "canvas-antifp",
+    #    "adguard",
+       "user-agent"]
 
-SIZE = 20 # number of browser windows that will open
+SIZE = 10 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
