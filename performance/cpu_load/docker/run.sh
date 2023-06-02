@@ -20,7 +20,7 @@ popd > /dev/null
 #pushd "${SELFPATH}/../docker" > /dev/null
 
 #source ~/work/pes/pes/bin/activate
-source ~/pes/measure/bin/activate
+source ~/pes/venv_measure/bin/activate
 
 #while true; do
 UUID=$(uuidgen -t)
