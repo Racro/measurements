@@ -115,15 +115,15 @@ def main():
        "adblock",
        "decentraleyes",
        "disconnect",
-    #    "ghostery",
-    #    "https",
-    #    "noscript",
-    #    "privacy-badger",
-    #    "ublock",
-    #    "scriptsafe",
-    #    "canvas-antifp",
-    #    "adguard",
-    #    "user-agent"  
+       "ghostery",
+       "https",
+       "noscript",
+       "privacy-badger",
+       "ublock",
+       "scriptsafe",
+       "canvas-antifp",
+       "adguard",
+       "user-agent"  
        # Combinations
     #    "decentraleyes,privacy_badger,ublock_origin"
     ]
