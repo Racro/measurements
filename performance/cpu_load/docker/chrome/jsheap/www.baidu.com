@@ -1,0 +1,1 @@
+{"stats": {"privacy-badger": {"jsStats": 7124272}, "scriptsafe": {"jsStats": 7684062}}}

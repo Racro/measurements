@@ -19,13 +19,13 @@ popd > /dev/null
 # wrapper.py assumes that various files are in the same directory
 #pushd "${SELFPATH}/../docker" > /dev/null
 
-#source ~/work/pes/pes/bin/activate
-source ~/pes/venv_measure/bin/activate
+source ~/work/pes/pes/bin/activate
+#source ~/pes/venv_measure/bin/activate
 
 #while true; do
 UUID=$(uuidgen -t)
 echo "Starting measurement run '${UUID}' at $(date)"
-python3 wrapper.py \
+python3 mini_wrapper.py \
 ${LOGS}/${UUID}.log \
 ${DOMAINS_LIST} \
 ${BROWSER}
