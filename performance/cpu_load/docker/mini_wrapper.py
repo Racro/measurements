@@ -91,7 +91,7 @@ def main():
             #     break
     f.close()
 
-    domains = domains[:5]
+    # domains = domains[:10]
     # with open("../../../adblock_detect/failed_sites.txt", "r") as f:
     #    failed_sites = f.read().splitlines()
     #    for site in failed_sites:
@@ -131,7 +131,7 @@ def main():
 
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
     # cpus_list = ['0','1','2','3']
-    cpus_list = [str(cpu) for cpu in range(2)]
+    cpus_list = [str(cpu) for cpu in range(15)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
     print(domain_set)

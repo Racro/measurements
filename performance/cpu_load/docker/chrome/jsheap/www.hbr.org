@@ -1,0 +1,1 @@
+{"stats": {"https": {"jsStats": 67814106}, "disconnect": {"jsStats": 21812851}, "canvas-antifp": {"jsStats": 69074417}, "adblock": {"jsStats": 32612855}, "scriptsafe": {"jsStats": 7899959}, "user-agent": {"jsStats": 62177373}, "noscript": {"jsStats": 3768727}, "privacy-badger": {"jsStats": 24036082}, "/jsheap/www.hbr.org": {"jsStats": 62437811}, "adguard": {"jsStats": 33539238}}}

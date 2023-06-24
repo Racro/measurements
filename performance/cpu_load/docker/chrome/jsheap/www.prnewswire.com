@@ -1,0 +1,1 @@
+{"stats": {"https": {"jsStats": 4307924}, "user-agent": {"jsStats": 4305637}, "disconnect": {"jsStats": 4933927}, "adblock": {"jsStats": 3646805}, "noscript": {"jsStats": 2375059}, "canvas-antifp": {"jsStats": 4964550}, "ublock": {"jsStats": 5094786}, "privacy-badger": {"jsStats": 3704222}, "scriptsafe": {"jsStats": 7379324}, "decentraleyes": {"jsStats": 3154528}}}

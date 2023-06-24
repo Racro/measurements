@@ -1,0 +1,1 @@
+{"stats": {"ublock": {"jsStats": 16048071}, "noscript": {"jsStats": 4462233}, "scriptsafe": {"jsStats": 6637104}}}

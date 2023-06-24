@@ -1,0 +1,1 @@
+{"stats": {"ghostery": {"jsStats": 20151068}, "scriptsafe": {"jsStats": 7371009}, "adguard": {"jsStats": 28647054}, "noscript": {"jsStats": 3509528}, "adblock": {"jsStats": 28945194}, "privacy-badger": {"jsStats": 43541157}, "ublock": {"jsStats": 24640858}, "disconnect": {"jsStats": 32715146}}}

@@ -19,8 +19,8 @@ popd > /dev/null
 # wrapper.py assumes that various files are in the same directory
 #pushd "${SELFPATH}/../docker" > /dev/null
 
-source ~/work/pes/pes/bin/activate
-#source ~/pes/venv_measure/bin/activate
+#source ~/work/pes/pes/bin/activate
+source ~/pes/venv_measure/bin/activate
 
 #while true; do
 UUID=$(uuidgen -t)

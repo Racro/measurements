@@ -54,21 +54,25 @@ def parse(stdout):
     global data
     global count
     # Parse RAM data
+    print('-'*50)
+    print('Count:', count)
+    print('-'*50)
     lst = stdout.split('\n')
-    print('count: ', count)
 
     if len(lst) == 2 and lst[1] == '':
         count += 1
-        if count == 15:
+        if count == 120:
             stop('docker_stats.json')
-    elif len(lst) > 2:
+
+    if len(lst) > 2:
         for entry in lst[1:-1]:
             try:
                 entry_lst = re.split("\s\s+", entry)
-                if entry_lst[1] == '--':
+                if entry_lst[1] == '--' or '.' not in entry_lst[1].split("_")[1]:
                     count += 1
-                    if count == 15:
+                    if count == 120:
                         stop('docker_stats.json')
+                        return
                     continue
 
                 ram = entry_lst[3].split(" / ")[0]
@@ -86,8 +90,6 @@ def parse(stdout):
                 count = 0                
                 
                 # print(data)
-                # print(extn)
-                # print(site)
                 if extn in data.keys():
                     # print(1)
                     if site in data[extn].keys():
