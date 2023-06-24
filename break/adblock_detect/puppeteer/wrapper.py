@@ -34,7 +34,8 @@ extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
        "noscript",
        "scriptsafe",
        "canvas-antifp",
-       "adguard"]
+       "adguard",
+       "user-agent"]
 # extn_lst = ['']
 SIZE = 15 # number of browser windows that will open
 
