@@ -26,7 +26,7 @@ import os
 # try_list = ["geeksforgeeks.org", "forbes.com", "insider.com"]
 # latest_list = try_list
 
-extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
+extn_lst = ['adblock', 'control', 'ublock', 'privacy-badger',
        "decentraleyes",
        "disconnect",
        "ghostery",
