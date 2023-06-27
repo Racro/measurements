@@ -82,7 +82,7 @@ def run(sites, extn, return_dict, l):
 
 if __name__ == "__main__":
     try:
-        with open("../../adblock_detect/inner_pages_custom.json", "r") as f:
+        with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
         #with open("../../adblock_detect/failed_sites.txt", "r") as f:
@@ -107,7 +107,12 @@ if __name__ == "__main__":
         chunks_list = list(divide_chunks(latest_list, SIZE))
         manager = multiprocessing.Manager()
         return_dict = manager.dict()
-        result_dict = {}
+
+        f = open('data_usage.json.bak', 'r')
+        result_dict = json.load(f)
+        f.close()
+
+        # result_dict = {}
         for extn in extn_lst:       
             return_dict[extn] = manager.dict()
             result_dict[extn] = {}
