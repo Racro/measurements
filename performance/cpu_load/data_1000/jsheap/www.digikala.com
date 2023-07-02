@@ -1,0 +1,1 @@
+{"stats": {"/jsheap/www.digikala.com": {"jsStats": 27270109}, "user-agent": {"jsStats": 22283962}, "https": {"jsStats": 22472180}, "canvas-antifp": {"jsStats": 22311615}, "noscript": {"jsStats": 3011384}, "ublock": {"jsStats": 17116108}, "scriptsafe": {"jsStats": 6696908}, "decentraleyes": {"jsStats": 20271141}}}

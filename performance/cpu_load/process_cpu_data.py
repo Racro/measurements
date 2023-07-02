@@ -125,6 +125,10 @@ for website in dir_list:
 for website in all_data:
     check_for_keys(all_data[website]['stats'], website)
 
+faulty_num = {}
+for extn in extn_lst[1:]:
+    faulty_num[extn] = 0
+
 for website in dir_list:
     # control case
     key = '/data/'+website
@@ -145,7 +149,7 @@ for website in dir_list:
         webStats_c = data["stats"][key]['webStats']
         data_dict['control'].append([usr_c, sys_c, iowait_c, webStats_c])
     except KeyError as k:
-        print(website, k, "- dropping website")
+        # print(website, k, "- dropping website")
         faulty_sites += 1
         data_dict['websites'] = data_dict['websites'][:-1]
         continue
@@ -165,10 +169,12 @@ for website in dir_list:
             iowait = iowait_c
             webStats = webStats_c
             data_dict[extn].append([usr, syst, iowait, webStats])
+            faulty_num[extn] += 1
             print(website, extn,  k)
             pass
 
-# print(data_dict)
+print(faulty_num) # manually removed the 0.0 extries corresponding to the number here
+
 # data_dict = {'websites':[], 'k1': [[[v1,v2,v3,ws1], [v4,v5,v6,ws2], [v1,v2,v3,ws3]], [[v1,v2,v3,ws11], [v4,v5,v6,ws21], [v1,v2,v3, ws31]]], 'k2': [[[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]], [[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]]], 'k3': [[[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]], [[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]]]}
 
 max_plot = [{}, {}, {}] # for usr, sys, iowait

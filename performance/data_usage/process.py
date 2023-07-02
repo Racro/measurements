@@ -21,7 +21,8 @@ extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
     "noscript",
     "scriptsafe",
     "canvas-antifp",
-    "adguard"]
+    "adguard",
+    "user-agent"]
 
 f = open(path, 'r')
 data_dict = json.load(f)

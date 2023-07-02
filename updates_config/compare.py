@@ -1,11 +1,11 @@
 import os
-from difflib import SequenceMatcher
+import sys
 
 f = open('filterlist/exceptionrules.txt', 'r')
 accept_ads = f.readlines()
 f.close()
 
-path = "./filterlist/adguard/"
+path = "./filterlist/ghostery/"
 dir_list = os.listdir(path)
 
 rules = []
@@ -44,29 +44,32 @@ for rule in accept_ads:
         domain = domain.split('\n')[0]        
         rules_exception.append(domain)
 
-f = open('conflicts_adguard_2.txt', 'w')
+#f = open('conflicts_ghostery.txt', 'w')
 count = 0
 print(len(rules_exception))
 print(len(rules_blocked))
+sys.exit(0)
 
 match_list = []
 for exception in rules_exception:
     for rule in rules_blocked:
-        match = os.path.commonprefix([exception.split('/')[0], rule.split('/')[0]])
-        # print(exception)
-        # print(rule)
+        # match = os.path.commonprefix([exception.split('/')[0], rule.split('/')[0]])
+        
+        match = exception
         match_doms = match.split('.')
         rule_doms = rule.split('.')
         check = 0
-        if len(match_doms) > 1:
+        if len(rule_doms) > 1:
             if (match_doms[0] == rule_doms[0]) and (match_doms[1] == rule_doms[1]):
                 check = 1
+        if len(rule_doms) > 2 and len(match_doms) > 2:
+            if (match_doms[1] == rule_doms[1]) and (match_doms[2] == rule_doms[2]):
+                check = 1
 
-        if (match == rule.split('/')[0]) or (check):
+        if (check):
             # match = match.split('/')[0]
             match = rule.split('/')[0]
             if match not in match_list:
-                # print(match)
                 if match[-1] == '/':
                     match_list.append(match)
                     match_list.append(match[:-1])
@@ -89,18 +92,22 @@ count = 0
 match_list = []
 for exception in rules_exception:
     for rule in rules_allowed:
-        match = os.path.commonprefix([exception.split('/')[0], rule.split('/')[0]])
+        # match = os.path.commonprefix([exception.split('/')[0], rule.split('/')[0]])
         # print(exception)
         # print(rule)
+        match = exception
         match_doms = match.split('.')
         rule_doms = rule.split('.')
         check = 0
-        if len(match_doms) > 1:
+        if len(rule_doms) > 1:
             if (match_doms[0] == rule_doms[0]) and (match_doms[1] == rule_doms[1]):
-                print(rule, exception)
+                check = 1
+        if len(rule_doms) > 2 and len(match_doms) > 2:
+            if (match_doms[1] == rule_doms[1]) and (match_doms[2] == rule_doms[2]):
                 check = 1
 
-        if (match == rule.split('/')[0]) or (check):
+        if (check):
+            # match = match.split('/')[0]
             match = rule.split('/')[0]
             if match not in match_list:
                 if match[-1] == '/':
@@ -109,6 +116,7 @@ for exception in rules_exception:
                 else:
                     match_list.append(match)
                     # match_list.append(match+'/')
-            count += 1
+                count += 1
+            break
 
 print(f'count_allowed: {count}')

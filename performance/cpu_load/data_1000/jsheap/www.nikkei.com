@@ -1,0 +1,1 @@
+{"stats": {"noscript": {"jsStats": 4113579}, "https": {"jsStats": 10299906}, "/jsheap/www.nikkei.com": {"jsStats": 12760071}, "canvas-antifp": {"jsStats": 10681190}, "decentraleyes": {"jsStats": 12590342}, "scriptsafe": {"jsStats": 7445459}, "user-agent": {"jsStats": 14200033}, "disconnect": {"jsStats": 12200662}}}

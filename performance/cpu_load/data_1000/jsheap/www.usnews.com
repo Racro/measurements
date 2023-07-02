@@ -1,0 +1,1 @@
+{"stats": {"privacy-badger": {"jsStats": 24914541}, "scriptsafe": {"jsStats": 7588123}, "adblock": {"jsStats": 32363270}, "adguard": {"jsStats": 28551132}, "ublock": {"jsStats": 16782412}, "disconnect": {"jsStats": 20512464}, "ghostery": {"jsStats": 18036589}, "noscript": {"jsStats": 3282286}}}
