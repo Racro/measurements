@@ -22,7 +22,9 @@ def run(log, browser, configurations, domains, cpu):
     for domain in domains:
         # We always visit with the website without any extensions first to
         # warm up the upstream DNS cache.
-        run_configuration(log, browser, "", domain, cpu)
+        
+        # COMMENTING THE NEXT LINE JUST FOR USER-AGENT CASE. UNCOMMENT IT AFTER
+        # run_configuration(log, browser, "", domain, cpu)
 
         random.shuffle(configurations)
         for extension in configurations:
@@ -132,7 +134,7 @@ def main():
 
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
     # cpus_list = ['0','1','2','3']
-    cpus_list = [str(cpu) for cpu in range(25)]
+    cpus_list = [str(cpu) for cpu in range(20)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
     print(domain_set)
