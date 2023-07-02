@@ -5,7 +5,7 @@ f = open('filterlist/exceptionrules.txt', 'r')
 accept_ads = f.readlines()
 f.close()
 
-path = "./filterlist/ublock_filters/"
+path = "./filterlist/adguard/"
 dir_list = os.listdir(path)
 
 rules = []
@@ -22,13 +22,15 @@ for rule in rules:
         domain = rule.split('@@||')[1]
         domain = domain.split('?')[0]       
         domain = domain.split('$')[0]
-        domain = domain.split('^')[0]         
+        domain = domain.split('^')[0]
+        domain = domain.split('\n')[0]
         rules_allowed.append(domain)
     elif rule.startswith('||'):
         domain = rule.split('||')[1]
         domain = domain.split('?')[0]       
         domain = domain.split('$')[0]
         domain = domain.split('^')[0]
+        domain = domain.split('\n')[0]
         rules_blocked.append(domain)
 
 # strip accept_ads to include only domains
@@ -39,9 +41,10 @@ for rule in accept_ads:
         domain = domain.split('?')[0]
         domain = domain.split('$')[0]        
         domain = domain.split('^')[0]        
+        domain = domain.split('\n')[0]        
         rules_exception.append(domain)
 
-f = open('conflicts.txt', 'w')
+f = open('conflicts_adguard_2.txt', 'w')
 count = 0
 print(len(rules_exception))
 print(len(rules_blocked))
@@ -49,13 +52,21 @@ print(len(rules_blocked))
 match_list = []
 for exception in rules_exception:
     for rule in rules_blocked:
-        match = os.path.commonprefix([exception, rule])
+        match = os.path.commonprefix([exception.split('/')[0], rule.split('/')[0]])
         # print(exception)
         # print(rule)
-        if (len(match) > 7):
-            print(match)
-            match = match.split('/')[0]
+        match_doms = match.split('.')
+        rule_doms = rule.split('.')
+        check = 0
+        if len(match_doms) > 1:
+            if (match_doms[0] == rule_doms[0]) and (match_doms[1] == rule_doms[1]):
+                check = 1
+
+        if (match == rule.split('/')[0]) or (check):
+            # match = match.split('/')[0]
+            match = rule.split('/')[0]
             if match not in match_list:
+                # print(match)
                 if match[-1] == '/':
                     match_list.append(match)
                     match_list.append(match[:-1])
@@ -66,17 +77,38 @@ for exception in rules_exception:
                 f.write(f'{match} for {exception}')
                 f.write('\n')
             break
-            
-#     print(f'count: {count}')
+
+f.close()         
+print(f'count_exception: {count}')
 
 # f.write(f'Total conflicts: {count}')
 # f.close()
 
 # print(f'Total conflicts: {count}')
 count = 0
-for match in match_list:
+match_list = []
+for exception in rules_exception:
     for rule in rules_allowed:
-        mat = os.path.commonprefix([exception, rule])
-        if len(mat) == len(match):
+        match = os.path.commonprefix([exception.split('/')[0], rule.split('/')[0]])
+        # print(exception)
+        # print(rule)
+        match_doms = match.split('.')
+        rule_doms = rule.split('.')
+        check = 0
+        if len(match_doms) > 1:
+            if (match_doms[0] == rule_doms[0]) and (match_doms[1] == rule_doms[1]):
+                print(rule, exception)
+                check = 1
+
+        if (match == rule.split('/')[0]) or (check):
+            match = rule.split('/')[0]
+            if match not in match_list:
+                if match[-1] == '/':
+                    match_list.append(match)
+                    match_list.append(match[:-1])
+                else:
+                    match_list.append(match)
+                    # match_list.append(match+'/')
             count += 1
-print(count)
+
+print(f'count_allowed: {count}')

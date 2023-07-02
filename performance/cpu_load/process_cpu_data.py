@@ -78,7 +78,8 @@ path = f"./data_1000/data_custom/"
 dir_list = os.listdir(path)
 
 # extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
-extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
+extn_lst = [
+    'control', 'adblock', 'ublock', 'privacy-badger',
        "decentraleyes",
        "disconnect",
        "ghostery",
@@ -86,7 +87,8 @@ extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
        "noscript",
        "scriptsafe",
        "canvas-antifp",
-       "adguard"]
+       "adguard",
+       "user-agent"]
 
 data_dict = {
     'websites': []
