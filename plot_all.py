@@ -23,8 +23,21 @@ extensions = ['adblock', 'ublock', 'privacy-badger', "decentraleyes",
        "adguard",
        "user-agent"]
 
+extn_dict = {
+    'adblock': 'ABP', 'ublock': 'UbO', 'privacy-badger': 'PB', "decentraleyes": 'Decentraleyes',
+       "disconnect": 'Disconnect',
+       "ghostery": 'Ghostery',
+       "https": 'HTTPS Everywhere',
+       "noscript": 'NoScript',
+       "scriptsafe": 'ScriptSafe',
+       "canvas-antifp": 'CFD',
+       "adguard": 'AdG',
+       "user-agent": 'UA Switcher'
+}
+
 # List of metrics
-metrics = ['usr (max)\n(in absolute)', 'usr (avg)\n(in absolute)', 'sys (max)\n(in absolute)', 'sys (avg)\n(in absolute)', 'load_time\n(in seconds)', 'data_usage\n(in MB)', 'RAM_usage_max\n(in MB)', 'RAM_usage_avg\n(in MB)', 'JSHeapSizeUsed\n(in MB)', '#frames\n(in absolute)', '#third_party\n(in absolute)']
+metrics = ['usr (max)\n(in absolute)', 'usr (avg)\n(in absolute)', 'sys (max)\n(in absolute)', 'sys (avg)\n(in absolute)', 'load_time\n(in seconds)', 'data_usage\n(in MB)', 'RAM_usage_max\n(in MB)', 'RAM_usage_avg\n(in MB)', 'JSHeapSizeUsed\n(in MB)']
+# metrics = ['load_time\n(in seconds)', 'data_usage\n(in MB)']
 
 # Sample data
 data = []
@@ -41,14 +54,14 @@ for extn in extensions:
     each_extn.append(np.array(ram['ram_max'][extn]))
     each_extn.append(np.array(ram['ram_avg'][extn]))
     each_extn.append(np.array(jsheap['jsheap'][extn]))
-    each_extn.append(np.array(frames[extn]))
-    each_extn.append(np.array(third_party[extn]))
+    # each_extn.append(np.array(frames[extn]))
+    # each_extn.append(np.array(third_party[extn]))
     data.append(each_extn)
 # sys.exit(0)
 # data = np.random.rand(8, 4, 20)  # now each metric has 2 values
 data = np.array(data, dtype=object)
 
-fig, axs = plt.subplots(12, 11, figsize=(20, 20))
+fig, axs = plt.subplots(12, 9, figsize=(20, 20))
 # plt.subplots_adjust(bottom=0.02, right=1)
 # axs = axs.transpose()
 
@@ -74,6 +87,21 @@ blue_shades = ['#aed6f1', '#85c1e9', '#3498db']
 # Red Shades
 red_shades = ['#f5b7b1', '#f1948a', '#e74c3c']
 
+max_min = [[], []]
+
+for j, metric in enumerate(metrics):
+    max_min[0].append(0)
+    max_min[1].append(0)
+
+for j, metric in enumerate(metrics):
+    min_val = 10000
+    max_val = 0
+    for i, extension in enumerate(extensions):
+        min_val = min(min(data[i,j]), min_val)    
+        max_val = max(max(data[i,j]), max_val)    
+    max_min[0][j] = max_val
+    max_min[1][j] = min_val
+
 for i, extension in enumerate(extensions):
     for j, metric in enumerate(metrics):
 
@@ -90,9 +118,9 @@ for i, extension in enumerate(extensions):
         mad[extension].append(mad_local)
         std[extension].append(std_local)
 
-        axs[i, j].plot(np.round(data[i, j], 3), color="black")
+        axs[i, j].plot(np.round(data[i, j], 3), range(len(data[i, j])), color="black")
         if j < 9:
-            axs[i, j].axhline(np.round(np.percentile(data[i, j], 50), 3), linestyle='dashed', color='g')
+            axs[i, j].axvline(np.round(np.percentile(data[i, j], 50), 3), linestyle='dashed', color='g')
             
             # Set the face color of the subplot
             if med < -2.5*mad_local:
@@ -166,19 +194,27 @@ for i, extension in enumerate(extensions):
             else:
                 print("ERRROR")
 
-        # set tick positions on x-axis
-        x = [0, int(len(data[i, j])/2), len(data[i, j])]
+        # set tick positions on y-axis
+        y = [0, int(len(data[i, j])/2), len(data[i, j])]
         tick_positions = [0, 0.5, 1]
-        axs[i, j].set_xticks(x)
-        axs[i, j].set_xticklabels(tick_positions)
+        axs[i, j].set_yticks(y)
+        axs[i, j].set_yticklabels(tick_positions)
 
+        # val = np.round(max(max(data[i,j]), abs(min(data[i,j]))), -3) 
+        x = [max_min[1][j], 0, max_min[0][j]]
+        # tick_positions = [0, 0.5, 1]
+        axs[i, j].set_xticks(x)
+        # axs[i, j].set_yticklabels(tick_positions)
+
+        if j > 0:
+            axs[i, j].set_yticklabels([])
         if i != len(extensions) - 1:  # if not the last row
             axs[i, j].set_xticklabels([])
         if j == 0:
             # axs[i, j].set_yticks([])
-            axs[i, j].set_ylabel(extension, rotation='horizontal', labelpad=80, verticalalignment='center')
+            axs[i, j].set_ylabel(extn_dict[extension], rotation='horizontal', labelpad=80, verticalalignment='center')
         if i == 0:
-            axs[i, j].set_title(metric)
+            axs[i, j].set_title(metric, weight='bold')
 
 #legend
 x_tilde = '\u0078\u0303'
@@ -205,10 +241,10 @@ red_patch3 = mpatches.Patch(facecolor=red_shades[2], label=f'{x_tilde} {goe} 2.5
 # red_patch2 = mpatches.Patch(facecolor=red_shades[1], label=f'0.5{sigma} {loe} {x_bar} < 1.5{sigma}',  edgecolor='black')
 # red_patch3 = mpatches.Patch(facecolor=red_shades[2], label=f'{x_bar} {goe} 1.5{sigma}',  edgecolor='black')
 
-# legend = plt.legend(handles=[text, blue_patch1, blue_patch2, blue_patch3, white_patch, red_patch1, red_patch2, red_patch3], loc='lower center', bbox_to_anchor=(-5.5, -1.5), ncol=8)
+# legend = plt.legend(handles=[text, blue_patch1, blue_patch2, blue_patch3, white_patch, red_patch1, red_patch2, red_patch3], loc='lower center', bbox_to_anchor=(0, -1.5), ncol=8)
 
 plt.tight_layout()
-# plt.show()
+plt.show()
 
 # print(f'perc_50: {perc_50}')
 # print(f'perc_95: {perc_95}')
