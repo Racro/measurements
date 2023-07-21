@@ -22,18 +22,18 @@ from threading import Timer
 import os
 
 extn_lst = [
-    # 'control', 'adblock', 'ublock', 'privacy-badger',
-    #    "decentraleyes",
-    #    "disconnect",
-    #    "ghostery",
-    #    "https",
-    #    "noscript",
-    #    "scriptsafe",
-    #    "canvas-antifp",
-    #    "adguard",
+     'control', 'adblock', 'ublock', 'privacy-badger',
+        "decentraleyes",
+        "disconnect",
+        "ghostery",
+        "https",
+        "noscript",
+        "scriptsafe",
+        "canvas-antifp",
+        "adguard",
        "user-agent"]
 
-SIZE = 10 # number of browser windows that will open
+SIZE = 15 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
@@ -96,7 +96,7 @@ def run(sites, extn, return_dict, l):
 
 if __name__ == "__main__":
     try:
-        with open("../break/adblock_detect/inner_pages_custom.json", "r") as f:
+        with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
         # with open("../../adblock_detect/failed_sites.txt", "r") as f:
@@ -146,14 +146,14 @@ if __name__ == "__main__":
                 for val in return_dict[extn][site]:
                     result_dict[extn][site].append(val)
 
-            f = open('frames.json', 'w')
+            f = open('frames_2.json', 'w')
             json.dump(result_dict, f)
             f.close()
 
     except KeyboardInterrupt:
         print('Interrupted')
 
-        f = open('frames.json', 'w')
+        f = open('frames_2.json', 'w')
         json.dump(result_dict, f)
         f.close()
 
@@ -165,6 +165,6 @@ if __name__ == "__main__":
     except Exception:
         print('Interrupted')
 
-        f = open('frames.json', 'w')
+        f = open('frames_2.json', 'w')
         json.dump(result_dict, f)
         f.close()
