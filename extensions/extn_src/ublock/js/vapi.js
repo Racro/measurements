@@ -19,6 +19,8 @@
     Home: https://github.com/gorhill/uBlock
 */
 
+var start_time=performance.now()
+
 'use strict';
 
 /* global HTMLDocument, XMLDocument */
@@ -35,6 +37,10 @@ if (
 } else {
     self.browser = self.chrome;
 }
+
+console.log('UbO 1');
+console.error('UbO 2');
+ 
 
 /******************************************************************************/
 
@@ -68,6 +74,10 @@ if (
     vAPI = self.vAPI = { uBO: true };
 }
 
+var end_time=performance.now()
+
+console.log('cs3');
+console.log(end_time - start_time);
 
 
 

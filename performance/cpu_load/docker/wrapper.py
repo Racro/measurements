@@ -18,7 +18,7 @@ def divide_chunks(l, n):
         yield l[i:i + n]
 
 def run(log, browser, configurations, domains, cpu):
-    random.shuffle(domains)
+    # random.shuffle(domains)
     for domain in domains:
         # We always visit with the website without any extensions first to
         # warm up the upstream DNS cache.
@@ -26,9 +26,10 @@ def run(log, browser, configurations, domains, cpu):
         # COMMENTING THE NEXT LINE JUST FOR USER-AGENT CASE. UNCOMMENT IT AFTER
         # run_configuration(log, browser, "", domain, cpu)
 
-        random.shuffle(configurations)
-        for extension in configurations:
-            run_configuration(log, browser, extension, domain, cpu)
+        # random.shuffle(configurations)
+        # for extension in configurations:
+        #     run_configuration(log, browser, extension, domain, cpu)
+        run_configuration(log, browser, domain, cpu)
 
 
 def run_configuration(log, browser, extension, domain, cpu):
@@ -42,13 +43,20 @@ def run_configuration(log, browser, extension, domain, cpu):
 
 def get_domain(log, browser, extension, domain, cpu):
     try:
+        # cmd = ["docker", "run", "--rm",
+        #         "-v", "/dev/shm:/dev/shm",
+        #         "-v", "./chrome/data:/data",
+        #         "--cpuset-cpus", cpu,
+        #        "--security-opt", "seccomp=seccomp.json",
+        #        f"mpstat-{browser}",
+        #        "--extensions", extension, "--cpu", cpu, domain]
         cmd = ["docker", "run", "--rm",
                 "-v", "/dev/shm:/dev/shm",
                 "-v", "./chrome/data:/data",
                 "--cpuset-cpus", cpu,
                "--security-opt", "seccomp=seccomp.json",
                f"mpstat-{browser}",
-               "--extensions", extension, "--cpu", cpu, domain]
+                "--cpu", cpu, domain]
         # we can use "--shm-size=2g" instead of /dev/shm:/dev/shm
         
         run = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -95,6 +103,8 @@ def main():
             #     break
     f.close()
 
+    domains = domains[:10]
+
     # with open("../../../adblock_detect/failed_sites.txt", "r") as f:
     #    failed_sites = f.read().splitlines()
     #    for site in failed_sites:
@@ -115,17 +125,17 @@ def main():
        # No extensions
     #    "",
     #    # Extensions on their own
-    #    "adblock",
-    #    "decentraleyes",
-    #    "disconnect",
-    #    "ghostery",
-    #    "https",
-    #    "noscript",
-    #    "privacy-badger",
-    #    "ublock",
-    #    "scriptsafe",
-    #    "canvas-antifp",
-    #    "adguard",
+       "adblock",
+       "decentraleyes",
+       "disconnect",
+       "ghostery",
+       "https",
+       "noscript",
+       "privacy-badger",
+       "ublock",
+       "scriptsafe",
+       "canvas-antifp",
+       "adguard",
        "user-agent"  
        # Combinations
     #    "decentraleyes,privacy_badger,ublock_origin"

@@ -19,6 +19,8 @@
     Home: https://github.com/gorhill/uBlock
 */
 
+var start_time=performance.now();
+
 'use strict';
 
 /*******************************************************************************
@@ -135,6 +137,9 @@ vAPI.contentScript = true;
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
+
+console.log('UbO 11');
+console.error('UbO 21');
 
 vAPI.userStylesheet = {
     added: new Set(),
@@ -1355,6 +1360,11 @@ vAPI.DOMFilterer = class {
 
 // This starts bootstrap process.
 vAPI.bootstrap();
+
+var end_time=performance.now()
+
+console.log('cs2');
+console.log(end_time - start_time);
 
 /******************************************************************************/
 /******************************************************************************/

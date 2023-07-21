@@ -18,6 +18,26 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+extensions_configurations = [
+    # No extensions
+   "",
+#    # Extensions on their own
+    "adblock",
+    "decentraleyes",
+    "disconnect",
+    "ghostery",
+    "https",
+    "noscript",
+    "privacy-badger",
+    "ublock",
+    "scriptsafe",
+    "canvas-antifp",
+    "adguard",
+    "user-agent"  
+    # Combinations
+#    "decentraleyes,privacy_badger,ublock_origin"
+]
+
 def is_loaded(webdriver):
     return webdriver.execute_script("return document.readyState") == "complete"
 
@@ -44,15 +64,7 @@ def webStats(webdriver):
     
     return domComplete - navigationStart, loadEnd - navigationStart
 
-def main(number_of_tries):
-    # Parse the command line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument('website')
-    parser.add_argument('--timeout', type=int, default=60)
-    parser.add_argument('--extensions')
-    parser.add_argument('--extensions-wait', type=int, default=10)
-    parser.add_argument('--cpu')
-    args = parser.parse_args()
+def main(number_of_tries, flag, args_lst):
     
     # Start X
     vdisplay = Display(visible=False, size=(1920, 1080))
@@ -69,77 +81,116 @@ def main(number_of_tries):
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
     options.binary_location = "/usr/bin/google-chrome"
 
-    # Install other addons
-    extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
-    fname = '/data/' + args.website.split('//')[1]
-    extn = fname
-    if args.extensions:
-        for extension in args.extensions.split(","):
-            matches = list(extensions_path.glob("{}*.crx".format(extension)))
-            if matches and len(matches) == 1:
-                options.add_extension(str(matches[0]))
-                extn = extension
-            else:
-                print(f"{args.extensions} - Extension not found")
+    if flag == 1:
+        driver = webdriver.Chrome(options=options)
+        driver.set_page_load_timeout(args_lst[1])
+
+        try:
+            driver.get(args_lst[0])
+
+            wait_until_loaded(driver, args_lst[1])
+
+        except Exception as e:
+            print(e, "SITE: ", args_lst[0])
+            if number_of_tries == 0:
                 sys.exit(1)
-    # Launch Chrome and install our extension for getting HARs
-    driver = webdriver.Chrome(options=options)
-    driver.set_page_load_timeout(args.timeout)
+            else:
+                driver.quit()
+                # vdisplay.stop()
+                return main(number_of_tries-1, flag, args_lst)
 
-    # Start perf timer
-    #perf = perfevents.PerfEvents(args.timeout)
-    stat = stats.Stats(args.timeout+10, fname, args.cpu)
-    # We need to wait for everything to open up properly
-    time.sleep(args.extensions_wait)
+        driver.quit()
+        vdisplay.stop()
 
-    try:
-        # Make a page load
-        stat.start()
-        time.sleep(2) # to record 2 extra mpstat cycle
-        # started = datetime.now()
-        driver.get(args.website)
-
-        wait_until_loaded(driver, args.timeout)
-
-        # Stop collecting performance data
-        stat_data = stat.stop()
-
-        # collect webstats
-        domComplete, loadEnd  = webStats(driver)
-        stat_data["webStats"] = [domComplete, loadEnd]
-
-    except Exception as e:
-        print(e, "SITE: ", args.website)
-        if number_of_tries == 0:
-            sys.exit(1)
-        else:
-            driver.quit()
-            # vdisplay.stop()
-            return main(number_of_tries-1)
-
-    if os.path.isfile(fname):
-        f = open(fname, 'r')
-        data = json.loads(f.read())
-        f.close()
     else:
-        # open the /data/website file and create the dict
-        data = {}
-        data['stats'] = {} 
+        # Install other addons
+        extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
+        fname = '/data/' + args_lst[0].split('//')[1]
+        extn = fname
+        if args_lst[-1]:
+            for extension in args_lst[-1].split(","):
+                matches = list(extensions_path.glob("{}*.crx".format(extension)))
+                if matches and len(matches) == 1:
+                    options.add_extension(str(matches[0]))
+                    extn = extension
+                else:
+                    print(f"{args_lst[-1]} - Extension not found")
+                    sys.exit(1)
+        # Launch Chrome and install our extension for getting HARs
+        driver = webdriver.Chrome(options=options)
+        driver.set_page_load_timeout(args_lst[1])
 
-    print("-"*25)
-    print(fname)
-    print(extn)
-    print("-"*25)
+        # Start perf timer
+        #perf = perfevents.PerfEvents(args.timeout)
+        stat = stats.Stats(args_lst[1]+10, fname, args_lst[2])
+        # We need to wait for everything to open up properly
+        time.sleep(10)
 
-    data['stats'][extn] = stat_data
+        try:
+            # Make a page load
+            stat.start()
+            time.sleep(2) # to record 2 extra mpstat cycle
+            # started = datetime.now()
+            driver.get(args_lst[0])
 
-    f = open(fname, 'w')
-    json_obj = json.dumps(data)
-    f.write(json_obj)
-    f.close()
+            wait_until_loaded(driver, args_lst[1])
 
-    driver.quit()
-    vdisplay.stop()
+            # Stop collecting performance data
+            stat_data = stat.stop()
+
+            # collect webstats
+            domComplete, loadEnd  = webStats(driver)
+            stat_data["webStats"] = [domComplete, loadEnd]
+
+        except Exception as e:
+            print(e, "SITE: ", args_lst[0])
+            if number_of_tries == 0:
+                sys.exit(1)
+            else:
+                driver.quit()
+                # vdisplay.stop()
+                return main(number_of_tries-1, flag, args_lst)
+
+        if os.path.isfile(fname):
+            f = open(fname, 'r')
+            data = json.loads(f.read())
+            f.close()
+        else:
+            # open the /data/website file and create the dict
+            data = {}
+            data['stats'] = {} 
+
+        print("-"*25)
+        print(fname)
+        print(extn)
+        print("-"*25)
+
+        data['stats'][extn] = stat_data
+
+        f = open(fname, 'w')
+        json_obj = json.dumps(data)
+        f.write(json_obj)
+        f.close()
+
+        driver.quit()
+        vdisplay.stop()
 
 if __name__ == '__main__':
-    main(3)
+    # Parse the command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('website')
+    parser.add_argument('--timeout', type=int, default=60)
+    # parser.add_argument('--extensions')
+    parser.add_argument('--extensions-wait', type=int, default=10)
+    parser.add_argument('--cpu')
+    args = parser.parse_args()
+
+    args_lst = [args.website, args.timeout, args.cpu]
+
+    # calibrate
+    for i in range(3):
+        main(3, 1, [])
+
+    for extn in extensions_configurations:
+        new_args = args_lst
+        main(3, 0, new_args.append(extn))
