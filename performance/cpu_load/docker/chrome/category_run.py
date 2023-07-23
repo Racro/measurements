@@ -105,7 +105,7 @@ def main(number_of_tries, flag, args_lst):
     else:
         # Install other addons
         extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
-        fname = '/data/' + args_lst[0].split('//')[1]
+        fname = '/data/' + args_lst[0]
         extn = fname
         if args_lst[-1]:
             for extension in args_lst[-1].split(","):
@@ -131,7 +131,7 @@ def main(number_of_tries, flag, args_lst):
             stat.start()
             time.sleep(2) # to record 2 extra mpstat cycle
             # started = datetime.now()
-            driver.get(args_lst[0])
+            driver.get('http://'+args_lst[0])
 
             wait_until_loaded(driver, args_lst[1])
 

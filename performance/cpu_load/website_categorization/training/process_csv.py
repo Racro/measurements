@@ -7,10 +7,7 @@ with open('training_data_en.csv') as f:
     for row in csv_reader:
         category = row[3].split('/')[1]
         if category in category_dict.keys():
-            if row[2][:4] == "www.":
-                category_dict[category].append(row[2][4:])
-            else:
-                category_dict[category].append(row[2])
+            category_dict[category].append(row[2])
         else:
             category_dict[category] = []
 f.close()
