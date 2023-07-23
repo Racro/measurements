@@ -75,7 +75,14 @@ def main(number_of_tries, flag, args_lst):
     #options.headless = False
     # options.add_argument("--headless=new")
     options.add_argument("no-sandbox")
+    options.add_argument("--disable-animations")
+    options.add_argument("--disable-web-animations")
+    # options.add_argument("--single-process")
     options.add_argument("--disable-gpu")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-web-security")
+    options.add_argument("--disable-features=IsolateOrigins,site-per-process")
+    options.add_argument("--disable-features=AudioServiceOutOfProcess")
     options.add_argument("auto-open-devtools-for-tabs")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
@@ -105,6 +112,7 @@ def main(number_of_tries, flag, args_lst):
     else:
         # Install other addons
         extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
+        print(args_lst)
         fname = '/data/' + args_lst[0].split('//')[1]
         extn = fname
         if args_lst[-1]:
@@ -189,8 +197,9 @@ if __name__ == '__main__':
 
     # calibrate
     for i in range(3):
-        main(3, 1, [])
+        main(3, 1, args_lst)
 
     for extn in extensions_configurations:
         new_args = args_lst
-        main(3, 0, new_args.append(extn))
+        new_args.append(extn)
+        main(3, 0, new_args)
