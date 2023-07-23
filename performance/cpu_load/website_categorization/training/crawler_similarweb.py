@@ -14,45 +14,6 @@ from threading import Thread, Lock
 
 from selenium.webdriver.chrome.options import Options
 
-def iterate_and_add_text(extn, date_lst, text_lst, lock):
-    if len(date_lst) != len(text_lst):
-        print("list lengths not equal")
-        exit(1)
-
-    lock.acquire()
-    for i in range(len(date_lst)):
-        review_dict[extn][0].append(date_lst[i].text)
-        review_dict[extn][1].append(text_lst[i].text)
-    lock.release()
-
-def write_to_pickle(data_str, filename):
-    filehandler = open(filename, 'wb')
-    pk.dump(data_str, filehandler)
-    filehandler.close()
-
-def write_to_textfile(data_str, filename):
-    filehandler = open(filename, 'wt')
-    filehandler.write(str(data_str))
-    filehandler.close()
-
-def pretty_write_to_textfile(data_str, filename):
-    filehandler = open(filename, 'wt')
-    for key in data_str:
-        filehandler.write(key)
-        filehandler.write('\n')
-        filehandler.write(str(len(review_dict[key][0])))
-        filehandler.write('\n')
-        for j in range(len(review_dict[key][0])):
-            filehandler.write(review_dict[key][0][j])
-            filehandler.write("\n")
-            filehandler.write(review_dict[key][1][j])
-            filehandler.write("\n---------------------------------------\n")
-
-        filehandler.write('\n'*3)
-        filehandler.write("-----------------------------------------------------------------------"*2)
-        filehandler.write('\n'*3)
-    filehandler.close()
-
 xf = Xvfb()  #  xf = Xvfb(1920, 1080) - will create virtual display with 1920x1080 size
 xf.start()
 
@@ -157,6 +118,6 @@ for lst in chunks_list:
         t.join()
 
 import json
-f = open('website_categories.json', 'w')
+f = open('website_categories1.json', 'w')
 json.dump(category_dict, f)
 f.close()

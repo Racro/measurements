@@ -1,6 +1,26 @@
 import json
 
-f1 = open('site_load_time_1000.json', 'r')
+extensions_configurations = [
+       # No extensions
+    #    "",
+    #    # Extensions on their own
+       "adblock",
+       "decentraleyes",
+       "disconnect",
+       "ghostery",
+       "https",
+       "noscript",
+       "privacy-badger",
+       "ublock",
+       "scriptsafe",
+       "canvas-antifp",
+       "adguard",
+       "user-agent"
+       # Combinations
+    #    "decentraleyes,privacy_badger,ublock_origin"
+    ]
+
+f1 = open('site_load_time_custom2_1000.json', 'r')
 # f2 = open('website_categories.json', 'r')
 # f3 = open('website_categories_less.json', 'r')
 
@@ -45,38 +65,79 @@ f1 = open('site_load_time_1000.json', 'r')
 #                 categories_new[key].append(root)
 
 sites = json.load(f1)
-n = 1
 
 f4 = open('website_roots.json', 'r')
 categories_new = json.load(f4)
 f4.close()                
 
-table = [] # for printing
-for site in list(sites['ub'].keys())[1:101]:
-    lst = site.split(".")
-    if len(lst) > 2:
-        root = lst[1]
-    else:
-        root = lst[0]
-    
-    check = 0 
-    
-    # print(root)
-    for key in categories_new:
-        if root in categories_new[key]:
-            check = 1
-            table.append([n, sites['ub'][site], site, key])
-            break
-    if check == 0:
-        table.append([n, sites['ub'][site], site, 'NULL'])
-    n += 1    
+table_min = [] # for printing
+table_max = [] # for printing
+for extn in extensions_configurations:
+    n = 1
+    for site in list(sites[extn].keys())[1:101]:
+        lst = site.split(".")
+        if len(lst) > 2:
+            root = lst[1]
+        else:
+            root = lst[0]
+        check = 0 
+        
+        if sites[extn][site] > -5000:
+            continue
 
-from tabulate import tabulate
-print(tabulate(table))
+        # print(root)
+        for key in categories_new:
+            for val in range(len(categories_new[key])):
+                if root in categories_new[key][val]:
+                    check = 1
+                    table_min.append([extn, n, sites[extn][site], site, key])
+                    break
+            if check==1:
+                break
+        if check == 0:
+            table_min.append([extn, n, sites[extn][site], site, 'NULL'])
+        n += 1
+
+    for site in list(sites[extn].keys())[-100:]:
+        lst = site.split(".")
+        if len(lst) > 2:
+            root = lst[1]
+        else:
+            root = lst[0]
+        check = 0 
+        
+        if sites[extn][site] < 5000:
+            continue
+
+        # print(root)
+        for key in categories_new:
+            for val in range(len(categories_new[key])):
+                if root in categories_new[key][val]:
+                    check = 1
+                    table_max.append([extn, n, sites[extn][site], site, key])
+                    break
+            if check==1:
+                break
+        if check == 0:
+            table_max.append([extn, n, sites[extn][site], site, 'NULL'])
+        n += 1
+
+# from tabulate import tabulate
+# print(tabulate(table_min))
+# print(tabulate(table_max))
 #print(n)
+import csv
+f = open('analysis1.csv', 'w')
+
+csvwriter = csv.writer(f)
+
+# writing the fields 
+csvwriter.writerow(['Extension', 'index', 'load_time', 'website', 'key']) 
+    
+# writing the data rows 
+csvwriter.writerows(table_min)
+csvwriter.writerow(['','','','',''])
+csvwriter.writerows(table_max)
+f.close()
 
 f1.close()
-# f2.close()
-# f3.close()
-
-    
