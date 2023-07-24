@@ -29,7 +29,7 @@ def run(log, browser, configurations, domains, cpu):
         # random.shuffle(configurations)
         # for extension in configurations:
         #     run_configuration(log, browser, extension, domain, cpu)
-        run_configuration(log, browser, domain, cpu)
+        run_configuration(log, browser, '', domain, cpu)
 
 
 def run_configuration(log, browser, extension, domain, cpu):
@@ -103,7 +103,7 @@ def main():
             #     break
     f.close()
 
-    domains = domains[:10]
+    # domains = domains[:10]
 
     # with open("../../../adblock_detect/failed_sites.txt", "r") as f:
     #    failed_sites = f.read().splitlines()
@@ -144,7 +144,7 @@ def main():
 
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
     # cpus_list = ['0','1','2','3']
-    cpus_list = [str(cpu) for cpu in range(20)]
+    cpus_list = [str(cpu) for cpu in range(25)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
     print(domain_set)

@@ -25,7 +25,7 @@ source ~/pes/venv_measure/bin/activate
 #while true; do
 UUID=$(uuidgen -t)
 echo "Starting measurement run '${UUID}' at $(date)"
-python3 wrapper.py \
+python3 category_wrapper.py \
 ${LOGS}/${UUID}.log \
 ${DOMAINS_LIST} \
 ${BROWSER}
