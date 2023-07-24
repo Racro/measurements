@@ -86,11 +86,12 @@ def main(number_of_tries, flag, args_lst):
         driver.set_page_load_timeout(args_lst[1])
 
         try:
-            driver.get(args_lst[0])
+            driver.get('http://'+args_lst[0])
 
             wait_until_loaded(driver, args_lst[1])
 
         except Exception as e:
+            print('flag: ', flag)
             print(e, "SITE: ", args_lst[0])
             if number_of_tries == 0:
                 sys.exit(1)
@@ -143,6 +144,7 @@ def main(number_of_tries, flag, args_lst):
             stat_data["webStats"] = [domComplete, loadEnd]
 
         except Exception as e:
+            print('flag: ', flag)
             print(e, "SITE: ", args_lst[0])
             if number_of_tries == 0:
                 sys.exit(1)
@@ -191,8 +193,9 @@ if __name__ == '__main__':
 
     # calibrate
     for i in range(3):
-        main(3, 1, [])
+        main(3, 1, args_lst)
 
     for extn in extensions_configurations:
         new_args = args_lst
-        main(3, 0, new_args.append(extn))
+        new_args.append(extn)
+        main(3, 0, new_args)
