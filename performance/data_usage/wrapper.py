@@ -22,18 +22,18 @@ from threading import Timer
 import os
 
 extn_lst = [
-    # 'adblock', 'control', 'ublock', 'privacy-badger',
-    #    "decentraleyes",
-    #    "disconnect",
-    #    "ghostery",
-    #    "https",
-    #    "noscript",
-    #    "scriptsafe",
-    #    "canvas-antifp",
-    #    "adguard",
+        'control', 'adblock', 'ublock', 'privacy-badger',
+        "decentraleyes",
+        "disconnect",
+        "ghostery",
+        "https",
+        "noscript",
+        "scriptsafe",
+        "canvas-antifp",
+        "adguard",
        "user-agent"]
 
-SIZE = 10 # number of browser windows that will open
+SIZE = 1 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
@@ -77,6 +77,9 @@ def run(sites, extn, return_dict, l):
             l.release()
         except Exception as e:
             print(e)
+            print(sites)
+            print(extn)
+            print(return_dict)
             l.release()
 
 
@@ -91,7 +94,9 @@ if __name__ == "__main__":
         #        updated_dict[site[11:]] = [site]
         #f.close()
 
-        # updated_dict = {
+        updated_dict = {
+                "github.com": ['http://www.github.com', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+hero&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=homepage+sticky+nav&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+footer&ref_page=%2F']
+            }
         #     "google.com": ["http://www.google.com"]
         #     ,
         #     "youtube.com": ["http://www.youtube.com"],
@@ -108,11 +113,11 @@ if __name__ == "__main__":
         manager = multiprocessing.Manager()
         return_dict = manager.dict()
 
-        f = open('data_usage.json.bak', 'r')
-        result_dict = json.load(f)
-        f.close()
+        #if = open('data_usage.json.bak', 'r')
+        #result_dict = json.load(f)
+        #f.close()
 
-        # result_dict = {}
+        result_dict = {}
         for extn in extn_lst:       
             return_dict[extn] = manager.dict()
             result_dict[extn] = {}
@@ -134,7 +139,7 @@ if __name__ == "__main__":
                 for val in return_dict[extn][site]:
                     result_dict[extn][site].append(val)
 
-            f = open('data_usage.json', 'w')
+            f = open('data_usage2.json', 'w')
             json.dump(result_dict, f)
             f.close()
 
@@ -142,7 +147,7 @@ if __name__ == "__main__":
         print(e)
         print('Interrupted')
 
-        f = open('data_usage.json', 'w')
+        f = open('data_usage2.json', 'w')
         json.dump(result_dict, f)
         f.close()
 

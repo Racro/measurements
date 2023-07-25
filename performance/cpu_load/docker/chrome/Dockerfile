@@ -41,7 +41,7 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 ADD extensions/ \
     /home/seluser/measure/extensions
 
-ADD category_run.py \
+ADD run.py \
     stats.py \
     /home/seluser/measure/
 
@@ -55,5 +55,5 @@ USER seluser
 
 WORKDIR /home/seluser/measure
 
-ENTRYPOINT ["python3", "/home/seluser/measure/category_run.py"]
+ENTRYPOINT ["python3", "/home/seluser/measure/run.py"]
 # ENTRYPOINT ["python3", "/home/seluser/measure/fingerprint.py"]
