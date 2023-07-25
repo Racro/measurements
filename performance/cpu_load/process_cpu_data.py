@@ -74,7 +74,7 @@ def generate_stats_dict(data_dict):
     # f.close()
 
 # list of all files in /data folder
-path = f"./data_1000/data_custom/"
+path = f"./data_1000/data_custom2/"
 dir_list = os.listdir(path)
 
 # extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
@@ -275,7 +275,7 @@ ret_data['sys_max'] = sys_max
 ret_data['sys_avg'] = sys_avg
 ret_data['load_time'] = generate_stats_dict(data_dict)
 
-with open('plot_performance.json', 'w') as f:
+with open('plot_performance2.json', 'w') as f:
     json.dump(ret_data, f, cls=NpEncoder)
 
 sys.exit(0)

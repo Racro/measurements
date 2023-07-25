@@ -67,24 +67,19 @@ def generate_stats_dict(data_dict):
         # plt.legend()
         # plt.show()
         # # plt.savefig(f'stat_{extn}.png')
-    return ret
+    return d
     # import json
     # with open('website_categorization/site_load_time_custom_1000.json', 'w') as f:
     #     json.dump(d, f, cls=NpEncoder)
     # f.close()
 
 # list of all files in /data folder
-path = f"./data_1000/data_custom/"
+path = f"./data_1000/data_category/"
 dir_list = os.listdir(path)
 
 website_pool = json.load(open('website_pool.json', 'r'))
 website_map = {}
 category_avg = {}
-
-for key in website_pool:
-    category_avg[key] = {}
-    for site in website_pool[key]:
-        website_map[site] = key
 
 # extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
 extn_lst = [
@@ -98,6 +93,15 @@ extn_lst = [
        "canvas-antifp",
        "adguard",
        "user-agent"]
+
+for key in website_pool:
+    category_avg[key] = {}
+    for extn in extn_lst[1:]:
+        category_avg[key][extn] = {'usr_avg': [], 'sys_avg': [], 'load_time': []}
+    for site in website_pool[key]:
+        website_map[site] = key
+
+
 
 data_dict = {
     'websites': []
@@ -186,9 +190,9 @@ print(faulty_num) # manually removed the 0.0 extries corresponding to the number
 
 # data_dict = {'websites':[], 'k1': [[[v1,v2,v3,ws1], [v4,v5,v6,ws2], [v1,v2,v3,ws3]], [[v1,v2,v3,ws11], [v4,v5,v6,ws21], [v1,v2,v3, ws31]]], 'k2': [[[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]], [[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]]], 'k3': [[[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]], [[v1,v2,v3], [v4,v5,v6], [v1,v2,v3]]]}
 
-max_plot = [{}, {}, {}] # for usr, sys, iowait
-avg_plot = [{}, {}, {}]
-stat_plot = [{}, {}]
+max_plot = [{}, {}, {}, []] # for usr, sys, iowait, website
+avg_plot = [{}, {}, {}, []]
+stat_plot = [{}, {}, []]
 
 for i in range(4): # initialization
     for extn in data_dict:
@@ -199,11 +203,11 @@ for i in range(4): # initialization
             else:
                 max_plot[i][extn] = []
                 avg_plot[i][extn] = []
-            
+
 for i in range(len(data_dict['control'])):
     for extn in data_dict:
-        for j in range(4):
-            if extn != 'websites':
+        if extn != 'websites':
+            for j in range(4):        
                 if (j==3):
                     # # filter out -1 values from stat_plot
                     # if data_dict[extn][i][j][0] == -1 or data_dict[extn][i][j][1] == -1:
@@ -217,6 +221,9 @@ for i in range(len(data_dict['control'])):
 
                     #avg
                     avg_plot[j][extn].append(sum(data_dict[extn][i][j][:-3]) / len(data_dict[extn][i][j][:-3])) # can do [:-1] so that last entry can be ignored (which would mostly be close to 0) bcoz I did run mpstat for 5 extra cycle 
+        else:
+            avg_plot[3].append(data_dict[extn][i])
+            stat_plot[2].append(data_dict[extn][i])
 
 
 # generate_stats_dict(data_dict)
@@ -263,28 +270,40 @@ def plot_avg():
 
 # plot_max()
 # plot_avg()
+ret_load = generate_stats_dict(data_dict)
+for i in range(len(avg_plot[3])):
+    site = avg_plot[3][i]
+    cat = website_map[site]
+    
+    # ret_data = {}
+    # usr_avg = {}
+    # sys_avg = {}
+    # load_time = {}
 
-ret_data = {}
-usr_max = {}
-usr_avg = {}
-sys_max = {}
-sys_avg = {}
-load_time = {}
+    for extn in extn_lst[1:]:
+        category_avg[cat][extn]['usr_avg'].append(avg_plot[0][extn][i] - avg_plot[0]['control'][i])
+        category_avg[cat][extn]['sys_avg'].append(avg_plot[1][extn] - avg_plot[1]['control'])
+        category_avg[cat][extn]['load_time'].append(ret_load[site])
+        
+plot_dict = {'usr_avg': {}, 'sys_avg': {}, 'load_time': {}}
 
 for extn in extn_lst[1:]:
-    usr_max[extn] = np.sort(np.array(max_plot[0][extn]) - np.array(max_plot[0]['control']))
-    usr_avg[extn] = np.sort(np.array(avg_plot[0][extn]) - np.array(avg_plot[0]['control']))
-    sys_max[extn] = np.sort(np.array(max_plot[1][extn]) - np.array(max_plot[1]['control']))
-    sys_avg[extn] = np.sort(np.array(avg_plot[1][extn]) - np.array(avg_plot[1]['control']))
+    plot_dict['usr_avg'][extn] = {}
+    plot_dict['sys_avg'][extn] = {}
+    plot_dict['load_time'][extn] = {}
+
+for cat in category_avg
+
+     
+
+# ret_data['usr_avg'] = usr_avg
+# ret_data['sys_avg'] = sys_avg
 
 
-ret_data['usr_max'] = usr_max
-ret_data['usr_avg'] = usr_avg
-ret_data['sys_max'] = sys_max
-ret_data['sys_avg'] = sys_avg
-ret_data['load_time'] = generate_stats_dict(data_dict)
 
-with open('plot_performance.json', 'w') as f:
+
+
+with open('plot_category.json', 'w') as f:
     json.dump(ret_data, f, cls=NpEncoder)
 
 sys.exit(0)

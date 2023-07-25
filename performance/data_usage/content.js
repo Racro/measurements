@@ -11,7 +11,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
 (async () => {
     var xvfb = new Xvfb({
         silent: true,
-        reuse: true,
+        // reuse: true,
         // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
     });
     xvfb.start((err)=>{if (err) console.error(err)})
@@ -37,7 +37,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
             "--no-sandbox",
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
-            `--disable-extensions-except=./../extensions/extn_src/${args[3]}`,
+            // `--disable-extensions-except=./../extensions/extn_src/${args[3]}`,
             `--load-extension=./../../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
             '--window-size=960, 1080',
@@ -48,7 +48,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
     const browser = await puppeteer.launch({
         headless: false,
         // headless: "new",
-        // ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
+        ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
         executablePath: '/usr/bin/google-chrome' 
         // executablePath: '/snap/bin/chromium' 
