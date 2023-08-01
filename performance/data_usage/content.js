@@ -11,7 +11,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
 (async () => {
     var xvfb = new Xvfb({
         silent: true,
-        // reuse: true,
+        reuse: true
         // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
     });
     xvfb.start((err)=>{if (err) console.error(err)})
@@ -50,7 +50,8 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         // headless: "new",
         ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
-        executablePath: '/usr/bin/google-chrome' 
+        executablePath: '/usr/bin/google-chrome',
+	timeout: 60000
         // executablePath: '/snap/bin/chromium' 
     });
 

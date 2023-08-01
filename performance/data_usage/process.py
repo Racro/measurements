@@ -11,18 +11,20 @@ import json
 #     return np.trunc(values*10**decs)/(10**decs)
 
 # list of all files in /content folder
-path = f"./dummy.json"
+path = f"./data_usage2.json"
 
 extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
-    "decentraleyes"]
-    #"disconnect",
-    #"ghostery",
-    #"https",
-    #"noscript",
-    #"scriptsafe",
-    #"canvas-antifp",
+    "decentraleyes",
+    "disconnect",
+    "ghostery",
+    "https",
+    "noscript",
+    "scriptsafe",
+    "canvas-antifp"
+    #,
     #"adguard",
-    #"user-agent"]
+    #"user-agent"
+    ]
 
 f = open(path, 'r')
 data_dict = json.load(f)
@@ -73,7 +75,7 @@ for extn in extn_lst:
     for site in data_dict[extn]:
         content = np.array(data_dict[extn][site], dtype=float)
         plot_data[extn][0].append(site)
-        plot_data[extn][1].append(np.sum(content)/len(content))
+        plot_data[extn][1].append((np.sum(content)*1000)/len(content))
 
 def generate_plot_content(extn_data, ctrl_data, extn):
     ctrl_content = np.array(ctrl_data[1])

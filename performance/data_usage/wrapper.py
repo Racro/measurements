@@ -22,13 +22,13 @@ from threading import Timer
 import os
 
 extn_lst = [
-        'adblock', 'control', 'ublock', 'privacy-badger',
-        "decentraleyes",
-        "disconnect",
-        "ghostery",
-        "https",
-        "noscript",
-        "scriptsafe",
+        #'adblock', 'control', 'ublock', 'privacy-badger',
+        #"decentraleyes",
+        #"disconnect",
+        #"ghostery",
+        #"https",
+        #"noscript",
+        #"scriptsafe",
         "canvas-antifp",
         "adguard",
        "user-agent"]
@@ -139,7 +139,7 @@ if __name__ == "__main__":
                 for val in return_dict[extn][site]:
                     result_dict[extn][site].append(val)
 
-            f = open('data_usage2.json', 'w')
+            f = open('data_usage22.json', 'w')
             json.dump(result_dict, f)
             f.close()
 
@@ -147,7 +147,7 @@ if __name__ == "__main__":
         print(e)
         print('Interrupted')
 
-        f = open('data_usage2.json', 'w')
+        f = open('data_usage22.json', 'w')
         json.dump(result_dict, f)
         f.close()
 
