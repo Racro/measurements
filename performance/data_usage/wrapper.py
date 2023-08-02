@@ -27,11 +27,12 @@ extn_lst = [
         #"disconnect",
         #"ghostery",
         #"https",
-        #"noscript",
-        #"scriptsafe",
-        "canvas-antifp",
-        "adguard",
-       "user-agent"]
+        "noscript",
+        "scriptsafe"
+        #"canvas-antifp",
+        #"adguard",
+       #"user-agent"
+       ]
 
 SIZE = 25 # number of browser windows that will open
 
