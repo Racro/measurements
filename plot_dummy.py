@@ -4,7 +4,7 @@ import json
 
 # Define the number of extensions, metrics, and the width of each boxplot and the gap between groups of boxplots
 num_extensions = 4
-num_metrics = 5
+num_metrics = 1
 # Let's increase the width of the boxplots and decrease the spacing between them
 box_width = 0.9  # Increase the width of the boxplots
 
@@ -14,21 +14,20 @@ gap_within_metric = 0.2
 metric_spacing = 0.8  # Increase the spacing between metrics
 
 # Define the number of metrics in each row
-num_metrics_1 = 3
-num_metrics_2 = 2
+num_metrics_1 = 1
 # num_metrics_3 = 2
 
 # List of extensions
 # extensions = ['AdBlock Plus', 'Decentraleyes', 'Disconnect', 'Ghostery', 'HTTPS Everywhere', 'NoScript Security Suite', 'Privacy Badger', 'uBlock Origin']
-extensions = ['adblock', 'ublock', 'privacy-badger', "decentraleyes",
-       "disconnect",
-       "ghostery",
-       "https",
-       "noscript",
-       "scriptsafe",
-       "canvas-antifp",
-       "adguard",
-       "user-agent"]
+extensions = ['adblock', 'ublock', 'privacy-badger', "decentraleyes"]
+    #    "disconnect",
+    #    "ghostery",
+    #    "https",
+    #    "noscript",
+    #    "scriptsafe",
+    #    "canvas-antifp",
+    #    "adguard",
+    #    "user-agent"]
 
 extn_dict = {
     'adblock': 'ABP', 'ublock': 'UbO', 'privacy-badger': 'PB', "decentraleyes": 'Decentraleyes',
@@ -44,7 +43,7 @@ extn_dict = {
 
 # List of metrics
 # metrics = ['usr (max)\n(in absolute)', 'usr (avg)\n(in absolute)', 'sys (max)\n(in absolute)', 'sys (avg)\n(in absolute)', 'load_time\n(in seconds)', 'data_usage\n(in MB)', 'RAM_usage_max\n(in MB)', 'RAM_usage_avg\n(in MB)', 'JSHeapSizeUsed\n(in MB)', '#frames\n(in absolute)', '#third_party\n(in absolute)']
-metrics = ['usr (avg)\n(in absolute)', 'sys (avg)\n(in absolute)', 'load_time\n(in seconds)', 'data_usage\n(in MB)', 'RAM_usage_avg\n(in MB)', 'JSHeapSizeUsed\n(in MB)']
+metrics = ['data_usage\n(in MB)']
 # metrics = ['load_time\n(in seconds)', 'data_usage\n(in MB)']
 
 # Generate some random data for demonstration purposes
@@ -62,15 +61,15 @@ data = []
 for extn in extensions:
     each_extn = []
     # each_extn.append(np.array(performance['usr_max'][extn]))
-    each_extn.append(np.array(performance['usr_avg'][extn]))
+    # each_extn.append(np.array(performance['usr_avg'][extn]))
     # each_extn.append(np.array(performance['sys_max'][extn]))
     # each_extn.append(np.array(performance['sys_avg'][extn]))
-    each_extn.append(np.array(performance['load_time'][extn])/1000)
+    # each_extn.append(np.array(performance['load_time'][extn])/1000)
     # print(np.array(content[extn]))
     each_extn.append(np.array(content[extn]))
     # each_extn.append(np.array(ram['ram_max'][extn]))
-    each_extn.append(np.array(ram['ram_avg'][extn]))
-    each_extn.append(np.array(jsheap['jsheap'][extn]))
+    # each_extn.append(np.array(ram['ram_avg'][extn]))
+    # each_extn.append(np.array(jsheap['jsheap'][extn]))
     # each_extn.append(np.array(frames[extn]))
     # each_extn.append(np.array(third_party[extn]))
     data.append(each_extn)
@@ -89,14 +88,14 @@ color_map = plt.cm.get_cmap('Set3', num_extensions)
 
 
 # Create subplots for the first row
-axs_1 = [plt.subplot(3, num_metrics_1, i+1) for i in range(num_metrics_1)]
+axs_1 = [plt.subplot(1, num_metrics_1, i+1) for i in range(num_metrics_1)]
 # Create subplots for the second row
-axs_2 = [plt.subplot(3, num_metrics_1, num_metrics_1+i+1) for i in range(num_metrics_2)]
+# axs_2 = [plt.subplot(3, num_metrics_1, num_metrics_1+i+1) for i in range(num_metrics_2)]
 # Create subplots for the third row
 # axs_3 = [plt.subplot(3, num_metrics_1, 2*num_metrics_1+i+1) for i in range(num_metrics_3)]
 
 # Combine all axes in a list
-axs = axs_1 + axs_2# + axs_3
+axs = axs_1# + axs_2# + axs_3
 
 # # For each metric in the first group...
 # for i in range(num_metrics_1):

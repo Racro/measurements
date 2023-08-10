@@ -77,7 +77,7 @@ def generate_stats_dict(data_dict):
 path = f"./data_1000/data_category/"
 dir_list = os.listdir(path)
 
-website_pool = json.load(open('website_pool.json', 'r'))
+website_pool = json.load(open('website_categorization/website_pool.json', 'r'))
 website_map = {}
 category_avg = {}
 
@@ -207,20 +207,24 @@ for i in range(4): # initialization
 for i in range(len(data_dict['control'])):
     for extn in data_dict:
         if extn != 'websites':
-            for j in range(4):        
-                if (j==3):
-                    # # filter out -1 values from stat_plot
-                    # if data_dict[extn][i][j][0] == -1 or data_dict[extn][i][j][1] == -1:
-                    #     continue
+            for j in range(4):  
+                try:      
+                    if (j==3):
+                        # # filter out -1 values from stat_plot
+                        # if data_dict[extn][i][j][0] == -1 or data_dict[extn][i][j][1] == -1:
+                        #     continue
 
-                    stat_plot[0][extn].append(data_dict[extn][i][j][0])
-                    stat_plot[1][extn].append(data_dict[extn][i][j][1])
-                else:
-                    #max
-                    max_plot[j][extn].append(max(data_dict[extn][i][j]))  
+                        stat_plot[0][extn].append(data_dict[extn][i][j][0])
+                        stat_plot[1][extn].append(data_dict[extn][i][j][1])
+                    else:
+                        #max
+                        max_plot[j][extn].append(max(data_dict[extn][i][j]))  
 
-                    #avg
-                    avg_plot[j][extn].append(sum(data_dict[extn][i][j][:-3]) / len(data_dict[extn][i][j][:-3])) # can do [:-1] so that last entry can be ignored (which would mostly be close to 0) bcoz I did run mpstat for 5 extra cycle 
+                        #avg
+                        avg_plot[j][extn].append(sum(data_dict[extn][i][j][:-3]) / len(data_dict[extn][i][j][:-3])) # can do [:-1] so that last entry can be ignored (which would mostly be close to 0) bcoz I did run mpstat for 5 extra cycle
+                except Exception as e:
+                    print(e)
+                    print('wohooooo') 
         else:
             avg_plot[3].append(data_dict[extn][i])
             stat_plot[2].append(data_dict[extn][i])
@@ -236,37 +240,37 @@ for extn in extn_lst:
     # sys_avg[extn] = np.array(avg_plot[1][extn]) # 0 - usr, 1 - sys
     # sys_max[extn] = np.array(max_plot[1][extn]) # 0 - usr, 1 - sys
 
-def plot_max():
-    median_lst = []
-    mean_lst = []
-    for extn in max_np.keys():
-        if extn != 'control':
-            median_lst.append(np.median(max_np[extn] - max_np['control']))
-            mean_lst.append(np.mean(max_np[extn] - max_np['control']))
-    print('max')
-    print(f'median -> {median_lst}')
-    print(f'mean -> {mean_lst}')
-        # plt.plot(np.sort(max_np[extn] - max_np['control']), label = extn)
-            # plt.axhline(np.median(max_np[extn] - max_np['control']), linestyle='dashed', color='g')
-            # plt.legend()
-            # plt.show()
-            # plt.savefig(f'max_{extn}.png')
+# def plot_max():
+#     median_lst = []
+#     mean_lst = []
+#     for extn in max_np.keys():
+#         if extn != 'control':
+#             median_lst.append(np.median(max_np[extn] - max_np['control']))
+#             mean_lst.append(np.mean(max_np[extn] - max_np['control']))
+#     print('max')
+#     print(f'median -> {median_lst}')
+#     print(f'mean -> {mean_lst}')
+#         # plt.plot(np.sort(max_np[extn] - max_np['control']), label = extn)
+#             # plt.axhline(np.median(max_np[extn] - max_np['control']), linestyle='dashed', color='g')
+#             # plt.legend()
+#             # plt.show()
+#             # plt.savefig(f'max_{extn}.png')
 
-def plot_avg():
-    median_lst = []
-    mean_lst = []
-    for extn in avg_np.keys():
-        if extn != 'control':
-            median_lst.append(np.median(avg_np[extn] - avg_np['control']))
-            mean_lst.append(np.mean(avg_np[extn] - avg_np['control']))
-    print('avg')
-    print(f'median -> {median_lst}')
-    print(f'mean -> {mean_lst}')
-            # plt.plot(np.sort(avg_np[extn] - avg_np['control']), label = extn)
-            # plt.axhline(np.median(avg_np[extn] - avg_np['control']), linestyle='dashed', color='g')
-            # plt.legend()
-            # plt.show()
-            # plt.savefig(f'avg_{extn}.png')
+# def plot_avg():
+#     median_lst = []
+#     mean_lst = []
+#     for extn in avg_np.keys():
+#         if extn != 'control':
+#             median_lst.append(np.median(avg_np[extn] - avg_np['control']))
+#             mean_lst.append(np.mean(avg_np[extn] - avg_np['control']))
+#     print('avg')
+#     print(f'median -> {median_lst}')
+#     print(f'mean -> {mean_lst}')
+#             # plt.plot(np.sort(avg_np[extn] - avg_np['control']), label = extn)
+#             # plt.axhline(np.median(avg_np[extn] - avg_np['control']), linestyle='dashed', color='g')
+#             # plt.legend()
+#             # plt.show()
+#             # plt.savefig(f'avg_{extn}.png')
 
 # plot_max()
 # plot_avg()
@@ -274,16 +278,21 @@ ret_load = generate_stats_dict(data_dict)
 for i in range(len(avg_plot[3])):
     site = avg_plot[3][i]
     cat = website_map[site]
-    
+
     # ret_data = {}
     # usr_avg = {}
     # sys_avg = {}
     # load_time = {}
 
     for extn in extn_lst[1:]:
+        # if 'Pets &' in cat:
+        #     print(avg_plot[0][extn][i])
+        #     print(avg_plot[1][extn][i])
+        #     print(ret_load[extn][site])
+        
         category_avg[cat][extn]['usr_avg'].append(avg_plot[0][extn][i] - avg_plot[0]['control'][i])
-        category_avg[cat][extn]['sys_avg'].append(avg_plot[1][extn] - avg_plot[1]['control'])
-        category_avg[cat][extn]['load_time'].append(ret_load[site])
+        category_avg[cat][extn]['sys_avg'].append(avg_plot[1][extn][i] - avg_plot[1]['control'][i])
+        category_avg[cat][extn]['load_time'].append(ret_load[extn][site])
         
 plot_dict = {'usr_avg': {}, 'sys_avg': {}, 'load_time': {}}
 
@@ -292,7 +301,17 @@ for extn in extn_lst[1:]:
     plot_dict['sys_avg'][extn] = {}
     plot_dict['load_time'][extn] = {}
 
-for cat in category_avg
+for cat in category_avg.keys():
+    if cat == "Pets and Animals" or cat == "Law and Government":
+        continue
+    for extn in extn_lst[1:]:
+        try:
+            plot_dict['usr_avg'][extn][cat] = np.round(np.average(category_avg[cat][extn]['usr_avg']), 3)
+            plot_dict['sys_avg'][extn][cat] = np.round(np.average(category_avg[cat][extn]['sys_avg']), 3)
+            plot_dict['load_time'][extn][cat] = np.round(np.average(category_avg[cat][extn]['load_time']), 3)
+        except Exception as e:
+            print(e)
+            print('wohoo2')
 
      
 
@@ -304,7 +323,8 @@ for cat in category_avg
 
 
 with open('plot_category.json', 'w') as f:
-    json.dump(ret_data, f, cls=NpEncoder)
+    json.dump(plot_dict, f, cls=NpEncoder)
+f.close()
 
 sys.exit(0)
 #######################################

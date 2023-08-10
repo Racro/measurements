@@ -14,8 +14,8 @@ gap_within_metric = 0.2
 metric_spacing = 0.8  # Increase the spacing between metrics
 
 # Define the number of metrics in each row
-num_metrics_1 = 3
-num_metrics_2 = 2
+num_metrics_1 = 5
+# num_metrics_2 = 2
 # num_metrics_3 = 2
 
 # List of extensions
@@ -44,34 +44,53 @@ extn_dict = {
 
 # List of metrics
 # metrics = ['usr (max)\n(in absolute)', 'usr (avg)\n(in absolute)', 'sys (max)\n(in absolute)', 'sys (avg)\n(in absolute)', 'load_time\n(in seconds)', 'data_usage\n(in MB)', 'RAM_usage_max\n(in MB)', 'RAM_usage_avg\n(in MB)', 'JSHeapSizeUsed\n(in MB)', '#frames\n(in absolute)', '#third_party\n(in absolute)']
-metrics = ['usr (avg)\n(in absolute)', 'sys (avg)\n(in absolute)', 'load_time\n(in seconds)', 'data_usage\n(in MB)', 'RAM_usage_avg\n(in MB)', 'JSHeapSizeUsed\n(in MB)']
+metrics = ['CPU Usage (usr_avg)\n(in percentage)', 'CPU Usage (sys_avg)\n(in percentage)', 'Load time\n(in s)', 'Data Usage\n(in KB)', 'RAM Usage (avg)\n(in MB)']
 # metrics = ['load_time\n(in seconds)', 'data_usage\n(in MB)']
 
 # Generate some random data for demonstration purposes
 # np.random.seed(0)  # for reproducibility
 # data = np.random.rand(num_metrics, num_extensions, 50)
 
-content = json.load(open('performance/data_usage/plot_content.json', 'r'))
+content = json.load(open('performance/data_usage/plot_content2.json', 'r'))
 frames = json.load(open('effective/ads/plot_frames.json', 'r'))
-performance = json.load(open('performance/cpu_load/plot_performance2.json', 'r'))
+performance = json.load(open('performance/cpu_load/plot_performance.json', 'r'))
 third_party = json.load(open('effective/third_party/plot_third_party.json', 'r'))
 ram = json.load(open('performance/cpu_load/plot_ram.json', 'r'))
 jsheap = json.load(open('performance/cpu_load/plot_jsheap.json', 'r'))
 
 data = []
 
+third_party_min = 999999
+third_party_weights = {}
+
+extn_except = ['decentraleyes', 'https', 'canvas-antifp', 'user-agent']
+
+for extn in extensions:
+    if extn not in extn_except:
+        third_party_min = np.minimum(third_party_min, np.absolute(np.average(np.array(third_party[extn]))))
+
+for extn in extensions:
+    # third_party_cent[extn] = np.array(third_party[extn])/third_party_sum
+    if extn not in extn_except:
+        third_party_weights[extn] = np.absolute(np.average(np.array(third_party[extn])))/third_party_min
+    else:
+        third_party_weights[extn] = 1
+print(third_party_weights)
+# import sys
+# sys.exit(0)
+
 for extn in extensions:
     each_extn = []
     # each_extn.append(np.array(performance['usr_max'][extn]))
     each_extn.append(np.array(performance['usr_avg'][extn]))
     # each_extn.append(np.array(performance['sys_max'][extn]))
-    # each_extn.append(np.array(performance['sys_avg'][extn]))
-    each_extn.append(np.array(performance['load_time'][extn])/1000)
+    each_extn.append(np.array(performance['sys_avg'][extn]))
+    each_extn.append(np.clip(np.array(performance['load_time'][extn])/1000, -50, 50))
     # print(np.array(content[extn]))
     each_extn.append(np.array(content[extn]))
     # each_extn.append(np.array(ram['ram_max'][extn]))
     each_extn.append(np.array(ram['ram_avg'][extn]))
-    each_extn.append(np.array(jsheap['jsheap'][extn]))
+    # each_extn.append(np.array(jsheap['jsheap'][extn]))
     # each_extn.append(np.array(frames[extn]))
     # each_extn.append(np.array(third_party[extn]))
     data.append(each_extn)
@@ -80,7 +99,7 @@ data = np.array(data, dtype=object)
 
 # # Create a new figure with three axes
 # fig, axs = plt.subplots(3, 1, figsize=(10, 10))
-fig = plt.figure(figsize=(10, 5))
+fig = plt.figure(figsize=(10,10))
 
 # Create a color map for the extensions
 color_map = plt.cm.get_cmap('Set3', num_extensions)
@@ -90,14 +109,14 @@ color_map = plt.cm.get_cmap('Set3', num_extensions)
 
 
 # Create subplots for the first row
-axs_1 = [plt.subplot(3, num_metrics_1, i+1) for i in range(num_metrics_1)]
+axs_1 = [plt.subplot(5, num_metrics_1, i+1) for i in range(num_metrics_1)]
 # Create subplots for the second row
-axs_2 = [plt.subplot(3, num_metrics_1, num_metrics_1+i+1) for i in range(num_metrics_2)]
+# axs_2 = [plt.subplot(3, num_metrics_1, num_metrics_1+i+1) for i in range(num_metrics_2)]
 # Create subplots for the third row
 # axs_3 = [plt.subplot(3, num_metrics_1, 2*num_metrics_1+i+1) for i in range(num_metrics_3)]
 
 # Combine all axes in a list
-axs = axs_1 + axs_2# + axs_3
+axs = axs_1 #+ axs_2# + axs_3
 
 # # For each metric in the first group...
 # for i in range(num_metrics_1):
@@ -184,14 +203,14 @@ for i in range(num_metrics):
     # axs[i].set_ylim((min_ylimit-diff, max_ylimit+diff))  # Set the y-axis limits for this metric
     axs[i].set_xticks([])  # Remove x-ticks
     axs[i].set_xlabel(f'{metrics[i]}')  # Set x-label to metric number
-
+    # axs[i].set_yscale('symlog')
 # axs[2].set_xticks([(num_extensions*box_width)/2 + i*(num_extensions*box_width + gap) for i in range(num_metrics - num_metrics_1 - num_metrics_2)])
 # axs[2].set_xticklabels([f'{metrics[i]}' for i in range(num_metrics_1 + num_metrics_2, num_metrics)])
 
 # Create a custom legend
 legend_elements = [plt.Line2D([0], [0], color=color_map(i), lw=4, label=f'{extn_dict[extensions[i]]}') for i in range(num_extensions)]
 # fig.legend(handles=legend_elements, prop={'size': 6}, loc='lower right', bbox_to_anchor=(0.96, 0.05), ncols=2)
-fig.legend(handles=legend_elements, prop={'size': 6}, loc='lower right', bbox_to_anchor=(0.96, 0.05), ncols=2)
+fig.legend(handles=legend_elements, prop={'size': 6}, loc='lower right',bbox_to_anchor=(0.96, 0.75), ncols=12)
 
 # # Create a custom legend
 # legend_elements = [plt.Line2D([0], [0], color=color_map(i), lw=4, label=f'{extensions[i]}') for i in range(num_extensions)]

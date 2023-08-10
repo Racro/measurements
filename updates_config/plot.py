@@ -18,6 +18,8 @@ df.sort_values('Timestamp', inplace=True)
 df2['Timestamp'] = pd.to_datetime(df2['Timestamp'])
 
 extn_lst = ['adblock-plus-free-ad-bloc', 'ublock-origin', 'ghostery-–-privacy-ad-blo', 'privacy-badger', 'adguard-adblocker']
+extn_dict = {'adblock-plus-free-ad-bloc': 'ABP', 'ublock-origin': 'UbO', 'ghostery-–-privacy-ad-blo': 'Ghostery', 'privacy-badger': 'PB', 'adguard-adblocker': 'AdG'}
+#extn_lst = ['ABP', 'UbO', 'Ghostery', 'PB', 'AdG']
 # Define the number of plots and their arrangement
 # n = len(df['Extension'].unique())
 n = n_filtered = 5
@@ -83,9 +85,9 @@ for i, extension in enumerate(df_filtered['Extension'].unique()):
     df_extension = df_filtered[df_filtered['Extension'] == extension]
     rolling_avg = df_extension['Score'].rolling(window=90).mean()
     axes[i].plot(df_extension['Timestamp'], rolling_avg, label=extension, color=color_list1[i % len(color_list1)])
-    axes[i].set_title(extension)
+    axes[i].set_title(extn_dict[extension])
     axes[i].set_xlabel('Date')
-    axes[i].set_ylabel('Sentiment Score')
+    axes[i].set_ylabel('Criticality Score')
     axes[i].set_ylim([-1, 1])  # Set y-axis limit
     axes[i].set_xlim([start_date, end_date])  # Set y-axis limit
     axes[i].grid(True)
@@ -118,10 +120,10 @@ for i, extension in enumerate(df_filtered['Extension'].unique()):
     # rolling_avg = df_extension['Score'].rolling(window=60).mean()
     # if extension == 'ghostery-–-privacy-ad-blo':
     #     print(rolling_avg)
-    axes2[i].plot(review_num[extension][1], review_num[extension][0], label=extension, color=color_list2[i % len(color_list2)])
-    axes2[i].set_title(extension)
+    axes2[i].plot(review_num[extension][1], review_num[extension][0], label=extn_dict[extension], color=color_list2[i % len(color_list2)])
+    #axes2[i].set_title(extn_dict[extension])
     # axes2[i].set_xlabel('Date')
-    axes2[i].set_ylabel('#Neg_Reviews')
+    axes2[i].set_ylabel('#Critical_Reviews')
     axes2[i].set_ylim([0, max(review_num[extension][0])+100])  # Set y-axis limit
     axes2[i].set_xlim([start_date, end_date])  # Set y-axis limit
     axes2[i].grid(True)

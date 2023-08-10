@@ -20,10 +20,9 @@ extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
     "https",
     "noscript",
     "scriptsafe",
-    "canvas-antifp"
-    #,
-    #"adguard",
-    #"user-agent"
+    "canvas-antifp",
+    "adguard",
+    "user-agent"
     ]
 
 f = open(path, 'r')
@@ -104,6 +103,6 @@ for extn in extn_lst[1:]:
     # generate_plot_content(plot_data[extn], plot_data['control'], extn)
     ret_data[extn] = generate_plot_content(plot_data[extn], plot_data['control'], extn)
 
-with open('plot_content_dummy.json', 'w') as f:
+with open('plot_content2.json', 'w') as f:
     json.dump(ret_data, f)
 

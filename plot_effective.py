@@ -28,14 +28,14 @@ extn_dict = {
 frames = json.load(open('effective/ads/plot_frames.json', 'r'))
 third_party = json.load(open('effective/third_party/plot_third_party.json', 'r'))
 
-color_map = plt.cm.get_cmap('Set3', 12)
+color_map = plt.cm.get_cmap('Set2', 12)
 
 # Sample data (replace this with your 12 arrays of data)
 x_values = np.arange(1, 13)  # Assuming you have 12 x-values from 1 to 12
 data_arrays = []  # List to store your 12 arrays of data
 for extn in extensions:
     # data = np.random.randn(10)  # Replace 10 with the number of data points in each array
-    data_arrays.append(frames[extn])
+    data_arrays.append(third_party[extn])
 
 # Calculate mean and standard deviation for each data array
 means = [np.mean(data) for data in data_arrays]
@@ -45,7 +45,7 @@ std_devs = [np.std(data) for data in data_arrays]
 x_positions = np.arange(1, len(means) + 1)
 
 # Plot the scatter plot
-sc = plt.scatter(x_positions, means, c=x_positions, label='Mean', cmap='Set1', s=50)
+sc = plt.scatter(x_positions, means, c=x_positions, label='Mean', cmap='Set2', s=50)
 # Add error bars to the scatter plot
 plt.errorbar(x_positions, means, yerr=std_devs, fmt='none', capsize=5, ecolor='black')
 
@@ -59,7 +59,7 @@ plt.errorbar(x_positions, means, yerr=std_devs, fmt='none', capsize=5, ecolor='b
 # Set labels and title
 plt.xlabel('Extensions')
 plt.ylabel('Difference from control case (absolute)')
-plt.title('Frames Plot with Mean and Standard Deviation')
+plt.title('Third_party Plot with Mean and Standard Deviation')
 
 
 num_extensions = len(extensions)

@@ -49,6 +49,18 @@ def generate_stats_dict(data_dict):
 
         np.delete(dele[extn], index)
         np.delete(dummy, index)
+
+        mask2 = np.abs(dummy) > 30000
+        count = np.sum(mask2)
+        # print('control', websites[mask].tolist())
+
+        mask1 = np.abs(dele[extn]) > 30000
+        count = np.sum(mask1)
+        # print(extn, websites[mask].tolist())
+
+        result_array = np.setdiff1d(websites[mask1], websites[mask2])
+        print(extn, len(result_array))
+
         zipped = zip(dele[extn] - dummy, websites)
         sorted_zipped = sorted(zipped)
         unzipped = list(zip(*sorted_zipped))
@@ -170,7 +182,7 @@ for website in dir_list:
             webStats = webStats_c
             data_dict[extn].append([usr, syst, iowait, webStats])
             faulty_num[extn] += 1
-            print(website, extn,  k)
+            # print(website, extn,  k)
             pass
 
 print(faulty_num) # manually removed the 0.0 extries corresponding to the number here
@@ -227,9 +239,9 @@ def plot_max():
         if extn != 'control':
             median_lst.append(np.median(max_np[extn] - max_np['control']))
             mean_lst.append(np.mean(max_np[extn] - max_np['control']))
-    print('max')
-    print(f'median -> {median_lst}')
-    print(f'mean -> {mean_lst}')
+    # print('max')
+    # print(f'median -> {median_lst}')
+    # print(f'mean -> {mean_lst}')
         # plt.plot(np.sort(max_np[extn] - max_np['control']), label = extn)
             # plt.axhline(np.median(max_np[extn] - max_np['control']), linestyle='dashed', color='g')
             # plt.legend()
@@ -243,9 +255,9 @@ def plot_avg():
         if extn != 'control':
             median_lst.append(np.median(avg_np[extn] - avg_np['control']))
             mean_lst.append(np.mean(avg_np[extn] - avg_np['control']))
-    print('avg')
-    print(f'median -> {median_lst}')
-    print(f'mean -> {mean_lst}')
+    # print('avg')
+    # print(f'median -> {median_lst}')
+    # print(f'mean -> {mean_lst}')
             # plt.plot(np.sort(avg_np[extn] - avg_np['control']), label = extn)
             # plt.axhline(np.median(avg_np[extn] - avg_np['control']), linestyle='dashed', color='g')
             # plt.legend()
@@ -262,6 +274,9 @@ sys_max = {}
 sys_avg = {}
 load_time = {}
 
+# print(np.max(avg_plot[0]['control']))
+# print(np.min(avg_plot[0]['control']))
+
 for extn in extn_lst[1:]:
     usr_max[extn] = np.sort(np.array(max_plot[0][extn]) - np.array(max_plot[0]['control']))
     usr_avg[extn] = np.sort(np.array(avg_plot[0][extn]) - np.array(avg_plot[0]['control']))
@@ -275,8 +290,8 @@ ret_data['sys_max'] = sys_max
 ret_data['sys_avg'] = sys_avg
 ret_data['load_time'] = generate_stats_dict(data_dict)
 
-with open('plot_performance2.json', 'w') as f:
-    json.dump(ret_data, f, cls=NpEncoder)
+# with open('plot_performance2.json', 'w') as f:
+#     json.dump(ret_data, f, cls=NpEncoder)
 
 sys.exit(0)
 #######################################
