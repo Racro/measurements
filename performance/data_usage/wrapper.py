@@ -22,13 +22,14 @@ from threading import Timer
 import os
 
 extn_lst = [
+        'ublock'
         #'adblock', 'control', 'ublock', 'privacy-badger',
         #"decentraleyes",
         #"disconnect",
         #"ghostery",
         #"https",
-        "noscript",
-        "scriptsafe"
+        # "noscript",
+        # "scriptsafe"
         #"canvas-antifp",
         #"adguard",
        #"user-agent"
@@ -86,18 +87,13 @@ def run(sites, extn, return_dict, l):
 
 if __name__ == "__main__":
     try:
-        with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
-            updated_dict = json.load(f)
-        f.close()
-        #with open("../../adblock_detect/failed_sites.txt", "r") as f:
-        #    failed_sites = f.read().splitlines()
-        #    for site in failed_sites:
-        #        updated_dict[site[11:]] = [site]
-        #f.close()
+        # with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
+        #     updated_dict = json.load(f)
+        # f.close()
 
-        # updated_dict = {
-                # "github.com": ['http://www.github.com', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+hero&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=homepage+sticky+nav&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+footer&ref_page=%2F']
-            
+        updated_dict = {
+            "foxnews.com": ['http://www.foxnews.com', 'https://www.foxnews.com/politics/conservatives-praise-mccarthy-for-grilling-reporter-until-she-admits-gop-has-evidence-of-biden-wrongdoing']            
+            # "github.com": ['http://www.github.com', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+hero&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=homepage+sticky+nav&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+footer&ref_page=%2F']
         #     "google.com": ["http://www.google.com"]
         #     ,
         #     "youtube.com": ["http://www.youtube.com"],
@@ -107,7 +103,7 @@ if __name__ == "__main__":
         #     'miit.gov.cn': ['http://miit.gov.cn'],
         #     'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
         #     'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
-        #}
+        }
         latest_list = list(updated_dict.keys())
         print(len(latest_list))
         chunks_list = list(divide_chunks(latest_list, SIZE))

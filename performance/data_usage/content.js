@@ -14,7 +14,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         reuse: true
         // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
     });
-    xvfb.start((err)=>{if (err) console.error(err)})
+    // xvfb.start((err)=>{if (err) console.error(err)})
     let p_args;
     if (args[3] === 'control'){
         p_args = [
@@ -24,10 +24,10 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
             // `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
-            '--display='+xvfb._display,
+            // '--display='+xvfb._display,
             '--window-size=960, 1080',
-            '--disable-features=AudioServiceOutOfProcess'
-	    // '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
+            '--disable-features=AudioServiceOutOfProcess',
+    	    '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
         ];
     }
     else{
@@ -39,10 +39,10 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
             '--disable-features=IsolateOrigins,site-per-process',
             // `--disable-extensions-except=./../extensions/extn_src/${args[3]}`,
             `--load-extension=./../../extensions/extn_src/${args[3]}`,
-            '--display='+xvfb._display,
+            // '--display='+xvfb._display,
             '--window-size=960, 1080',
-            '--disable-features=AudioServiceOutOfProcess'
-	    // '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
+            '--disable-features=AudioServiceOutOfProcess',
+    	    '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
         ];
     }
     const browser = await puppeteer.launch({
@@ -91,6 +91,9 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
 
         try{
             await page.goto(site, { waitUntil: 'networkidle2', timeout: 60000 });
+            
+            await scrollToBottom(page);
+            await page.waitForTimeout(3000);
         } catch (error){
             console.error(error);
             console.error(site);
@@ -110,3 +113,12 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
     await browser.close();
     xvfb.stop();
 })();
+
+async function scrollToBottom(page) {
+    const distance = 100; // should be less than or equal to window.innerHeight
+    const delay = 100;
+    while (await page.evaluate(() => document.scrollingElement.scrollTop + window.innerHeight < document.scrollingElement.scrollHeight)) {
+      await page.evaluate((y) => { document.scrollingElement.scrollBy(0, y); }, distance);
+      await page.waitForTimeout(delay);
+    }
+  }
