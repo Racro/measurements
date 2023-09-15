@@ -1,10 +1,8 @@
 #*.txt
 **/log*
-**/logs/
-#data/
-#.png
+**/logs
 out
-**/node_modules/
-**/rough/
+**/node_modules
+**/rough
 **/package.json
 **/package-lock.json
