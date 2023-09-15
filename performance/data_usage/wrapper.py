@@ -20,13 +20,14 @@ import math
 import subprocess
 from threading import Timer
 import os
+import itertools
 
 extn_lst = [
-        'ublock'
-        #'adblock', 'control', 'ublock', 'privacy-badger',
+        #'ublock'
+        'adblock', 'control', 'ublock', 'privacy-badger',
         #"decentraleyes",
         #"disconnect",
-        #"ghostery",
+        "ghostery"
         #"https",
         # "noscript",
         # "scriptsafe"
@@ -87,12 +88,13 @@ def run(sites, extn, return_dict, l):
 
 if __name__ == "__main__":
     try:
-        # with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
-        #     updated_dict = json.load(f)
-        # f.close()
+        with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
+            updated_dict = json.load(f)
+        f.close()
+        updated_dict = dict(itertools.islice(updated_dict.items(), 500))
 
-        updated_dict = {
-            "foxnews.com": ['http://www.foxnews.com', 'https://www.foxnews.com/politics/conservatives-praise-mccarthy-for-grilling-reporter-until-she-admits-gop-has-evidence-of-biden-wrongdoing']            
+        # updated_dict = {
+        #     "foxnews.com": ['http://www.foxnews.com', 'https://www.foxnews.com/politics/conservatives-praise-mccarthy-for-grilling-reporter-until-she-admits-gop-has-evidence-of-biden-wrongdoing']            
             # "github.com": ['http://www.github.com', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+hero&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=homepage+sticky+nav&ref_page=%2F', 'http://www.github.com/organizations/enterprise_plan?ref_cta=Start+a+free+enterprise+trial&ref_loc=Home+campaign+footer&ref_page=%2F']
         #     "google.com": ["http://www.google.com"]
         #     ,
@@ -103,7 +105,7 @@ if __name__ == "__main__":
         #     'miit.gov.cn': ['http://miit.gov.cn'],
         #     'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
         #     'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
-        }
+        # }
         latest_list = list(updated_dict.keys())
         print(len(latest_list))
         chunks_list = list(divide_chunks(latest_list, SIZE))
@@ -136,7 +138,7 @@ if __name__ == "__main__":
                 for val in return_dict[extn][site]:
                     result_dict[extn][site].append(val)
 
-            f = open('data_usage22.json', 'w')
+            f = open('data_usage_scroll.json', 'w')
             json.dump(result_dict, f)
             f.close()
 
@@ -144,7 +146,7 @@ if __name__ == "__main__":
         print(e)
         print('Interrupted')
 
-        f = open('data_usage22.json', 'w')
+        f = open('data_usage_scroll.json', 'w')
         json.dump(result_dict, f)
         f.close()
 
