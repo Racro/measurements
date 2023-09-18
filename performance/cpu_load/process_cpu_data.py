@@ -293,6 +293,8 @@ ret_data['load_time'] = generate_stats_dict(data_dict)
 # with open('plot_performance2.json', 'w') as f:
 #     json.dump(ret_data, f, cls=NpEncoder)
 
+print(ret_data['load_time'])
+
 sys.exit(0)
 #######################################
 '''

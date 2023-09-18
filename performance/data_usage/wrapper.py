@@ -36,7 +36,7 @@ extn_lst = [
        #"user-agent"
        ]
 
-SIZE = 25 # number of browser windows that will open
+SIZE = 15 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""

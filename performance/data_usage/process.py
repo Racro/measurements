@@ -11,18 +11,19 @@ import json
 #     return np.trunc(values*10**decs)/(10**decs)
 
 # list of all files in /content folder
-path = f"./data_usage2.json"
+path = f"./data_usage_scroll.json"
 
-extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger',
-    "decentraleyes",
-    "disconnect",
-    "ghostery",
-    "https",
-    "noscript",
-    "scriptsafe",
-    "canvas-antifp",
-    "adguard",
-    "user-agent"
+extn_lst = ['control', 'adblock'
+    #         , 'ublock', 'privacy-badger',
+    # "decentraleyes",
+    # "disconnect",
+    # "ghostery",
+    # "https",
+    # "noscript",
+    # "scriptsafe",
+    # "canvas-antifp",
+    # "adguard",
+    # "user-agent"
     ]
 
 f = open(path, 'r')
@@ -103,6 +104,6 @@ for extn in extn_lst[1:]:
     # generate_plot_content(plot_data[extn], plot_data['control'], extn)
     ret_data[extn] = generate_plot_content(plot_data[extn], plot_data['control'], extn)
 
-with open('plot_content2.json', 'w') as f:
+with open('plot_content_scroll.json', 'w') as f:
     json.dump(ret_data, f)
 

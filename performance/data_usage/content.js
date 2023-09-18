@@ -46,8 +46,8 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         ];
     }
     const browser = await puppeteer.launch({
-        headless: false,
-        // headless: "new",
+        // headless: false,
+        headless: "new",
         ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
         executablePath: '/usr/bin/google-chrome',
@@ -98,12 +98,14 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
             console.error(error);
             console.error(site);
             // continue;
+            page.close();
             break;
         }
         await page.waitForTimeout(2000);
         // console.log(Bytes);
         num_sites += 1;
         totalBytes += Bytes;
+        page.close();
     }
 
     if (num_sites != 0){
