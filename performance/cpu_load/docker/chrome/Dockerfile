@@ -3,7 +3,7 @@ FROM ubuntu:latest
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
-ENV CHROMEDRIVER_VERSION=114.0.5735.90
+ENV CHROMEDRIVER_VERSION=113.0.5672.63
 
 # Google Chrome
 # =============
@@ -13,10 +13,10 @@ RUN apt-get update && \
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | \
     apt-key add -
 
-RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/chrome.list
-RUN apt-get update && \
-    apt-get -y install --no-install-recommends google-chrome-stable \
-        xvfb xauth x11-utils
+# RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/chrome.list
+# RUN apt-get update && \
+#     apt-get -y install --no-install-recommends google-chrome-stable \
+#         xvfb xauth x11-utils
 
 RUN wget -q https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip -O /tmp/chromedriver.zip && \
     unzip /tmp/chromedriver.zip -d /usr/local/bin && \
@@ -41,8 +41,14 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 ADD extensions/ \
     /home/seluser/measure/extensions
 
-ADD run.py \
-    stats.py \
+ADD chrome_113 \
+    /home/seluser/measure/chrome_113
+
+# ADD run.py \
+#     stats.py \
+#     /home/seluser/measure/
+
+ADD data.py \
     /home/seluser/measure/
 
 # ADD fingerprint.py \

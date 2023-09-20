@@ -94,7 +94,6 @@ def main(number_of_tries, flag, args_lst):
 
         try:
             driver.get(args_lst[0])
-
             wait_until_loaded(driver, args_lst[1])
 
         except Exception as e:
