@@ -27,7 +27,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
             '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess',
-    	    '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
+    	    '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"'
         ];
     }
     else{
@@ -42,7 +42,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
             '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess',
-    	    '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
+    	    '--user-agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"'
         ];
     }
     const browser = await puppeteer.launch({
@@ -50,7 +50,8 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         headless: "new",
         ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
-        executablePath: '/usr/bin/google-chrome',
+        // executablePath: '/usr/bin/google-chrome',
+        executablePath: '/home/ritik/work/pes/chrome_113/chrome',
 	timeout: 60000
         // executablePath: '/snap/bin/chromium' 
     });
@@ -92,8 +93,8 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         try{
             await page.goto(site, { waitUntil: 'networkidle2', timeout: 60000 });
             
-            await scrollToBottom(page);
-            await page.waitForTimeout(3000);
+            // await scrollToBottom(page);
+            // await page.waitForTimeout(3000);
         } catch (error){
             console.error(error);
             console.error(site);

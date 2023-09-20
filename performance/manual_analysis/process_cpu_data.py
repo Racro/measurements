@@ -296,7 +296,10 @@ ret_data['sys_max'] = sys_max
 ret_data['sys_avg'] = sys_avg
 ret_data['load_time'] = generate_stats_dict(data_dict)
 
-# with open('plot_performance2.json', 'w') as f:
+with open('man_analysis_dataset.json', 'w') as f:
+    json.dump(ret_data['load_time'], f, cls=NpEncoder)
+    # with open('plot_performance2.json', 'w') as f:
+#     json.dump(ret_data, f, cls=NpEncoder)
 #     json.dump(ret_data, f, cls=NpEncoder)
 
 print(ret_data['load_time'])
