@@ -1,0 +1,1 @@
+{"/data/www.smzdm.com": [], "adblock": [], "decentraleyes": [], "disconnect": [], "ghostery": [], "https": [], "noscript": [3609.888671875, 3625.546875, 3598.6875], "privacy-badger": [], "ublock": [4567.0625, 4565.005859375, 4571.65625], "scriptsafe": [3449.783203125, 3659.5361328125, 3718.0283203125], "canvas-antifp": [], "adguard": [], "user-agent": []}

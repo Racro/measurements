@@ -102,7 +102,8 @@ def main():
             #     break
     f.close()
 
-    domains = domains[:10]
+    # domains = ['http://www.google.com', 'http://www.reuters.com']
+    domains = domains[:500]
 
     # with open("../../../adblock_detect/failed_sites.txt", "r") as f:
     #    failed_sites = f.read().splitlines()
@@ -125,17 +126,17 @@ def main():
     #    "",
     #    # Extensions on their own
        "adblock",
-       "decentraleyes",
-       "disconnect",
-       "ghostery",
-       "https",
-       "noscript",
-       "privacy-badger",
-       "ublock",
-       "scriptsafe",
-       "canvas-antifp",
-       "adguard",
-       "user-agent"  
+    #    "decentraleyes",
+    #    "disconnect",
+    #    "ghostery",
+    #    "https",
+    #    "noscript",
+    #    "privacy-badger",
+    #    "ublock",
+    #    "scriptsafe",
+    #    "canvas-antifp",
+    #    "adguard",
+    #    "user-agent"  
        # Combinations
     #    "decentraleyes,privacy_badger,ublock_origin"
     ]
@@ -143,7 +144,7 @@ def main():
 
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
     # cpus_list = ['0','1','2','3']
-    cpus_list = [str(cpu) for cpu in range(5)]
+    cpus_list = [str(cpu) for cpu in range(20)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
     print(domain_set)

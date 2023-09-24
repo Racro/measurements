@@ -1,7 +1,6 @@
 from browsermobproxy import Server
 from pyvirtualdisplay import Display
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time 
 
@@ -19,6 +18,7 @@ from datetime import datetime
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 
 extensions_configurations = [
     # No extensions
@@ -54,9 +54,9 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
         time.sleep(period)
     return False
 
-
 # Initialize BrowserMob Proxy
-server = Server("/home/ritik/work/pes/browsermob-proxy/bin/browsermob-proxy")
+# server = Server("/home/ritik/work/pes/browsermob-proxy/bin/browsermob-proxy")
+server = Server("/usr/local/bin/browsermob-proxy-2.1.4/bin/browsermob-proxy", options={'port': 8080})
 server.start()
 proxy = server.create_proxy()
 
@@ -69,9 +69,9 @@ def main(num_tries, args_lst):
     # Initialize Selenium
     options = Options()
     # options.add_argument('headless=new')
-    options.add_argument('ignore-certificate-errors')
+    options.add_argument('--ignore-certificate-errors')
     options.add_argument("--proxy-server={0}".format(proxy.proxy))
-    options.add_argument("no-sandbox")
+    options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
     # options.add_argument("--single-process")
@@ -80,27 +80,31 @@ def main(num_tries, args_lst):
     options.add_argument("--disable-web-security")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
-    options.add_argument("auto-open-devtools-for-tabs")
-    options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
+    # options.add_argument("auto-open-devtools-for-tabs")
+    options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
-    options.binary_location = "/home/seluser/measure/chrome_113/chrome"
+    options.binary_location = "/usr/local/bin/chrome_113/chrome"
+    # options.binary_location = "/usr/bin/google-chrome"
     # options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
     if args_lst[-1] != "":
+        print(args_lst[-1])
         options.add_extension(args_lst[-1])
 
+    # Initialize service
+    service = Service(executable_path='/usr/local/bin/chromedriver')
 
     for i in range(num_tries):
         # Launch Chrome and install our extension for getting HARs
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(service=service, options=options)
         driver.set_page_load_timeout(args_lst[1])
-        time.sleep(10)
+        time.sleep(2)
 
         try:
             # Create a new HAR with the following options
             proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
 
             # Use Selenium to navigate to a webpage
-            driver.get("http://www.forbes.com")
+            driver.get(args_lst[0])
             wait_until_loaded(driver, args_lst[1])
 
             # Collect HAR data
@@ -112,8 +116,8 @@ def main(num_tries, args_lst):
                 # print(entry['response'])
                 total_size += entry['response']['bodySize']
             # print(len(result['log']['entries']))
-            # print(f"Total data usage: {total_size} bytes")
-            data_usage.append(total_size)
+            print(f"Total data usage: {total_size} bytes")
+            data_usage.append(round(total_size/1024), 1)
         except Exception as e:
             print(e)
 
@@ -124,6 +128,7 @@ def main(num_tries, args_lst):
     return data_usage
 
 if __name__ == '__main__':
+    print(2)
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('website')
@@ -132,7 +137,7 @@ if __name__ == '__main__':
     parser.add_argument('--extensions-wait', type=int, default=10)
     args = parser.parse_args()
 
-    fname = '/data/' + args[0].split('//')[1]
+    fname = '/data/' + args.website.split('//')[1]
     extn = fname
     args_lst = [args.website, args.timeout]
 
