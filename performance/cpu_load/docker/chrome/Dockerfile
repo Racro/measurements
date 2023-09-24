@@ -22,6 +22,17 @@ RUN wget -q https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/
     unzip /tmp/chromedriver.zip -d /usr/local/bin && \
     rm /tmp/chromedriver.zip
 
+RUN wget -q 'https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F1121461%2Fchrome-linux.zip?generation=1679615958002864&alt=media' -O /tmp/chrome_113.zip && \
+    unzip /tmp/chrome_113.zip -d /usr/local/bin && \
+    rm /tmp/chrome_113.zip && \
+    mv /usr/local/bin/chrome-linux /usr/local/bin/chrome_113
+
+RUN wget -q 'https://github.com/lightbody/browsermob-proxy/releases/download/browsermob-proxy-2.1.4/browsermob-proxy-2.1.4-bin.zip' -O /tmp/browsermob-proxy.zip && \
+    unzip /tmp/browsermob-proxy.zip -d /usr/local/bin && \
+    rm /tmp/browsermob-proxy.zip
+
+RUN chmod +x /usr/local/bin/browsermob-proxy-2.1.4/bin/browsermob-proxy
+
 # Python
 # ==========
 RUN apt-get install -y --no-install-recommends \
@@ -29,7 +40,11 @@ RUN apt-get install -y --no-install-recommends \
 
 #mpstat
 # ==========
-RUN apt-get install && apt-get install -y sysstat
+# RUN apt-get install && apt-get install -y sysstat
+
+RUN apt-get update && apt-get install -y xvfb
+
+RUN apt-get install -y libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev libasound2 default-jre
 
 ADD requirements.txt /tmp/
 RUN pip3 install -U -r /tmp/requirements.txt && \
@@ -41,15 +56,20 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 ADD extensions/ \
     /home/seluser/measure/extensions
 
-ADD chrome_113 \
+ADD chrome_113/ \
     /home/seluser/measure/chrome_113
 
+ADD browsermob-proxy/ \
+    /home/seluser/measure/browsermob-proxy
 # ADD run.py \
 #     stats.py \
 #     /home/seluser/measure/
 
 ADD data.py \
     /home/seluser/measure/
+
+# Open necessary ports
+EXPOSE 8080 8081
 
 # ADD fingerprint.py \
 #     stats.py \
@@ -61,5 +81,5 @@ USER seluser
 
 WORKDIR /home/seluser/measure
 
-ENTRYPOINT ["python3", "/home/seluser/measure/run.py"]
+ENTRYPOINT ["python3", "/home/seluser/measure/data.py"]
 # ENTRYPOINT ["python3", "/home/seluser/measure/fingerprint.py"]
