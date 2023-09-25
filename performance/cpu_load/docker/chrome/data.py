@@ -54,13 +54,7 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
         time.sleep(period)
     return False
 
-# Initialize BrowserMob Proxy
-# server = Server("/home/ritik/work/pes/browsermob-proxy/bin/browsermob-proxy")
-server = Server("/usr/local/bin/browsermob-proxy-2.1.4/bin/browsermob-proxy", options={'port': 8080})
-server.start()
-proxy = server.create_proxy()
-
-def main(num_tries, args_lst):
+def main(num_tries, args_lst, proxy):
     # Start X
     data_usage = []
     vdisplay = Display(visible=False, size=(1920, 1080))
@@ -87,7 +81,6 @@ def main(num_tries, args_lst):
     # options.binary_location = "/usr/bin/google-chrome"
     # options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
     if args_lst[-1] != "":
-        print(args_lst[-1])
         options.add_extension(args_lst[-1])
 
     # Initialize service
@@ -107,19 +100,38 @@ def main(num_tries, args_lst):
             driver.get(args_lst[0])
             wait_until_loaded(driver, args_lst[1])
 
+            curr_scroll_position = -1
+            curr_time = time.time()
+            while True:
+                # Define the scroll step size
+                scroll_step = 50  # Adjust this value to control the scroll speed
+                # Get the current scroll position
+                scroll_position = driver.execute_script("return window.pageYOffset;")
+                # Check if we've reached the bottom
+                if curr_scroll_position == scroll_position:
+                    break
+                else:
+                    curr_scroll_position = scroll_position
+
+                # Scroll down by the step size
+                driver.execute_script(f"window.scrollBy(0, {scroll_step});")
+                
+                # Wait for a bit (this controls the scroll speed indirectly)
+                time.sleep(0.1)  # Adjust this value to control the scroll speed
+                if time.time() - curr_time >= 45:
+                    break
+
             # Collect HAR data
             result = proxy.har
 
             # Analyze HAR data (this is a simplified example)
             total_size = 0
             for entry in result['log']['entries']:
-                # print(entry['response'])
                 total_size += entry['response']['bodySize']
-            # print(len(result['log']['entries']))
             print(f"Total data usage: {total_size} bytes")
-            data_usage.append(round(total_size/1024), 1)
+            data_usage.append((round(total_size/1024), 2))
         except Exception as e:
-            print(e)
+            print(e, args_lst[0], file=sys.stderr)
 
         # Stop Selenium and BrowserMob Proxy
         driver.quit()
@@ -128,7 +140,6 @@ def main(num_tries, args_lst):
     return data_usage
 
 if __name__ == '__main__':
-    print(2)
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('website')
@@ -147,6 +158,13 @@ if __name__ == '__main__':
 
     data_dict = {}
     extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
+    
+    # Initialize BrowserMob Proxy
+    # server = Server("/home/ritik/work/pes/browsermob-proxy/bin/browsermob-proxy")
+    server = Server("/usr/local/bin/browsermob-proxy-2.1.4/bin/browsermob-proxy")
+    server.start()
+    proxy = server.create_proxy()
+    
     for extn in extensions_configurations:
         new_args = args_lst
         new_args.append(extn)
@@ -158,10 +176,10 @@ if __name__ == '__main__':
                     # options.add_extension(str(matches[0]))
                     # extn = extension
                 else:
-                    print(f"{args_lst[-1]} - Extension not found")
+                    print(f"{args_lst[-1]} - Extension not found", file=sys.stderr)
                     sys.exit(1)
-
-        ret = main(3, new_args)
+        
+        ret = main(3, new_args, proxy)
 
         if extn == "":
             data_dict[fname] = ret
