@@ -1,0 +1,1 @@
+{"/data/www.cookiesweedonline.com": [[1, 2]], "adblock": [[1, 2], [1, 2], [1, 2]], "decentraleyes": [], "disconnect": [[1, 2]], "ghostery": [], "https": [[1, 2], [1, 2]], "noscript": [[1, 2]], "privacy-badger": [], "ublock": [], "scriptsafe": [[1, 2]], "canvas-antifp": [[1, 2], [1, 2], [1, 2]], "adguard": [[450, 2], [450, 2]], "user-agent": []}

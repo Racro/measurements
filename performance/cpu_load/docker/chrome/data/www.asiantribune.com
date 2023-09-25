@@ -1,0 +1,1 @@
+{"/data/www.asiantribune.com": [], "adblock": [[250, 2], [250, 2]], "decentraleyes": [], "disconnect": [[251, 2]], "ghostery": [[251, 2]], "https": [], "noscript": [], "privacy-badger": [], "ublock": [[251, 2]], "scriptsafe": [[3, 2]], "canvas-antifp": [], "adguard": [], "user-agent": [[250, 2], [251, 2]]}

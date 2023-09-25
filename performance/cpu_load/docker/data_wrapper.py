@@ -103,7 +103,7 @@ def main():
     f.close()
 
     # domains = ['http://www.google.com', 'http://www.reuters.com']
-    domains = domains[:500]
+    # domains = domains[:500]
 
     # with open("../../../adblock_detect/failed_sites.txt", "r") as f:
     #    failed_sites = f.read().splitlines()
