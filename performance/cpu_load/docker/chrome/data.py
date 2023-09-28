@@ -14,6 +14,7 @@ import time
 # import threading
 import os
 from datetime import datetime
+import ast 
 
 from pyvirtualdisplay import Display
 from selenium import webdriver
@@ -57,6 +58,7 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
 def main(num_tries, args_lst, proxy):
     # Start X
     data_usage = []
+    contacted_urls = []
     vdisplay = Display(visible=False, size=(1920, 1080))
     vdisplay.start()
 
@@ -91,35 +93,40 @@ def main(num_tries, args_lst, proxy):
         driver = webdriver.Chrome(service=service, options=options)
         driver.set_page_load_timeout(args_lst[1])
         time.sleep(2)
-
+        
         try:
             # Create a new HAR with the following options
             proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
 
             # Use Selenium to navigate to a webpage
-            driver.get(args_lst[0])
-            wait_until_loaded(driver, args_lst[1])
+            valid = 0
+            for website in args_lst[0]:
+                # i += 1
+                print(website)
+                driver.get(website)
+                wait_until_loaded(driver, args_lst[1])
 
-            curr_scroll_position = -1
-            curr_time = time.time()
-            while True:
-                # Define the scroll step size
-                scroll_step = 50  # Adjust this value to control the scroll speed
-                # Get the current scroll position
-                scroll_position = driver.execute_script("return window.pageYOffset;")
-                # Check if we've reached the bottom
-                if curr_scroll_position == scroll_position:
-                    break
-                else:
-                    curr_scroll_position = scroll_position
+                curr_scroll_position = -1
+                curr_time = time.time()
+                while True:
+                    # Define the scroll step size
+                    scroll_step = 50  # Adjust this value to control the scroll speed
+                    # Get the current scroll position
+                    scroll_position = driver.execute_script("return window.pageYOffset;")
+                    # Check if we've reached the bottom
+                    if curr_scroll_position == scroll_position:
+                        break
+                    else:
+                        curr_scroll_position = scroll_position
 
-                # Scroll down by the step size
-                driver.execute_script(f"window.scrollBy(0, {scroll_step});")
-                
-                # Wait for a bit (this controls the scroll speed indirectly)
-                time.sleep(0.1)  # Adjust this value to control the scroll speed
-                if time.time() - curr_time >= 45:
-                    break
+                    # Scroll down by the step size
+                    driver.execute_script(f"window.scrollBy(0, {scroll_step});")
+                    
+                    # Wait for a bit (this controls the scroll speed indirectly)
+                    time.sleep(0.1)  # Adjust this value to control the scroll speed
+                    if time.time() - curr_time >= 45:
+                        break
+                valid += 1
 
             # Collect HAR data
             result = proxy.har
@@ -128,8 +135,12 @@ def main(num_tries, args_lst, proxy):
             total_size = 0
             for entry in result['log']['entries']:
                 total_size += entry['response']['bodySize']
+                if entry['response']['status'] == 200:
+                    url = entry['request']['url'].split('://')[1].split('/')[0]
+                    if url not in contacted_urls:
+                        contacted_urls.append(url)
             print(f"Total data usage: {total_size} bytes")
-            data_usage.append((round(total_size/1024), 2))
+            data_usage.append(round((total_size/(1024*valid)), 2))
         except Exception as e:
             print(e, args_lst[0], file=sys.stderr)
 
@@ -137,7 +148,7 @@ def main(num_tries, args_lst, proxy):
         driver.quit()
     
     vdisplay.stop()
-    return data_usage
+    return data_usage, contacted_urls
 
 if __name__ == '__main__':
     # Parse the command line arguments
@@ -148,9 +159,11 @@ if __name__ == '__main__':
     parser.add_argument('--extensions-wait', type=int, default=10)
     args = parser.parse_args()
 
-    fname = '/data/' + args.website.split('//')[1]
+    websites = ast.literal_eval(args.website)
+    print(f'data --- {websites}')
+    fname = '/data/' + websites[0].split('//')[1]
     extn = fname
-    args_lst = [args.website, args.timeout]
+    args_lst = [websites, args.timeout]
 
     # calibrate
     # for i in range(3):
@@ -178,13 +191,11 @@ if __name__ == '__main__':
                 else:
                     print(f"{args_lst[-1]} - Extension not found", file=sys.stderr)
                     sys.exit(1)
-        
-        ret = main(3, new_args, proxy)
-
+        ret, contacted_urls = main(3, new_args, proxy)
         if extn == "":
-            data_dict[fname] = ret
+            data_dict[fname] = [ret, contacted_urls]
         else:
-            data_dict[extn] = ret
+            data_dict[extn] = [ret, contacted_urls]
     
     with open(fname, 'w') as f:
         json.dump(data_dict, f)

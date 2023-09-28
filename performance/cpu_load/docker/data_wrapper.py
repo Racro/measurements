@@ -17,7 +17,7 @@ def divide_chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-def run(log, browser, configurations, domains, cpu):
+def run(log, browser, inner_dict, domains, cpu):
     # random.shuffle(domains)
     for domain in domains:
         # We always visit with the website without any extensions first to
@@ -29,19 +29,19 @@ def run(log, browser, configurations, domains, cpu):
         # random.shuffle(configurations)
         # for extension in configurations:
         #     run_configuration(log, browser, extension, domain, cpu)
-        run_configuration(log, browser, '', domain, cpu)
+        run_configuration(log, browser, inner_dict, domain, cpu)
 
 
-def run_configuration(log, browser, extension, domain, cpu):
-    log.info(f"Collecting mpstat data via {browser} with '{extension}' for '{domain}' on cpu '{cpu}'")
+def run_configuration(log, browser, inner_dict, domain, cpu):
+    log.info(f"Collecting mpstat data via {browser} for '{domain}' on cpu '{cpu}'")
     try:
-        get_domain(log, browser, extension, domain, cpu)
+        get_domain(log, browser, inner_dict, domain, cpu)
 
     except Exception as e:
         log.error(f"Unknown error for domain '{domain}': {e}")
 
 
-def get_domain(log, browser, extension, domain, cpu):
+def get_domain(log, browser, inner_dict, domain, cpu):
     try:
         # cmd = ["docker", "run", "--rm",
         #         "-v", "/dev/shm:/dev/shm",
@@ -50,12 +50,13 @@ def get_domain(log, browser, extension, domain, cpu):
         #        "--security-opt", "seccomp=seccomp.json",
         #        f"mpstat-{browser}",
         #        "--extensions", extension, "--cpu", cpu, domain]
+        # print(f'wrapper --- {inner_dict[domain]}')
         cmd = ["docker", "run", "--rm",
                 "-v", "/dev/shm:/dev/shm",
                 "-v", "./chrome/data:/data",
                "--security-opt", "seccomp=seccomp.json",
                f"mpstat-{browser}",
-                domain]
+                str(inner_dict[domain])]
         # we can use "--shm-size=2g" instead of /dev/shm:/dev/shm
         
         run = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -96,12 +97,13 @@ def main():
     # domains = ['http://www.google.com']
     with open(args.domains_list_file, 'r') as f:
         inner_dict = json.load(f)
-        for key in inner_dict:
-            domains.append(inner_dict[key][0])
+        # for key in inner_dict:
+        #     domains.append(inner_dict[key][0])
             # if len(domains) == 500:
             #     break
     f.close()
 
+    domains = list(inner_dict.keys())
     # domains = ['http://www.google.com', 'http://www.reuters.com']
     # domains = domains[:500]
 
@@ -111,46 +113,14 @@ def main():
     #        domains.append(site)
     # f.close()
 
-    # extensions_configurations = [
-    #     # No extensions
-    #     "",
-    #     # Extensions on their own
-    #     "adblock",
-    #     "privacy-badger",
-    #     "ublock",
-    #     # Combinations
-    # ]
-    
-    extensions_configurations = [
-       # No extensions
-    #    "",
-    #    # Extensions on their own
-       "adblock",
-    #    "decentraleyes",
-    #    "disconnect",
-    #    "ghostery",
-    #    "https",
-    #    "noscript",
-    #    "privacy-badger",
-    #    "ublock",
-    #    "scriptsafe",
-    #    "canvas-antifp",
-    #    "adguard",
-    #    "user-agent"  
-       # Combinations
-    #    "decentraleyes,privacy_badger,ublock_origin"
-    ]
-
-
     # RUNNING 4 DOCKERS ON 4 DIFFERENT CPU CORES
     # cpus_list = ['0','1','2','3']
     cpus_list = [str(cpu) for cpu in range(20)]
     thread_list = []
     domain_set = list(divide_chunks(domains, int(len(domains)/len(cpus_list))))
-    print(domain_set)
     for i in range(len(cpus_list)):
         # thread_list.append(threading.Thread(target=run, args=(log, args.browser, extensions_configurations, domain_set[i], cpus_list[i],)))
-        thread_list.append(multiprocessing.Process(target=run, args=(log, args.browser, extensions_configurations, domain_set[i], cpus_list[i],)))
+        thread_list.append(multiprocessing.Process(target=run, args=(log, args.browser, inner_dict, domain_set[i], cpus_list[i],)))
     
     log.info("starting threads ....")
     for thread in thread_list:
