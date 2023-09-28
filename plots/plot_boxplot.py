@@ -3,7 +3,7 @@ import numpy as np
 import json
 
 # Define the number of extensions, metrics, and the width of each boxplot and the gap between groups of boxplots
-num_extensions = 1
+num_extensions = 12
 num_metrics = 5
 # Let's increase the width of the boxplots and decrease the spacing between them
 box_width = 0.9  # Increase the width of the boxplots
@@ -21,15 +21,15 @@ num_metrics_1 = 5
 # List of extensions
 # extensions = ['AdBlock Plus', 'Decentraleyes', 'Disconnect', 'Ghostery', 'HTTPS Everywhere', 'NoScript Security Suite', 'Privacy Badger', 'uBlock Origin']
 extensions = ['adblock'
-    #           , 'ublock', 'privacy-badger', "decentraleyes",
-    #    "disconnect",
-    #    "ghostery",
-    #    "https",
-    #    "noscript",
-    #    "scriptsafe",
-    #    "canvas-antifp",
-    #    "adguard",
-    #    "user-agent"
+              , 'ublock', 'privacy-badger', "decentraleyes",
+       "disconnect",
+       "ghostery",
+       "https",
+       "noscript",
+       "scriptsafe",
+       "canvas-antifp",
+       "adguard",
+       "user-agent"
     ]
 
 extn_dict = {
@@ -53,7 +53,7 @@ metrics = ['CPU Usage (usr_avg)\n(in percentage)', 'CPU Usage (sys_avg)\n(in per
 # np.random.seed(0)  # for reproducibility
 # data = np.random.rand(num_metrics, num_extensions, 50)
 
-content = json.load(open('../performance/data_usage/old_data/plot_content2.json', 'r'))
+content = json.load(open('../performance/data_usage/plot_content_selenium.json', 'r'))
 frames = json.load(open('../effective/ads/plot_frames.json', 'r'))
 performance = json.load(open('../performance/cpu_load/plot_performance.json', 'r'))
 third_party = json.load(open('../effective/third_party/plot_third_party.json', 'r'))
