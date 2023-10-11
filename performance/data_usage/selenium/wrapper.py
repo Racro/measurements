@@ -49,7 +49,7 @@ while True:
     # Wait for a bit (this controls the scroll speed indirectly)
     time.sleep(0.1)  # Adjust this value to control the scroll speed
     print(time.time() - curr_time)
-    if time.time() - curr_time >= 45:
+    if time.time() - curr_time >= 2:
         break
 
 # Collect HAR data
@@ -57,8 +57,8 @@ result = proxy.har
 
 # Analyze HAR data (this is a simplified example)
 total_size = 0
-for entry in result['log']['entries']:
-    # print(entry['response'])
+for entry in result['log']['entries'][:2]:
+    print(entry)
     total_size += entry['response']['bodySize']
 print(len(result['log']['entries']))
 print(f"Total data usage: {total_size} bytes")

@@ -46,16 +46,18 @@ extn_dict = {
 
 # List of metrics
 # metrics = ['usr (max)\n(in absolute)', 'usr (avg)\n(in absolute)', 'sys (max)\n(in absolute)', 'sys (avg)\n(in absolute)', 'load_time\n(in seconds)', 'data_usage\n(in MB)', 'RAM_usage_max\n(in MB)', 'RAM_usage_avg\n(in MB)', 'JSHeapSizeUsed\n(in MB)', '#frames\n(in absolute)', '#third_party\n(in absolute)']
-metrics = ['CPU Usage (usr_avg)\n(in percentage)', 'CPU Usage (sys_avg)\n(in percentage)', 'Load time\n(in s)', 'Data Usage\n(in KB)', 'RAM Usage (avg)\n(in MB)']
+metrics = ['CPU Usage (avg)\n(in percentage)', 'CPU Usage (sys_avg)\n(in percentage)', 'Load time\n(in s)', 'Data Usage\n(in MB)', 'RAM Usage (avg)\n(in MB)']
+# metrics = ['CPU Usage (avg)\n(in percentage)', 'Load time\n(in s)', 'Data Usage\n(in MB)', 'RAM Usage (avg)\n(in MB)']
 # metrics = ['load_time\n(in seconds)', 'data_usage\n(in MB)']
 
 # Generate some random data for demonstration purposes
 # np.random.seed(0)  # for reproducibility
 # data = np.random.rand(num_metrics, num_extensions, 50)
 
-content = json.load(open('../performance/data_usage/plot_content_selenium.json', 'r'))
+content = json.load(open('../performance/data_usage/plot_content_selenium_1000_scroll.json', 'r'))
 frames = json.load(open('../effective/ads/plot_frames.json', 'r'))
 performance = json.load(open('../performance/cpu_load/plot_performance.json', 'r'))
+performance2 = json.load(open('../performance/cpu_load/plot_performance2.json', 'r'))
 third_party = json.load(open('../effective/third_party/plot_third_party.json', 'r'))
 ram = json.load(open('../performance/cpu_load/plot_ram.json', 'r'))
 jsheap = json.load(open('../performance/cpu_load/plot_jsheap.json', 'r'))
@@ -84,10 +86,11 @@ print(third_party_weights)
 for extn in extensions:
     each_extn = []
     # each_extn.append(np.array(performance['usr_max'][extn]))
-    each_extn.append(np.array(performance['usr_avg'][extn]))
+    # each_extn.append(np.array(performance['usr_avg'][extn]))
+    each_extn.append(np.array(performance['cpu_avg'][extn]))
     # each_extn.append(np.array(performance['sys_max'][extn]))
     each_extn.append(np.array(performance['sys_avg'][extn]))
-    each_extn.append(np.clip(np.array(performance['load_time'][extn])/1000, -50, 50))
+    each_extn.append(np.clip(np.array(performance2['load_time'][extn])/1000, -50, 50))
     # print(np.array(content[extn]))
     each_extn.append(np.array(content[extn]))
     # each_extn.append(np.array(ram['ram_max'][extn]))

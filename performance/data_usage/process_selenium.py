@@ -23,7 +23,7 @@ extn_lst = ['control', 'adblock'
     "user-agent"
     ]
 
-path = f"./data_500/"
+path = f"./data_1000_scroll/"
 dir_list = os.listdir(path)
 
 # extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
@@ -79,7 +79,7 @@ for website in all_data.keys():
         extn1 = extn
         if extn[:5] == '/data':
             extn1 = 'control'
-        data_dict[extn1][website] = all_data[website][extn] 
+        data_dict[extn1][website] = all_data[website][extn][0] 
 
 faulty_sites = {}
 for extn in extn_lst:
@@ -162,6 +162,7 @@ for extn in extn_lst[1:]:
     # generate_plot_content(plot_data[extn], plot_data['control'], extn)
     ret_data[extn] = generate_plot_content(plot_data[extn], plot_data['control'], extn)
 
-with open('plot_content_selenium.json', 'w') as f:
+
+with open('plot_content_selenium_1000_scroll.json', 'w') as f:
     json.dump(ret_data, f)
 

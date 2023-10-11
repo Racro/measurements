@@ -24,30 +24,14 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
         time.sleep(period)
     return False
 
-extensions_configurations = [
-    # No extensions
-   "",
-#    # Extensions on their own
-    "adblock",
-    "decentraleyes",
-    "disconnect",
-    "ghostery",
-    "https",
-    "noscript",
-    "privacy-badger",
-    "ublock",
-    "scriptsafe",
-    "canvas-antifp",
-    "adguard",
-    "user-agent"  
-    # Combinations
-#    "decentraleyes,privacy_badger,ublock_origin"
-]
+import re
 
 login_keywords = [
     "log in",
+    "log-in",
     "login",
     "sign in",
+    "sign-in",
     "signin"
     "join "
 ]
@@ -58,6 +42,17 @@ def check_for_presence(lst):
         if check.lower() in login_keywords:
             return word
     return ""
+
+# Function to check for password field
+def check_for_password_field(driver):
+    # Look for password input fields
+    password_fields = driver.find_elements(By.XPATH, '//input[@type="password"]')
+
+    # Return True if any password fields were found, False otherwise
+    return len(password_fields)
+
+# def check_for_google(driver)
+
 
 # url = "https://www.delta.com"
 # try:
@@ -100,20 +95,24 @@ def run(extn, sites):
     if extn != "":
         options.add_extension(f'./../../extensions/extn_crx/{extn}.crx')
     # if extn != "":
-        time.sleep(10)
     lst = []
     driver = webdriver.Chrome(options=options)
+    time.sleep(1)
 
     for site in sites:       
         # Visit the website
         driver.get(site)
         wait_until_loaded(driver)
-        time.sleep(5)
-        # driver.save_screenshot('delete.png')
+        time.sleep(10)
+        driver.save_screenshot('before.png')
+
+        js = '''return document.documentElement.outerHTML;'''
 
         # before DOM
-        initial_dom = driver.page_source
+        initial_passwd = check_for_password_field(driver)
+        initial_dom = driver.execute_script(js)
         initial_url = driver.current_url
+        initial_windows = len(driver.window_handles)
 
         after_dom = ""
         after_url = ""
@@ -131,11 +130,14 @@ def run(extn, sites):
             for element in button_text:
                 button_tag_lst.append(element.text)
 
+            print(a_tag_lst)
+
             word = check_for_presence(a_tag_lst)
             if word:
                 button_by_exact_text = driver.find_element(By.PARTIAL_LINK_TEXT, word)
             else:
                 word = check_for_presence(button_tag_lst)
+                
                 if word:
                     button_by_exact_text = driver.find_element(By.XPATH, f"//button[contains(., '{word}')]")
                 else:
@@ -144,26 +146,45 @@ def run(extn, sites):
             if button_by_exact_text:
                 button_by_exact_text.click()
                 time.sleep(5)
+                driver.save_screenshot('after.png')
 
-            # This is the rendered DOM after JS execution
-            after_dom = driver.page_source
-            after_url = driver.current_url
-        
+                # This is the rendered DOM after JS execution
+                after_dom = driver.execute_script(js)
+                after_passwd = check_for_password_field(driver)
+                after_url = driver.current_url
+                after_windows = len(driver.window_handles)
+                
+                # print(driver.find_element(By.ID, 'loginPassword'))
+                # sys.exit(1)
         except Exception as e:
             print(f'{site} ---- <button> ---- {e}', file=sys.stderr)
+            continue
+
+        # print('initial', initial_passwd, initial_windows)
+        # print('after', after_passwd, after_windows)
+
 
         if after_url == "":
-            print(f"No login button - {site} {extn}", file=sys.stderr)
+            print(f"No login button ---- {site} {extn}", file=sys.stderr)
             continue
+        
         else:
             # compare the doms and urls
-            if initial_url != after_url:
+            if initial_url != after_url or after_windows > initial_windows or after_passwd > initial_passwd:
                 continue
-            initial_count = initial_dom.lower().count("password")
-            after_count = after_dom.lower().count("password")
+            initial_count = len(re.findall('password|continue\\ with\\ google|sign\\ in\\ with\\ google', initial_dom.lower())) #initial_dom.lower().count("password")
+            after_count = len(re.findall('password|continue\\ with\\ google|sign\\ in\\ with\\ google', after_dom.lower())) #after_dom.lower().count("password")
+            
+            with open('after.out', 'w') as f:
+                f.write(after_dom)
+            f.close()
+            with open('before.out', 'w') as f:
+                f.write(initial_dom)
+            f.close()
             
             if initial_count == after_count:
-                # print(f'crawler2 ---- {site}')
+                # print(f'initial --- {initial_count}')
+                # print(f'after --- {after_count}')
                 lst.append(site.split("//")[1])
 
                 # Define the directory and file name for the screenshot

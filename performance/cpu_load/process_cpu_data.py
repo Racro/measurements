@@ -86,7 +86,7 @@ def generate_stats_dict(data_dict):
     # f.close()
 
 # list of all files in /data folder
-path = f"./data_1000/data_custom2/"
+path = f"./data_1000/data_custom/"
 dir_list = os.listdir(path)
 
 # extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
@@ -272,6 +272,7 @@ usr_max = {}
 usr_avg = {}
 sys_max = {}
 sys_avg = {}
+cpu_avg = {}
 load_time = {}
 
 # print(np.max(avg_plot[0]['control']))
@@ -282,18 +283,19 @@ for extn in extn_lst[1:]:
     usr_avg[extn] = np.sort(np.array(avg_plot[0][extn]) - np.array(avg_plot[0]['control']))
     sys_max[extn] = np.sort(np.array(max_plot[1][extn]) - np.array(max_plot[1]['control']))
     sys_avg[extn] = np.sort(np.array(avg_plot[1][extn]) - np.array(avg_plot[1]['control']))
-
+    cpu_avg[extn] = np.sort(np.array(avg_plot[0][extn]) + np.array(avg_plot[1][extn]) - np.array(avg_plot[0]['control']))
 
 ret_data['usr_max'] = usr_max
 ret_data['usr_avg'] = usr_avg
 ret_data['sys_max'] = sys_max
 ret_data['sys_avg'] = sys_avg
+ret_data['cpu_avg'] = cpu_avg
 ret_data['load_time'] = generate_stats_dict(data_dict)
 
-# with open('plot_performance2.json', 'w') as f:
-#     json.dump(ret_data, f, cls=NpEncoder)
+with open('plot_performance.json', 'w') as f:
+    json.dump(ret_data, f, cls=NpEncoder)
 
-print(ret_data['load_time'])
+# print(ret_data['load_time'])
 
 sys.exit(0)
 #######################################
