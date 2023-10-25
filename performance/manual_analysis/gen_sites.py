@@ -40,41 +40,51 @@ def generate_stats_dict(data_dict):
     print(type(websites[mask2]))
     
     websites_filter = random.sample(list(websites[mask2]), 50)
-    rett = {'websites': websites_filter, 'control': dummy[mask2]}
+    rett = {'websites': websites_filter}
     ret = {}
     for extn in extn_lst:
         if extn == 'control':
-            continue
+            add = []
+            for web in websites_filter:
+                web_lst = list(websites)
+                if web in web_lst:
+                    ind = web_lst.index(web)
+                    add.append(dummy[ind])
+                else:
+                    add.append('X')
 
-        # extn_stat.append(np.array(stat_plot[1][extn]))
-        dele[extn] = np.array(stat_plot[1][extn])
-        d[extn] = {}
-
-        # filter all -1 values from stat_plot
-        dummy = np.array(stat_plot[1]['control'])
-        index = np.where(dele[extn] == -1)
-
-        np.delete(dele[extn], index)
-        np.delete(dummy, index)
-
-        zipped = zip(dele[extn] - dummy, websites)
-        sorted_zipped = sorted(zipped)
-        unzipped = list(zip(*sorted_zipped))
-        x = list(unzipped[1]) # x -> website
-        y = list(unzipped[0]) # y -> extn_time - ctrl_time
+            ret[extn] = np.array(add)
         
-        add = []
-        for web in websites_filter:
-            if web in x:
-                ind = x.index(web)
-                add.append(y[ind])
-            else:
-                add.append('X')
+        else:
+            # extn_stat.append(np.array(stat_plot[1][extn]))
+            dele[extn] = np.array(stat_plot[1][extn])
+            d[extn] = {}
 
-        ret[extn] = np.array(add)
+            # filter all -1 values from stat_plot
+            dummy = np.array(stat_plot[1]['control'])
+            index = np.where(dele[extn] == -1)
 
-        for j in range(len(x)):
-            d[extn][x[j]] = y[j]
+            np.delete(dele[extn], index)
+            np.delete(dummy, index)
+
+            zipped = zip(dele[extn] - dummy, websites)
+            sorted_zipped = sorted(zipped)
+            unzipped = list(zip(*sorted_zipped))
+            x = list(unzipped[1]) # x -> website
+            y = list(unzipped[0]) # y -> extn_time - ctrl_time
+            
+            add = []
+            for web in websites_filter:
+                if web in x:
+                    ind = x.index(web)
+                    add.append(y[ind])
+                else:
+                    add.append('X')
+
+            ret[extn] = np.array(add)
+
+            for j in range(len(x)):
+                d[extn][x[j]] = y[j]
 
 
         # # plot
@@ -296,13 +306,8 @@ ret_data['sys_max'] = sys_max
 ret_data['sys_avg'] = sys_avg
 ret_data['load_time'] = generate_stats_dict(data_dict)
 
-with open('man_analysis_dataset.json', 'w') as f:
-    json.dump(ret_data['load_time'], f, cls=NpEncoder)
-    # with open('plot_performance2.json', 'w') as f:
-#     json.dump(ret_data, f, cls=NpEncoder)
-#     json.dump(ret_data, f, cls=NpEncoder)
-
-print(ret_data['load_time'])
+# with open('man_analysis_dataset.json', 'w') as f:
+#     json.dump(ret_data['load_time'], f, cls=NpEncoder)
 
 sys.exit(0)
 #######################################

@@ -17,7 +17,7 @@ options.add_argument('ignore-certificate-errors')
 options.add_argument("--proxy-server={0}".format(proxy.proxy))
 options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
 # options.add_extension('/home/ritik/work/pes/extensions/extn_crx/ublock.crx')
-#options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
+# options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
 options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
 driver = webdriver.Chrome(options=options)
 time.sleep(2)

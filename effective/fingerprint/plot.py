@@ -45,13 +45,13 @@ i = 0
 for bar, original_value in zip(bars, values):
     width = bar.get_width()
     plt.text(width + 0.1, bar.get_y() + bar.get_height() / 2, uniqueness[i], fontsize=size, ha='left', va='center')
-    i =+ 1
+    i += 1
 
 # plt.title('Bar Chart of Extensions vs Values', fontsize=size)
-plt.xticks(x_ticks, fontsize=15)
-plt.yticks(fontsize=15)
+plt.xticks(x_ticks, fontsize=16)
+plt.yticks(fontsize=16)
 plt.grid(axis='x', which='both', linestyle='--', linewidth=0.5)
 
 # Display the plot
 plt.show()
-# plt.savefig('fingerprint.png')
+# plt.savefig('fingerprint.pdf')

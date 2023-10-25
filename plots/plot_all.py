@@ -4,12 +4,13 @@ import json
 import sys
 import matplotlib.patches as mpatches
 
-content = json.load(open('performance/data_usage/plot_content2.json', 'r'))
-frames = json.load(open('effective/ads/plot_frames.json', 'r'))
-performance = json.load(open('performance/cpu_load/plot_performance2.json', 'r'))
-third_party = json.load(open('effective/third_party/plot_third_party.json', 'r'))
-ram = json.load(open('performance/cpu_load/plot_ram.json', 'r'))
-jsheap = json.load(open('performance/cpu_load/plot_jsheap.json', 'r'))
+content = json.load(open('../performance/data_usage/plot_content_selenium_1000_scroll.json', 'r'))
+frames = json.load(open('../effective/ads/plot_frames.json', 'r'))
+performance = json.load(open('../performance/cpu_load/plot_performance.json', 'r'))
+performance2 = json.load(open('../performance/cpu_load/plot_performance2.json', 'r'))
+third_party = json.load(open('../effective/third_party/plot_third_party.json', 'r'))
+ram = json.load(open('../performance/cpu_load/plot_ram.json', 'r'))
+jsheap = json.load(open('../performance/cpu_load/plot_jsheap.json', 'r'))
 
 # List of extensions
 # extensions = ['AdBlock Plus', 'Decentraleyes', 'Disconnect', 'Ghostery', 'HTTPS Everywhere', 'NoScript Security Suite', 'Privacy Badger', 'uBlock Origin']
@@ -36,7 +37,7 @@ extn_dict = {
 }
 
 # List of metrics
-metrics = ['usr (avg)\n(in percentage)', 'sys (avg)\n(in percentage)', 'Load time\n(in seconds)', 'Data usage\n(in KB)', 'RAM_usage_avg\n(in MB)']
+metrics = ['CPU Usage (avg)\n(in percentage)', 'Load time\n(in seconds)', 'Data usage\n(in MB)', 'RAM_usage_avg\n(in MB)']
 # metrics = ['load_time\n(in seconds)', 'data_usage\n(in MB)']
 
 # Sample data
@@ -45,10 +46,11 @@ data = []
 for extn in extensions:
     each_extn = []
     #each_extn.append(np.array(performance['usr_max'][extn]))
-    each_extn.append(np.array(performance['usr_avg'][extn]))
-    #each_extn.append(np.array(performance['sys_max'][extn]))
-    each_extn.append(np.array(performance['sys_avg'][extn]))
-    each_extn.append(np.array(performance['load_time'][extn]))
+    # each_extn.append(np.array(performance['usr_avg'][extn]))
+    # #each_extn.append(np.array(performance['sys_max'][extn]))
+    # each_extn.append(np.array(performance['sys_avg'][extn]))
+    each_extn.append(np.array(performance['cpu_avg'][extn]))
+    each_extn.append(np.clip(np.array(performance2['load_time'][extn])/1000, -50, 50))
     # print(np.array(content[extn]))
     each_extn.append(np.array(content[extn]))
     #each_extn.append(np.array(ram['ram_max'][extn]))
@@ -61,7 +63,7 @@ for extn in extensions:
 # data = np.random.rand(8, 4, 20)  # now each metric has 2 values
 data = np.array(data, dtype=object)
 
-fig, axs = plt.subplots(12, 5, figsize=(10, 10))
+fig, axs = plt.subplots(12, 4, figsize=(10, 10))
 # plt.subplots_adjust(bottom=0.02, right=1)
 # axs = axs.transpose()
 
@@ -198,7 +200,7 @@ for i, extension in enumerate(extensions):
         y = [0, int(len(data[i, j])/2), len(data[i, j])]
         tick_positions = [0, 0.5, 1]
         axs[i, j].set_yticks(y)
-        axs[i, j].set_yticklabels(tick_positions)
+        axs[i, j].set_yticklabels(tick_positions, fontsize=12)
 
         # val = np.round(max(max(data[i,j]), abs(min(data[i,j]))), -3) 
         x = [max_min[1][j], 0, max_min[0][j]]
@@ -212,9 +214,9 @@ for i, extension in enumerate(extensions):
             axs[i, j].set_xticklabels([])
         if j == 0:
             # axs[i, j].set_yticks([])
-            axs[i, j].set_ylabel(extn_dict[extension], rotation='horizontal', labelpad=80, verticalalignment='center')
+            axs[i, j].set_ylabel(extn_dict[extension], rotation='horizontal', labelpad=80, verticalalignment='center', fontsize=14)
         if i == 0:
-            axs[i, j].set_title(metric, weight='bold')
+            axs[i, j].set_title(metric, fontsize=16)
 
 #legend
 x_tilde = '\u0078\u0303'
@@ -242,7 +244,7 @@ red_patch3 = mpatches.Patch(facecolor=red_shades[2], label=f'{x_tilde} {goe} 2.5
 # red_patch3 = mpatches.Patch(facecolor=red_shades[2], label=f'{x_bar} {goe} 1.5{sigma}',  edgecolor='black')
 
 # legend = plt.legend(handles=[text, blue_patch1, blue_patch2, blue_patch3, white_patch, red_patch1, red_patch2, red_patch3], loc='lower center', bbox_to_anchor=(0, -1.5), ncol=8)
-
+# fig.suptitle('Metrics Vs Extensions', fontsize=16)
 plt.tight_layout()
 plt.show()
 

@@ -9,7 +9,7 @@ import pickle
 df = pd.read_csv('./review_sentiment.csv')
 df2 = pd.read_csv('./release.csv')
 
-f = open('../../review_extraction/pickle_files/sentimentscore_vs_time.pickle', 'rb')
+f = open('../../review_extraction/pickle_files/sentimentscore_vs_time_new.pickle', 'rb')
 review_set = pickle.load(f)
 
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
@@ -44,32 +44,6 @@ for extn in df['Extension'].unique():
 df_filtered = df_filtered[df_filtered['Score'].abs() >= 0.7]
 # print(df_filtered.head())
 
-# # Flatten the axes array and remove excess plots
-# axes = axes.flatten()
-# if len(axes) > n:
-#     for ax in axes[n:]:
-#         fig.delaxes(ax)
-
-# # Loop through each extension and plot the sentiment over time
-# for i, extension in enumerate(df['Extension'].unique()):
-#     df_extension = df[df['Extension'] == extension]
-#     rolling_avg = df_extension['Score'].rolling(window=30).mean()
-#     axes[i].plot(df_extension['Timestamp'], rolling_avg, label=extension, color=color_list[i % len(color_list)])
-#     axes[i].set_title(extension)
-#     axes[i].set_xlabel('Date')
-#     axes[i].set_ylabel('Sentiment Score')
-#     axes[i].set_ylim([-1, 1])  # Set y-axis limit
-#     axes[i].grid(True)
-#     axes[i].tick_params(axis='x', rotation=45)
-
-# fig.suptitle('Review Sentiment Over Time for Each Extension (30-day Rolling Average)', fontsize=16, y=1.02)
-# fig.tight_layout()
-# plt.show()
-
-
-### just 5 extn plot
-# Loop through each extension and plot the sentiment over time with a 60-day rolling average
-
 fig, axes = plt.subplots(nrows=nrows_filtered, ncols=ncols, figsize=(10, 4*nrows_filtered))
 
 # Flatten the axes array and remove excess plots
@@ -83,15 +57,24 @@ end_date = datetime.date(2023, 1, 1)
 
 for i, extension in enumerate(df_filtered['Extension'].unique()):
     df_extension = df_filtered[df_filtered['Extension'] == extension]
-    rolling_avg = df_extension['Score'].rolling(window=90).mean()
+    rolling_avg = df_extension['Score'].rolling(window=60).mean()
     axes[i].plot(df_extension['Timestamp'], rolling_avg, label=extension, color=color_list1[i % len(color_list1)])
-    axes[i].set_title(extn_dict[extension])
-    axes[i].set_xlabel('Date')
-    axes[i].set_ylabel('Criticality Score')
+    axes[i].set_title(extn_dict[extension], fontsize=16, pad=-10)
+    # axes[i].set_xlabel('Date')
     axes[i].set_ylim([-1, 1])  # Set y-axis limit
     axes[i].set_xlim([start_date, end_date])  # Set y-axis limit
     axes[i].grid(True)
-    axes[i].tick_params(axis='x', rotation=45)
+    axes[i].tick_params(axis='y', labelsize=16)
+
+    # axes[i].tick_params(axis='x', rotation=45)
+    # print(extension)
+    if extension == 'adguard-adblocker':
+        axes[i].set_ylabel('Criticality Score', fontsize=20)
+    if extension == 'privacy-badger':
+        axes[i].tick_params(axis='x', rotation=45, labelsize=16)
+        axes[i].set_xlabel('Date', fontsize=16)
+    else:
+        axes[i].tick_params(labelbottom = False)
 
 review_num = {}
 mask_pos = {}
@@ -123,10 +106,12 @@ for i, extension in enumerate(df_filtered['Extension'].unique()):
     axes2[i].plot(review_num[extension][1], review_num[extension][0], label=extn_dict[extension], color=color_list2[i % len(color_list2)])
     #axes2[i].set_title(extn_dict[extension])
     # axes2[i].set_xlabel('Date')
-    axes2[i].set_ylabel('#Critical_Reviews')
+    if extension == 'adguard-adblocker':
+        axes2[i].set_ylabel('#Critical_Reviews', fontsize=20)
     axes2[i].set_ylim([0, max(review_num[extension][0])+100])  # Set y-axis limit
     axes2[i].set_xlim([start_date, end_date])  # Set y-axis limit
     axes2[i].grid(True)
+    axes2[i].tick_params(axis='y', labelsize=16)
     # axes2[i].tick_params(axis='x', rotation=45)
 
 for ax in axes:
@@ -137,6 +122,9 @@ for ax in axes:
     ax.xaxis.set_major_locator(mdates.YearLocator(2))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 
-fig.suptitle('Review Sentiment Over Time for Each Extension (60-day Rolling Average)', fontsize=16, y=1.02)
+# plt.xticks(fontsize=15)
+# plt.yticks(fontsize=15)
+# plt.legend(fontsize='14', loc='upper left', bbox_to_anchor=(0.05, 1.0))
+fig.suptitle('Review Sentiment Over Time for Each Extension (60-day Rolling Average)', fontsize=16)
 fig.tight_layout()
 plt.show()
