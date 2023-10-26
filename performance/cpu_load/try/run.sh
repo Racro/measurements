@@ -20,7 +20,7 @@ mkdir -p ${LOGS}
 UUID=$(uuidgen -t)
 echo "Starting measurement run '${UUID}' at $(date)"
 python3 wrapper.py \
-${LOGS}/${UUID}.log \
+${LOGS}/${UUID}.log
 echo "Completed measurement run '${UUID}' at $(date)"
 # done
 

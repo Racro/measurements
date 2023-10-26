@@ -12,8 +12,6 @@ import time
 import os
 from datetime import datetime
 
-import stats
-
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -87,14 +85,14 @@ def main(number_of_tries, flag, args_lst):
     options.add_argument("auto-open-devtools-for-tabs")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
-    options.binary_location = "~/pes/chrome_113/chrome"
+    options.binary_location = "/home/ritik/pes/chrome_113/chrome"
 
     if flag == 1:
         driver = webdriver.Chrome(options=options)
         driver.set_page_load_timeout(args_lst[1])
 
         try:
-            driver.get(args_lst[0])
+            driver.get('https://'+args_lst[0])
             wait_until_loaded(driver, args_lst[1])
 
         except Exception as e:
@@ -113,7 +111,7 @@ def main(number_of_tries, flag, args_lst):
         # Install other addons
         extensions_path = pathlib.Path("../../../extensions/extn_crx")
         print(args_lst)
-        fname = './data/' + args_lst[0].split('//')[1]
+        fname = './data/' + args_lst[0]
         extn = fname
         if args_lst[-1]:
             for extension in args_lst[-1].split(","):
@@ -129,7 +127,7 @@ def main(number_of_tries, flag, args_lst):
         driver.set_page_load_timeout(args_lst[1])
 
         try:
-            driver.get(args_lst[0])
+            driver.get('https://'+args_lst[0])
 
             wait_until_loaded(driver, args_lst[1])
 

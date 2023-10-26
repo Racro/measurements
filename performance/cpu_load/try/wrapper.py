@@ -73,29 +73,25 @@ def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('log', default="logs/measurement.log")
-    #parser.add_argument('database_config_file')
-    parser.add_argument('domains_list_file')
-    #parser.add_argument('experiment')
-    parser.add_argument('browser')
     args = parser.parse_args()
 
     logging.basicConfig(filename=args.log, level=logging.DEBUG)
     log = logging.getLogger('wrapper')
 
     #database = Database.init_from_config_file(args.database_config_file)
+    args.browser = 'chrome'
+    # if args.browser not in ('firefox', 'chrome'):
+    #     raise ValueError(f"Browser must be 'firefox' or 'chrome', not '{args.browser}'")
 
-    if args.browser not in ('firefox', 'chrome'):
-        raise ValueError(f"Browser must be 'firefox' or 'chrome', not '{args.browser}'")
-
-    domains = []
-    # domains = ['http://www.google.com']
-    with open(args.domains_list_file, 'r') as f:
-        inner_dict = json.load(f)
-        for key in inner_dict:
-            domains.append(inner_dict[key][0])
-            # if len(domains) == 500:
-            #     break
-    f.close()
+    # domains = []
+    # # domains = ['http://www.google.com']
+    # with open(args.domains_list_file, 'r') as f:
+    #     inner_dict = json.load(f)
+    #     for key in inner_dict:
+    #         domains.append(inner_dict[key][0])
+    #         # if len(domains) == 500:
+    #         #     break
+    # f.close()
     domains = ["www.patriciamcconnell.com", "www.cruisecritic.com", "www.themailorderbrides.com", "www.nyu.edu", "www.kueski.com", "www.tencent.com", "www.launchpad.net", "www.sedo.com", "www.ordermychecks.com", "www.roblox.com", "www.surveymonkey.com", "www.bit.ly", "www.gartner.com", "www.forbes.com", "www.lavote.net", "www.gitee.com", "www.squarespace.com", "www.tmall.com", "www.rakuten.co.jp", "www.vgkami.com", "www.sec.gov", "www.tandfonline.com", "www.qidian.com", "www.metro.co.uk", "www.emojifoundation.com", "www.mzstatic.com", "www.digicert.com", "www.mttcoin.com", "www.alpilean.com", "www.mashable.com", "www.snapchat.com", "www.zlatnakopacka.mk", "www.drenthe.nl", "www.webs.com", "www.elegantthemes.com", "www.pcmag.com", "www.canva.com", "www.9animetv.to", "www.mdit.edu.cn", "www.thepeoplesperson.com", "www.scientificamerican.com", "www.docin.com", "www.dictionaryofobscuresorrows.com", "www.trello.com", "www.targetspot.com", "www.canada.ca", "www.gov.uk", "www.usps.com", "www.asus.com", "www.action-media.ru"]
 
     # domains = domains[:10]
