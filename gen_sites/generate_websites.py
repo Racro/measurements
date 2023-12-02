@@ -14,14 +14,16 @@ with open('tranco_custom.csv') as f:
     for row in csv_reader:
         total_list.append(row[1])
 
-sites = total_list[:1000]
+sites = total_list[:10000]
+sites.extend(total_list[-10000:])
 
-index = 1000
-for i in range(500):
-    sites.append(total_list[index])
-    index = index + 500
+# index = 1000
+# for i in range(500):
+#     sites.append(total_list[index])
+#     index = index + 500
 
-with open("test_sites_custom.txt", "w") as f:
+# with open("test_sites_custom.txt", "w") as f:
+with open("test_sites_custom_break.txt", "w") as f:
     for site in sites:
         f.write(site)
         f.write('\n')

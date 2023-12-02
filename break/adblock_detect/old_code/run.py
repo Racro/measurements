@@ -14,7 +14,7 @@ import time
 
 def find_inner_pages(sites, updated_dict = {}):
     # href_count = {}
-    legit_f = open("../test_sites_legit.txt", "w")
+    legit_f = open("gen_sites/test_sites_legit_break.txt", "w")
     for site in sites:
         w_flag = 1
         try:
@@ -88,7 +88,8 @@ import json
 import sys
 import math 
 
-with open("../test_sites_custom.txt", "r") as f:
+# with open("../test_sites_custom.txt", "r") as f:
+with open("gen_sites/test_sites_custom_break.txt", "r") as f:
     sites = f.read().splitlines()
 f.close()
 
@@ -101,7 +102,8 @@ extn_lst = ['adblock', 'ublock', 'privacy-badger']
 SIZE = 5 # number of browser windows that will open
 if __name__ == "__main__":
     updated_dict = find_inner_pages(sites)
-    with open("inner_pages_custom.json", "w") as f:
+    # with open("inner_pages_custom.json", "w") as f:
+    with open("break/adblock_detect/inner_pages_custom_break.json", "w") as f:
         json.dump(updated_dict, f)
     f.close()
     # with open("inner_pages_99k.json", "w") as f:

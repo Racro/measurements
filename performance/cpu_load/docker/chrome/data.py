@@ -134,7 +134,8 @@ def main(num_tries, args_lst, proxy):
             # Analyze HAR data (this is a simplified example)
             total_size = 0
             for entry in result['log']['entries']:
-                total_size += entry['response']['bodySize']
+                # total_size += entry['response']['bodySize']
+                total_size += entry['response']['content']['size']
                 if entry['response']['status'] == 200:
                     url = entry['request']['url'].split('://')[1].split('/')[0]
                     if url not in contacted_urls:
