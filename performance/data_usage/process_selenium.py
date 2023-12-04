@@ -23,7 +23,7 @@ extn_lst = ['control', 'adblock'
     "user-agent"
     ]
 
-path = f"./data_1000_scroll/"
+path = f"./data_1000_content/"
 dir_list = os.listdir(path)
 
 # extn_lst = ['control', 'adblock', 'ublock', 'privacy-badger']
@@ -163,6 +163,6 @@ for extn in extn_lst[1:]:
     ret_data[extn] = generate_plot_content(plot_data[extn], plot_data['control'], extn)
 
 
-with open('plot_content_selenium_1000_scroll.json', 'w') as f:
+with open('plot_content_selenium_1000_content.json', 'w') as f:
     json.dump(ret_data, f)
 
