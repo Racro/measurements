@@ -19,8 +19,6 @@
     Home: https://github.com/gorhill/uBlock
 */
 
-var start_time=performance.now();
-
 'use strict';
 
 /*******************************************************************************
@@ -137,9 +135,6 @@ vAPI.contentScript = true;
 /******************************************************************************/
 /******************************************************************************/
 /******************************************************************************/
-
-console.log('UbO 11');
-console.error('UbO 21');
 
 vAPI.userStylesheet = {
     added: new Set(),
@@ -668,9 +663,9 @@ vAPI.DOMFilterer = class {
             const proceduralFilterer = this.proceduralFiltererInstance();
             if ( proceduralFilterer !== null ) {
                 for ( const json of this.convertedProceduralFilters ) {
-                    out.procedural.push(
-                        proceduralFilterer.createProceduralFilter(json)
-                    );
+                    const pfilter = proceduralFilterer.createProceduralFilter(json);
+                    pfilter.converted = true;
+                    out.procedural.push(pfilter);
                 }
             }
         }
@@ -712,7 +707,7 @@ vAPI.DOMFilterer = class {
         object: 'object',
         video: 'media',
     };
-    let resquestIdGenerator = 1,
+    let requestIdGenerator = 1,
         processTimer,
         cachedBlockedSet,
         cachedBlockedSetHash,
@@ -806,10 +801,10 @@ vAPI.DOMFilterer = class {
 
     const send = function() {
         processTimer = undefined;
-        toCollapse.set(resquestIdGenerator, toProcess);
+        toCollapse.set(requestIdGenerator, toProcess);
         messaging.send('contentscript', {
             what: 'getCollapsibleBlockedRequests',
-            id: resquestIdGenerator,
+            id: requestIdGenerator,
             frameURL: window.location.href,
             resources: toFilter,
             hash: cachedBlockedSetHash,
@@ -818,7 +813,7 @@ vAPI.DOMFilterer = class {
         });
         toProcess = [];
         toFilter = [];
-        resquestIdGenerator += 1;
+        requestIdGenerator += 1;
     };
 
     const process = function(delay) {
@@ -1303,7 +1298,7 @@ vAPI.DOMFilterer = class {
         const {
             noSpecificCosmeticFiltering,
             noGenericCosmeticFiltering,
-            scriptlets,
+            scriptletDetails,
         } = response;
 
         vAPI.noSpecificCosmeticFiltering = noSpecificCosmeticFiltering;
@@ -1327,10 +1322,12 @@ vAPI.DOMFilterer = class {
 
         // Library of resources is located at:
         // https://github.com/gorhill/uBlock/blob/master/assets/ublock/resources.txt
-        if ( scriptlets && typeof self.uBO_scriptletsInjected !== 'boolean' ) {
-            self.uBO_scriptletsInjected = true;
-            vAPI.injectScriptlet(document, scriptlets);
-            vAPI.injectedScripts = scriptlets;
+        if ( scriptletDetails && typeof self.uBO_scriptletsInjected !== 'string' ) {
+            self.uBO_scriptletsInjected = scriptletDetails.filters;
+            if ( scriptletDetails.mainWorld ) {
+                vAPI.injectScriptlet(document, scriptletDetails.mainWorld);
+                vAPI.injectedScripts = scriptletDetails.mainWorld;
+            }
         }
 
         if ( vAPI.domSurveyor ) {
@@ -1351,7 +1348,7 @@ vAPI.DOMFilterer = class {
         vAPI.messaging.send('contentscript', {
             what: 'retrieveContentScriptParameters',
             url: vAPI.effectiveSelf.location.href,
-            needScriptlets: typeof self.uBO_scriptletsInjected !== 'boolean',
+            needScriptlets: typeof self.uBO_scriptletsInjected !== 'string',
         }).then(response => {
             onResponseReady(response);
         });
@@ -1360,11 +1357,6 @@ vAPI.DOMFilterer = class {
 
 // This starts bootstrap process.
 vAPI.bootstrap();
-
-var end_time=performance.now()
-
-console.log('cs2');
-console.log(end_time - start_time);
 
 /******************************************************************************/
 /******************************************************************************/

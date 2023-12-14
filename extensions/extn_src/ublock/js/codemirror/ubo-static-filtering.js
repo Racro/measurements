@@ -32,10 +32,27 @@ import { dom, qs$ } from '../dom.js';
 
 const redirectNames = new Map();
 const scriptletNames = new Map();
-const preparseDirectiveTokens = new Map();
+const preparseDirectiveEnv = [];
 const preparseDirectiveHints = [];
 const originHints = [];
 let hintHelperRegistered = false;
+
+/******************************************************************************/
+
+CodeMirror.defineOption('trustedSource', false, (cm, state) => {
+    if ( typeof state !== 'boolean' ) { return; }
+    self.dispatchEvent(new CustomEvent('trustedSource', {
+        detail: state,
+    }));
+});
+
+CodeMirror.defineOption('trustedScriptletTokens', undefined, (cm, tokens) => {
+    if ( tokens === undefined || tokens === null ) { return; }
+    if ( typeof tokens[Symbol.iterator] !== 'function' ) { return; }
+    self.dispatchEvent(new CustomEvent('trustedScriptletTokens', {
+        detail: new Set(tokens),
+    }));
+});
 
 /******************************************************************************/
 
@@ -49,16 +66,20 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
     let lastNetOptionType = 0;
 
     const redirectTokenStyle = node => {
-        const rawToken = astParser.getNodeString(node);
+        const rawToken = astParser.getNodeString(node || currentWalkerNode);
         const { token } = sfp.parseRedirectValue(rawToken);
         return redirectNames.has(token) ? 'value' : 'value warning';
     };
 
+    const nodeHasError = node => {
+        return astParser.getNodeFlags(
+            node || currentWalkerNode, sfp.NODE_FLAG_ERROR
+        ) !== 0;
+    };
+
     const colorFromAstNode = function() {
         if ( astParser.nodeIsEmptyString(currentWalkerNode) ) { return '+'; }
-        if ( astParser.getNodeFlags(currentWalkerNode, sfp.NODE_FLAG_ERROR) !== 0 ) {
-            return 'error';
-        }
+        if ( nodeHasError() ) { return 'error'; }
         const nodeType = astParser.getNodeType(currentWalkerNode);
         switch ( nodeType ) {
             case sfp.NODE_TYPE_WHITESPACE:
@@ -74,15 +95,9 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
             case sfp.NODE_TYPE_PREPARSE_DIRECTIVE_VALUE:
                 return 'directive';
             case sfp.NODE_TYPE_PREPARSE_DIRECTIVE_IF_VALUE: {
-                if ( preparseDirectiveTokens.size === 0 ) {
-                    return 'positive strong';
-                }
                 const raw = astParser.getNodeString(currentWalkerNode);
-                const not = raw.startsWith('!');
-                const token = not ? raw.slice(1) : raw;
-                return not === preparseDirectiveTokens.get(token)
-                    ? 'negative strong'
-                    : 'positive strong';
+                const state = sfp.utils.preparser.evaluateExpr(raw, preparseDirectiveEnv);
+                return state ? 'positive strong' : 'negative strong';
             }
             case sfp.NODE_TYPE_EXT_OPTIONS_ANCHOR:
                 return astParser.getFlags(sfp.AST_FLAG_IS_EXCEPTION)
@@ -189,7 +204,7 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
                 switch ( lastNetOptionType ) {
                     case sfp.NODE_TYPE_NET_OPTION_NAME_REDIRECT:
                     case sfp.NODE_TYPE_NET_OPTION_NAME_REDIRECTRULE:
-                        return redirectTokenStyle(currentWalkerNode);
+                        return redirectTokenStyle();
                     default:
                         break;
                 }
@@ -206,7 +221,15 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
         return '+';
     };
 
-    return {
+    self.addEventListener('trustedSource', ev => {
+        astParser.options.trustedSource = ev.detail;
+    });
+
+    self.addEventListener('trustedScriptletTokens', ev => {
+        astParser.options.trustedScriptletTokens = ev.detail;
+    });
+
+   return {
         lineComment: '!',
         token: function(stream) {
             if ( stream.sol() ) {
@@ -220,6 +243,8 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
                     return 'comment';
                 }
                 currentWalkerNode = astWalker.reset();
+            } else if ( nodeHasError() ) {
+                currentWalkerNode = astWalker.right();
             } else {
                 currentWalkerNode = astWalker.next();
             }
@@ -253,40 +278,6 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
             style = style.trim();
             return style !== '' ? style : null;
         },
-        setHints: function(details) {
-            if ( Array.isArray(details.redirectResources) ) {
-                for ( const [ name, desc ] of details.redirectResources ) {
-                    const displayText = desc.aliasOf !== ''
-                        ? `${name} (${desc.aliasOf})`
-                        : '';
-                    if ( desc.canRedirect ) {
-                        redirectNames.set(name, displayText);
-                    }
-                    if ( desc.canInject && name.endsWith('.js') ) {
-                        scriptletNames.set(name.slice(0, -3), displayText);
-                    }
-                }
-            }
-            if ( Array.isArray(details.preparseDirectiveTokens)) {
-                details.preparseDirectiveTokens.forEach(([ a, b ]) => {
-                    preparseDirectiveTokens.set(a, b);
-                });
-            }
-            if ( Array.isArray(details.preparseDirectiveHints)) {
-                preparseDirectiveHints.push(...details.preparseDirectiveHints);
-            }
-            if ( Array.isArray(details.originHints) ) {
-                originHints.length = 0;
-                for ( const hint of details.originHints ) {
-                    originHints.push(hint);
-                }
-            }
-            if ( hintHelperRegistered === false ) {
-                hintHelperRegistered = true;
-                initHints();
-            }
-            astParser.options.filterOnHeaders = details.filterOnHeaders === true;
-        },
         parser: astParser,
     };
 });
@@ -296,7 +287,40 @@ CodeMirror.defineMode('ubo-static-filtering', function() {
 // Following code is for auto-completion. Reference:
 //   https://codemirror.net/demo/complete.html
 
-const initHints = function() {
+CodeMirror.defineOption('uboHints', null, (cm, hints) => {
+    if ( hints instanceof Object === false ) { return; }
+    if ( Array.isArray(hints.redirectResources) ) {
+        for ( const [ name, desc ] of hints.redirectResources ) {
+            const displayText = desc.aliasOf !== ''
+                ? `${name} (${desc.aliasOf})`
+                : '';
+            if ( desc.canRedirect ) {
+                redirectNames.set(name, displayText);
+            }
+            if ( desc.canInject && name.endsWith('.js') ) {
+                scriptletNames.set(name.slice(0, -3), displayText);
+            }
+        }
+    }
+    if ( Array.isArray(hints.preparseDirectiveEnv)) {
+        preparseDirectiveEnv.length = 0;
+        preparseDirectiveEnv.push(...hints.preparseDirectiveEnv);
+    }
+    if ( Array.isArray(hints.preparseDirectiveHints)) {
+        preparseDirectiveHints.push(...hints.preparseDirectiveHints);
+    }
+    if ( Array.isArray(hints.originHints) ) {
+        originHints.length = 0;
+        for ( const hint of hints.originHints ) {
+            originHints.push(hint);
+        }
+    }
+    if ( hintHelperRegistered ) { return; }
+    hintHelperRegistered = true;
+    initHints();
+});
+
+function initHints() {
     const astParser = new sfp.AstFilterParser({
         interactive: true,
         nativeCssHas: vAPI.webextFlavor.env.includes('native_css_has'),
@@ -488,7 +512,7 @@ const initHints = function() {
                 matchRight[0]
             );
         }
-        if ( matchLeft[0].startsWith('domain=') ) {
+        if ( /^(domain|from)=/.test(matchLeft[0]) ) {
             return getOriginHints(cursor, line);
         }
     };
@@ -601,7 +625,7 @@ const initHints = function() {
         }
         return getOriginHints(cursor, line);
     });
-};
+}
 
 /******************************************************************************/
 
@@ -694,6 +718,9 @@ CodeMirror.registerHelper('fold', 'ubo-static-filtering', (( ) => {
                 case sfp.AST_ERROR_DOMAIN_NAME:
                     msg = `${msg}: Bad domain name`;
                     break;
+                case sfp.AST_ERROR_OPTION_BADVALUE:
+                    msg = `${msg}: Bad value assigned to a valid option`;
+                    break;
                 case sfp.AST_ERROR_OPTION_DUPLICATE:
                     msg = `${msg}: Duplicate filter option`;
                     break;
@@ -702,6 +729,9 @@ CodeMirror.registerHelper('fold', 'ubo-static-filtering', (( ) => {
                     break;
                 case sfp.AST_ERROR_IF_TOKEN_UNKNOWN:
                     msg = `${msg}: Unknown preparsing token`;
+                    break;
+                case sfp.AST_ERROR_UNTRUSTED_SOURCE:
+                    msg = `${msg}: Filter requires trusted source`;
                     break;
                 default:
                     if ( astParser.isCosmeticFilter() && astParser.result.error ) {
@@ -977,6 +1007,14 @@ CodeMirror.registerHelper('fold', 'ubo-static-filtering', (( ) => {
             return;
         }
     };
+
+    self.addEventListener('trustedSource', ev => {
+        astParser.options.trustedSource = ev.detail;
+    });
+
+    self.addEventListener('trustedScriptletTokens', ev => {
+        astParser.options.trustedScriptletTokens = ev.detail;
+    });
 
     CodeMirror.defineInitHook(cm => {
         cm.on('changes', onChanges);

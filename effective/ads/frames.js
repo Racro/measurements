@@ -11,17 +11,14 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         reuse: true,
         // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
     });
-    xvfb.start((err)=>{if (err) console.error(err)})
+    // xvfb.start((err)=>{if (err) console.error(err)})
     let p_args;
     if (args[3] === 'control'){
         p_args = [
             "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--no-sandbox",
-            '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
             // `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
-            '--display='+xvfb._display,
+            // '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'
 	    // '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
@@ -30,13 +27,10 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
     else{
         p_args= [
             "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--no-sandbox",
-            '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process',
-            `--disable-extensions-except=./../extensions/extn_src/${args[3]}`,
-            `--load-extension=./../extensions/extn_src/${args[3]}`,
-            '--display='+xvfb._display,
+            `--disable-extensions-except=./../../extensions/extn_src/${args[3]}`,
+            `--load-extension=./../../extensions/extn_src/${args[3]}`,
+            // '--display='+xvfb._display,
             '--window-size=960, 1080',
             '--disable-features=AudioServiceOutOfProcess'
 	    // '--user-agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/112.0"'
@@ -48,17 +42,38 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         // headless: "new",
         // ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
-        executablePath: '/usr/bin/google-chrome' 
+        executablePath: '/home/ritik/work/pes/chrome_113/chrome' 
         // executablePath: '/snap/bin/chromium' 
     });
+
+    await delay(3000);
+
+    if ( args[3] == 'adblock' ){
+        await delay(15000);    
+    }
+    else if ( args[3] == 'ghostery' ){
+        let pages = await browser.pages();
+        for(let i = 0; i < pages.length; i += 1) {
+            if(pages[i].url().startsWith('chrome-extension://')) {
+                try{
+                    pages[i].click('xpath=//ui-button[@type="success"]');
+                    break;
+                }
+                catch (e){
+                    console.error(e);
+                    console.error(args[3]);
+
+                }
+                
+            }
+        }
+    }
     
-    await delay(10000);
+    await delay(3000);
 
     var num_sites = 0;
     var frames = 0;
     var docs = 0;
-
-    // var pages = []
 
     var sites = args[2].split(',');
 
@@ -91,7 +106,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
 
     // await page.screenshot({path: 'result.png'});
     await browser.close()
-    await xvfb.stop();
+    // await xvfb.stop();
 
     // const metrics = await page.metrics();
     // console.log(metrics);

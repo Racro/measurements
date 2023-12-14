@@ -53,16 +53,21 @@ const hashFromStr = (type, s) => {
 // dependencies
 
 const rePlainSelector = /^[#.][\w\\-]+/;
+const rePlainSelectorEx = /^[^#.\[(]+([#.][\w-]+)|([#.][\w-]+)$/;
 const rePlainSelectorEscaped = /^[#.](?:\\[0-9A-Fa-f]+ |\\.|\w|-)+/;
 const reEscapeSequence = /\\([0-9A-Fa-f]+ |.)/g;
 
 const keyFromSelector = selector => {
+    let key = '';
     let matches = rePlainSelector.exec(selector);
-    if ( matches === null ) { return; }
-    let key = matches[0];
-    if ( key.indexOf('\\') === -1 ) {
-        return key;
+    if ( matches ) {
+        key = matches[0];
+    } else {
+        matches = rePlainSelectorEx.exec(selector);
+        if ( matches === null ) { return; }
+        key = matches[1] || matches[2];
     }
+    if ( key.indexOf('\\') === -1 ) { return key; }
     matches = rePlainSelectorEscaped.exec(selector);
     if ( matches === null ) { return; }
     key = '';
@@ -96,13 +101,17 @@ function addExtendedToDNR(context, parser) {
             context.scriptletFilters = new Map();
         }
         const exception = parser.isException();
-        const raw = parser.getTypeString(sfp.NODE_TYPE_EXT_PATTERN_RAW);
+        const args = parser.getScriptletArgs();
+        const argsToken = JSON.stringify(args);
         for ( const { hn, not, bad } of parser.getExtFilterDomainIterator() ) {
             if ( bad ) { continue; }
             if ( exception ) { continue; }
-            let details = context.scriptletFilters.get(raw);
+            let details = context.scriptletFilters.get(argsToken);
             if ( details === undefined ) {
-                context.scriptletFilters.set(raw, details = {});
+                context.scriptletFilters.set(argsToken, details = { args });
+                if ( context.trustedSource ) {
+                    details.trustedSource = true;
+                }
             }
             if ( not ) {
                 if ( details.excludeMatches === undefined ) {
@@ -125,7 +134,54 @@ function addExtendedToDNR(context, parser) {
     }
 
     // Response header filtering
-    if ( (parser.flavorBits & parser.BITFlavorExtResponseHeader) !== 0 ) {
+    if ( parser.isResponseheaderFilter() ) {
+        if ( parser.hasError() ) { return; }
+        if ( parser.hasOptions() === false ) { return; }
+        if ( parser.isException() ) { return; }
+        const node = parser.getBranchFromType(sfp.NODE_TYPE_EXT_PATTERN_RESPONSEHEADER);
+        if ( node === 0 ) { return; }
+        const header = parser.getNodeString(node);
+        if ( context.responseHeaderRules === undefined ) {
+            context.responseHeaderRules = [];
+        }
+        const rule =  {
+            action: {
+                responseHeaders: [
+                    {
+                        header,
+                        operation: 'remove',
+                    }
+                ],
+                type: 'modifyHeaders'
+            },
+            condition: {
+                resourceTypes: [
+                    'main_frame',
+                    'sub_frame'
+                ]
+            },
+        };
+        for ( const { hn, not, bad } of parser.getExtFilterDomainIterator() ) {
+            if ( bad ) { continue; }
+            if ( not ) {
+                if ( rule.condition.excludedInitiatorDomains === undefined ) {
+                    rule.condition.excludedInitiatorDomains = [];
+                }
+                rule.condition.excludedInitiatorDomains.push(hn);
+                continue;
+            }
+            if ( hn === '*' ) {
+                if ( rule.condition.initiatorDomains !== undefined ) {
+                    rule.condition.initiatorDomains = undefined;
+                }
+                continue;
+            }
+            if ( rule.condition.initiatorDomains === undefined ) {
+                rule.condition.initiatorDomains = [];
+            }
+            rule.condition.initiatorDomains.push(hn);
+        }
+        context.responseHeaderRules.push(rule);
         return;
     }
 
@@ -138,17 +194,30 @@ function addExtendedToDNR(context, parser) {
 
     // Generic cosmetic filtering
     if ( parser.hasOptions() === false ) {
-        if ( context.genericCosmeticFilters === undefined ) {
-            context.genericCosmeticFilters = new Map();
-        }
         const { compiled } = parser.result;
         if ( compiled === undefined ) { return; }
         if ( compiled.length <= 1 ) { return; }
+        if ( parser.isException() ) {
+            if ( context.genericCosmeticExceptions === undefined ) {
+                context.genericCosmeticExceptions = new Set();
+            }
+            context.genericCosmeticExceptions.add(compiled);
+            return;
+        }
         if ( compiled.charCodeAt(0) === 0x7B /* '{' */ ) { return; }
         const key = keyFromSelector(compiled);
-        if ( key === undefined ) { return; }
+        if ( key === undefined ) {
+            if ( context.genericHighCosmeticFilters === undefined ) {
+                context.genericHighCosmeticFilters = new Set();
+            }
+            context.genericHighCosmeticFilters.add(compiled);
+            return;
+        }
         const type = key.charCodeAt(0);
         const hash = hashFromStr(type, key.slice(1));
+        if ( context.genericCosmeticFilters === undefined ) {
+            context.genericCosmeticFilters = new Map();
+        }
         let bucket = context.genericCosmeticFilters.get(hash);
         if ( bucket === undefined ) {
             context.genericCosmeticFilters.set(hash, bucket = []);
@@ -228,8 +297,24 @@ function addToDNR(context, list) {
 
         parser.parse(line);
 
+        if ( parser.isComment() ) {
+            if ( line === `!#trusted on ${context.secret}` ) {
+                parser.trustedSource = true;
+                context.trustedSource = true;
+            } else if ( line === `!#trusted off ${context.secret}` ) {
+                parser.trustedSource = false;
+                context.trustedSource = false;
+            }
+            continue;
+        }
+
         if ( parser.isFilter() === false ) { continue; }
-        if ( parser.hasError() ) { continue; }
+        if ( parser.hasError() ) {
+            if ( parser.astError === sfp.AST_ERROR_OPTION_EXCLUDED ) {
+                context.invalid.add(`Incompatible with DNR: ${line}`);
+            }
+            continue;
+        }
 
         if ( parser.isExtendedFilter() ) {
             addExtendedToDNR(context, parser);
@@ -255,6 +340,129 @@ function addToDNR(context, list) {
 
 /******************************************************************************/
 
+function finalizeRuleset(context, network) {
+    const ruleset = network.ruleset;
+
+    // Assign rule ids
+    const rulesetMap = new Map();
+    {
+        let ruleId = 1;
+        for ( const rule of ruleset ) {
+            rulesetMap.set(ruleId++, rule);
+        }
+    }
+    // Merge rules where possible by merging arrays of a specific property.
+    //
+    // https://github.com/uBlockOrigin/uBOL-home/issues/10#issuecomment-1304822579
+    //   Do not merge rules which have errors.
+    const mergeRules = (rulesetMap, mergeTarget) => {
+        const mergeMap = new Map();
+        const sorter = (_, v) => {
+            if ( Array.isArray(v) ) {
+                return typeof v[0] === 'string' ? v.sort() : v;
+            }
+            if ( v instanceof Object ) {
+                const sorted = {};
+                for ( const kk of Object.keys(v).sort() ) {
+                    sorted[kk] = v[kk];
+                }
+                return sorted;
+            }
+            return v;
+        };
+        const ruleHasher = (rule, target) => {
+            return JSON.stringify(rule, (k, v) => {
+                if ( k.startsWith('_') ) { return; }
+                if ( k === target ) { return; }
+                return sorter(k, v);
+            });
+        };
+        const extractTargetValue = (obj, target) => {
+            for ( const [ k, v ] of Object.entries(obj) ) {
+                if ( Array.isArray(v) && k === target ) { return v; }
+                if ( v instanceof Object ) {
+                    const r = extractTargetValue(v, target);
+                    if ( r !== undefined ) { return r; }
+                }
+            }
+        };
+        const extractTargetOwner = (obj, target) => {
+            for ( const [ k, v ] of Object.entries(obj) ) {
+                if ( Array.isArray(v) && k === target ) { return obj; }
+                if ( v instanceof Object ) {
+                    const r = extractTargetOwner(v, target);
+                    if ( r !== undefined ) { return r; }
+                }
+            }
+        };
+        for ( const [ id, rule ] of rulesetMap ) {
+            if ( rule._error !== undefined ) { continue; }
+            const hash = ruleHasher(rule, mergeTarget);
+            if ( mergeMap.has(hash) === false ) {
+                mergeMap.set(hash, []);
+            }
+            mergeMap.get(hash).push(id);
+        }
+        for ( const ids of mergeMap.values() ) {
+            if ( ids.length === 1 ) { continue; }
+            const leftHand = rulesetMap.get(ids[0]);
+            const leftHandSet = new Set(
+                extractTargetValue(leftHand, mergeTarget) || []
+            );
+            for ( let i = 1; i < ids.length; i++ ) {
+                const rightHandId = ids[i];
+                const rightHand = rulesetMap.get(rightHandId);
+                const rightHandArray =  extractTargetValue(rightHand, mergeTarget);
+                if ( rightHandArray !== undefined ) {
+                    if ( leftHandSet.size !== 0 ) {
+                        for ( const item of rightHandArray ) {
+                            leftHandSet.add(item);
+                        }
+                    }
+                } else {
+                    leftHandSet.clear();
+                }
+                rulesetMap.delete(rightHandId);
+            }
+            const leftHandOwner = extractTargetOwner(leftHand, mergeTarget);
+            if ( leftHandSet.size > 1 ) {
+                //if ( leftHandOwner === undefined ) { debugger; }
+                leftHandOwner[mergeTarget] = Array.from(leftHandSet).sort();
+            } else if ( leftHandSet.size === 0 ) {
+                if ( leftHandOwner !== undefined ) {
+                    leftHandOwner[mergeTarget] = undefined;
+                }
+            }
+        }
+    };
+    mergeRules(rulesetMap, 'resourceTypes');
+    mergeRules(rulesetMap, 'initiatorDomains');
+    mergeRules(rulesetMap, 'requestDomains');
+    mergeRules(rulesetMap, 'removeParams');
+    mergeRules(rulesetMap, 'responseHeaders');
+
+    // Patch id
+    const rulesetFinal = [];
+    {
+        let ruleId = 1;
+        for ( const rule of rulesetMap.values() ) {
+            if ( rule._error === undefined ) {
+                rule.id = ruleId++;
+            } else {
+                rule.id = 0;
+            }
+            rulesetFinal.push(rule);
+        }
+        for ( const invalid of context.invalid ) {
+            rulesetFinal.push({ _error: [ invalid ] });
+        }
+    }
+
+    network.ruleset = rulesetFinal;
+}
+
+/******************************************************************************/
+
 async function dnrRulesetFromRawLists(lists, options = {}) {
     const context = Object.assign({}, options);
     staticNetFilteringEngine.dnrFromCompiled('begin', context);
@@ -269,13 +477,19 @@ async function dnrRulesetFromRawLists(lists, options = {}) {
         }
     }
     await Promise.all(toLoad);
-
-    return {
+    const result = {
         network: staticNetFilteringEngine.dnrFromCompiled('end', context),
         genericCosmetic: context.genericCosmeticFilters,
+        genericHighCosmetic: context.genericHighCosmeticFilters,
+        genericCosmeticExceptions: context.genericCosmeticExceptions,
         specificCosmetic: context.specificCosmeticFilters,
         scriptlet: context.scriptletFilters,
     };
+    if ( context.responseHeaderRules ) {
+        result.network.ruleset.push(...context.responseHeaderRules);
+    }
+    finalizeRuleset(context, result.network);
+    return result;
 }
 
 /******************************************************************************/

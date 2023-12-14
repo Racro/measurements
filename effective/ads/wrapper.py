@@ -22,16 +22,17 @@ from threading import Timer
 import os
 
 extn_lst = [
-     'control', 'adblock', 'ublock', 'privacy-badger',
+     'control', 
+     'adblock', 
+     'ublock'
+     , 'privacy-badger',
         "decentraleyes",
         "disconnect",
-        "ghostery",
-        "https",
-        "noscript",
-        "scriptsafe",
-        "canvas-antifp",
-        "adguard",
-       "user-agent"]
+        "ghostery"
+        ,
+        "adguard"
+    # ,
+    ]
 
 SIZE = 15 # number of browser windows that will open
 
@@ -47,7 +48,7 @@ def run(sites, extn, return_dict, l):
     
     frames = []
     docs = []
-    for i in range(3):
+    for i in range(1):
         try:
             cmd = ["node", "frames.js", input_str, extn, fname]
             process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, timeout = 180)
@@ -105,21 +106,22 @@ if __name__ == "__main__":
         #         updated_dict[site[11:]] = [site]
         # f.close()
 
-        # updated_dict = {
-        #     # "google.com": ["http://www.google.com"]
-        #     # ,
-        #     # "youtube.com": ["http://www.youtube.com"]
-        #     # ,
-        #     'geeksforgeeks.org': ['http://geeksforgeeks.org', 'https://www.geeksforgeeks.org/node-js-fs-open-method/#']
-        #     ,
-        #     'forbes.com': ['http://forbes.com', 'https://www.forbes.com/sites/rashishrivastava/2023/04/20/ive-never-hired-a-writer-better-than-chatgpt-how-ai-is-upending-the-freelance-world/?sh=67d6db3462be', 'https://www.forbes.com/sites/digital-assets/2023/04/13/forget-art-lets-trade-how-a-10-person-startup-came-to-dominate-nft-markets/?sh=4a773f9a2680']
-        #     ,
-        #     # 'hichina.com': ['http://hichina.com'],
-        #     # 'miit.gov.cn': ['http://miit.gov.cn']
-        #     # ,
-        #     'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
-        #     'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
-        # }
+        updated_dict = {
+            # "google.com": ["http://www.google.com"]
+            # ,
+            # "youtube.com": ["http://www.youtube.com"]
+            # ,
+            'geeksforgeeks.org': ['http://geeksforgeeks.org', 'https://www.geeksforgeeks.org/node-js-fs-open-method/#']
+            # ,
+            # 'forbes.com': ['http://forbes.com', 'https://www.forbes.com/sites/rashishrivastava/2023/04/20/ive-never-hired-a-writer-better-than-chatgpt-how-ai-is-upending-the-freelance-world/?sh=67d6db3462be', 'https://www.forbes.com/sites/digital-assets/2023/04/13/forget-art-lets-trade-how-a-10-person-startup-came-to-dominate-nft-markets/?sh=4a773f9a2680']
+            # ,
+            # 'hichina.com': ['http://hichina.com'],
+            # 'miit.gov.cn': ['http://miit.gov.cn']
+            # ,
+            # 'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4'],
+            # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
+        }
+        SIZE = 1
         latest_list = list(updated_dict.keys())
         print(len(latest_list))
         chunks_list = list(divide_chunks(latest_list, SIZE))

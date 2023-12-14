@@ -276,11 +276,11 @@
     "description": "Example of use: Version 1.26.4"
   },
   "popup3pScriptFilter": {
-    "message": "script",
+    "message": "স্ক্রিপ্ট",
     "description": "Appears as an option to filter out firewall rows"
   },
   "popup3pFrameFilter": {
-    "message": "frame",
+    "message": "কাঠামো",
     "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
@@ -469,35 +469,35 @@
   },
   "3pGroupDefault": {
     "message": "বিল্ট-ইন",
-    "description": "Header for the uBlock filters section in 'Filter lists pane'"
+    "description": "Filter lists section name"
   },
   "3pGroupAds": {
     "message": "বিজ্ঞাপন",
-    "description": "English: Ads"
+    "description": "Filter lists section name"
   },
   "3pGroupPrivacy": {
     "message": "গোপনীয়তা",
-    "description": "English: Privacy"
+    "description": "Filter lists section name"
   },
   "3pGroupMalware": {
     "message": "ম্যালওয়্যার ডোমেইন",
-    "description": "English: Malware domains"
+    "description": "Filter lists section name"
   },
   "3pGroupAnnoyances": {
     "message": "বিরক্তিকর",
-    "description": "The header identifying the filter lists in the category 'annoyances'"
+    "description": "Filter lists section name"
   },
   "3pGroupMultipurpose": {
     "message": "বহুমুখী",
-    "description": "English: Multipurpose"
+    "description": "Filter lists section name"
   },
   "3pGroupRegions": {
     "message": "অঞ্চল, ভাষা",
-    "description": "English: Regions, languages"
+    "description": "Filter lists section name"
   },
   "3pGroupCustom": {
     "message": "স্বনির্ধারিত",
-    "description": "English: Custom"
+    "description": "Filter lists section name"
   },
   "3pImport": {
     "message": "আমদানি করুন...",
@@ -531,13 +531,17 @@
     "message": "লাইন প্রতি একটি ফিল্টার। একটি ফিল্টার শুধু হোস্টনেম বা অ্যাডব্লক প্লাস-এর সাথে সামঞ্জস্যপূর্ণ ফিল্টার হতে পারে। <code>!</code> দিয়ে শুরু হওয়া লাইন উপেক্ষা করা হবে।",
     "description": "Short information about how to create custom filters"
   },
+  "1pTrustWarning": {
+    "message": "সন্দেহজনক উৎস থেকে ফিল্টারে কোন কিছু যোগ করবেন না।",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
   "1pImport": {
     "message": "আমদানি করে পরিশেষে যোগ করুন",
-    "description": "English: Import and append"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExport": {
     "message": "রপ্তানি করুন",
-    "description": "English: Export"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExportFilename": {
     "message": "amar-ublock-static-filters_{{datetime}}.txt",
@@ -581,7 +585,7 @@
   },
   "rulesExport": {
     "message": "ফাইলে রপ্তানি",
-    "description": ""
+    "description": "Button in the 'My rules' pane"
   },
   "rulesDefaultFileName": {
     "message": "amar-ublock-dynamic-niyom_{{datetime}}.txt",
@@ -617,11 +621,11 @@
   },
   "whitelistImport": {
     "message": "আমদানি ও পরিশেষে যোগ করুন",
-    "description": "English: Import and append"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExport": {
     "message": "রপ্তানি করুন",
-    "description": "English: Export"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExportFilename": {
     "message": "amar-ublock-whitelist_{{datetime}}.txt",
@@ -951,6 +955,14 @@
     "message": "ডুপ্লিকেট রিপোর্ট সহ স্বেচ্ছাসেবকদের বোঝা এড়াতে, অনুগ্রহ করে যাচাই করুন যে সমস্যাটি ইতিমধ্যে রিপোর্ট করা হয়নি।",
     "description": "A paragraph in the filter issue reporter section"
   },
+  "supportS6P2S1": {
+    "message": "ফিল্টারের লিস্ট প্রতিদিন আপডেট করা হয়। নতুন আপডেটে আপনার সমস্যার সমাধান করা হয়েছে কিনা তা লক্ষ্য করুন। ",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "অভিযোগ দিন যদি আপনার রিলোডের পরও ওয়েবপেজের সমস্যার সমাধান না হয়।",
+    "description": "A paragraph in the filter issue reporter section"
+  },
   "supportS6URL": {
     "message": "ওয়েব পেজের ঠিকানা:",
     "description": "Label for the URL of the page"
@@ -1216,7 +1228,7 @@
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
   "contextMenuViewSource": {
-    "message": "View source code…",
+    "message": "সোর্স কোড দেখুন.... ",
     "description": "A context menu entry, to view the source code of the target resource"
   },
   "shortcutCapturePlaceholder": {
@@ -1264,12 +1276,12 @@
     "description": "Message used in frame placeholders"
   },
   "linterMainReport": {
-    "message": "Errors: {{count}}",
+    "message": "এরর: {{গণনা}}",
     "description": "Summary of number of errors as reported by the linter "
   },
   "unprocessedRequestTooltip": {
-    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
-    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
+    "message": "ঠিকভাবে ফিল্টার চালু করা যায়নি। পুনরায় আবার পেজ রিলোড করুন ঠিকভাবে ফিল্টার চালু করার জন্য",
+    "description": "A warning which will appear in the popup panel if needed"
   },
   "dummy": {
     "message": "This entry must be the last one",

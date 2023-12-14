@@ -108,6 +108,7 @@ const onMessage = function(request, sender, callback) {
             dontCache: true,
             needSourceURL: true,
         }).then(result => {
+            result.trustedSource = µb.isTrustedList(result.assetKey);
             callback(result);
         });
         return;
@@ -196,14 +197,6 @@ const onMessage = function(request, sender, callback) {
                 rule.action.redirect.transform !== undefined;
             const runtime = Date.now() - t0;
             const { ruleset } = network;
-            const out = [
-                `dnrRulesetFromRawLists(${JSON.stringify(listNames, null, 2)})`,
-                `Run time: ${runtime} ms`,
-                `Filters count: ${network.filterCount}`,
-                `Accepted filter count: ${network.acceptedFilterCount}`,
-                `Rejected filter count: ${network.rejectedFilterCount}`,
-                `Resulting DNR rule count: ${ruleset.length}`,
-            ];
             const good = ruleset.filter(rule =>
                 isUnsupported(rule) === false &&
                 isRegex(rule) === false &&
@@ -211,7 +204,9 @@ const onMessage = function(request, sender, callback) {
                 isCsp(rule) === false &&
                 isRemoveparam(rule) === false
             );
-            out.push(`+ Good filters (${good.length}): ${JSON.stringify(good, replacer, 2)}`);
+            const unsupported = ruleset.filter(rule =>
+                isUnsupported(rule)
+            );
             const regexes = ruleset.filter(rule =>
                 isUnsupported(rule) === false &&
                 isRegex(rule) &&
@@ -219,32 +214,42 @@ const onMessage = function(request, sender, callback) {
                 isCsp(rule) === false &&
                 isRemoveparam(rule) === false
             );
-            out.push(`+ Regex-based filters (${regexes.length}): ${JSON.stringify(regexes, replacer, 2)}`);
             const redirects = ruleset.filter(rule =>
                 isUnsupported(rule) === false &&
                 isRedirect(rule)
             );
-            out.push(`+ 'redirect=' filters (${redirects.length}): ${JSON.stringify(redirects, replacer, 2)}`);
             const headers = ruleset.filter(rule =>
                 isUnsupported(rule) === false &&
                 isCsp(rule)
             );
-            out.push(`+ 'csp=' filters (${headers.length}): ${JSON.stringify(headers, replacer, 2)}`);
             const removeparams = ruleset.filter(rule =>
                 isUnsupported(rule) === false &&
                 isRemoveparam(rule)
             );
+            const out = [
+                `dnrRulesetFromRawLists(${JSON.stringify(listNames, null, 2)})`,
+                `Run time: ${runtime} ms`,
+                `Filters count: ${network.filterCount}`,
+                `Accepted filter count: ${network.acceptedFilterCount}`,
+                `Rejected filter count: ${network.rejectedFilterCount}`,
+                `Un-DNR-able filter count: ${unsupported.length}`,
+                `Resulting DNR rule count: ${ruleset.length}`,
+            ];
+            out.push(`+ Good filters (${good.length}): ${JSON.stringify(good, replacer, 2)}`);
+            out.push(`+ Regex-based filters (${regexes.length}): ${JSON.stringify(regexes, replacer, 2)}`);
+            out.push(`+ 'redirect=' filters (${redirects.length}): ${JSON.stringify(redirects, replacer, 2)}`);
+            out.push(`+ 'csp=' filters (${headers.length}): ${JSON.stringify(headers, replacer, 2)}`);
             out.push(`+ 'removeparam=' filters (${removeparams.length}): ${JSON.stringify(removeparams, replacer, 2)}`);
-            const bad = ruleset.filter(rule =>
-                isUnsupported(rule)
-            );
-            out.push(`+ Unsupported filters (${bad.length}): ${JSON.stringify(bad, replacer, 2)}`);
+            out.push(`+ Unsupported filters (${unsupported.length}): ${JSON.stringify(unsupported, replacer, 2)}`);
             out.push(`+ generichide exclusions (${network.generichideExclusions.length}): ${JSON.stringify(network.generichideExclusions, replacer, 2)}`);
-            out.push(`+ Cosmetic filters: ${result.specificCosmetic.size}`);
-            for ( const details of result.specificCosmetic ) {
-                out.push(`    ${JSON.stringify(details)}`);
+            if ( result.specificCosmetic ) {
+                out.push(`+ Cosmetic filters: ${result.specificCosmetic.size}`);
+                for ( const details of result.specificCosmetic ) {
+                    out.push(`    ${JSON.stringify(details)}`);
+                }
+            } else {
+                out.push('  Cosmetic filters: 0');
             }
-
             callback(out.join('\n'));
         });
         return;
@@ -287,6 +292,10 @@ const onMessage = function(request, sender, callback) {
 
     case 'getDomainNames':
         response = getDomainNames(request.targets);
+        break;
+
+    case 'getTrustedScriptletTokens':
+        response = redirectEngine.getTrustedScriptletTokens();
         break;
 
     case 'getWhitelist':
@@ -337,6 +346,7 @@ const onMessage = function(request, sender, callback) {
     case 'setWhitelist':
         µb.netWhitelist = µb.whitelistFromString(request.whitelist);
         µb.saveWhitelist();
+        µb.filteringBehaviorChanged();
         break;
 
     case 'toggleHostnameSwitch':
@@ -589,6 +599,53 @@ const getElementCount = async function(tabId, what) {
     return total;
 };
 
+const launchReporter = async function(request) {
+    const pageStore = µb.pageStoreFromTabId(request.tabId);
+    if ( pageStore === null ) { return; }
+    if ( pageStore.hasUnprocessedRequest ) {
+        request.popupPanel.hasUnprocessedRequest = true;
+    }
+
+    const entries = await io.getUpdateAges({
+        filters: µb.selectedFilterLists.slice()
+    });
+    const shouldUpdateLists = [];
+    for ( const entry of entries ) {
+        if ( entry.age < (2 * 60 * 60 * 1000) ) { continue; }
+        shouldUpdateLists.push(entry.assetKey);
+    }
+
+    // https://github.com/gorhill/uBlock/commit/6efd8eb#commitcomment-107523558
+    //   Important: for whatever reason, not using `document_start` causes the
+    //   Promise returned by `tabs.executeScript()` to resolve only when the
+    //   associated tab is closed.
+    const cosmeticSurveyResults = await vAPI.tabs.executeScript(request.tabId, {
+        allFrames: true,
+        file: '/js/scriptlets/cosmetic-report.js',
+        matchAboutBlank: true,
+        runAt: 'document_start',
+    });
+
+    const filters = cosmeticSurveyResults.reduce((a, v) => {
+        if ( Array.isArray(v) ) { a.push(...v); }
+        return a;
+    }, []);
+    // Remove duplicate, truncate too long filters.
+    if ( filters.length !== 0 ) {
+        request.popupPanel.extended = Array.from(
+            new Set(filters.map(s => s.length <= 64 ? s : `${s.slice(0, 64)}…`))
+        );
+    }
+
+    const supportURL = new URL(vAPI.getURL('support.html'));
+    supportURL.searchParams.set('pageURL', request.pageURL);
+    supportURL.searchParams.set('popupPanel', JSON.stringify(request.popupPanel));
+    if ( shouldUpdateLists.length ) {
+        supportURL.searchParams.set('shouldUpdateLists', JSON.stringify(shouldUpdateLists));
+    }
+    return supportURL.href;
+};
+
 const onMessage = function(request, sender, callback) {
     // Async
     switch ( request.what ) {
@@ -610,36 +667,6 @@ const onMessage = function(request, sender, callback) {
         });
         return;
 
-    // https://github.com/gorhill/uBlock/commit/6efd8eb#commitcomment-107523558
-    //   Important: for whatever reason, not using `document_start` causes the
-    //   Promise returned by `tabs.executeScript()` to resolve only when the
-    //   associated tab is closed.
-    case 'launchReporter': {
-        const pageStore = µb.pageStoreFromTabId(request.tabId);
-        if ( pageStore === null ) { break; }
-        if ( vAPI.net.hasUnprocessedRequest(request.tabId) ) {
-            request.popupPanel.hasUnprocessedRequest = true;
-        }
-        vAPI.tabs.executeScript(request.tabId, {
-            allFrames: true,
-            file: '/js/scriptlets/cosmetic-report.js',
-            matchAboutBlank: true,
-            runAt: 'document_start',
-        }).then(results => {
-            const filters = results.reduce((a, v) => {
-                if ( Array.isArray(v) ) { a.push(...v); }
-                return a;
-            }, []);
-            if ( filters.length !== 0 ) {
-                request.popupPanel.cosmetic = filters;
-            }
-            const supportURL = new URL(vAPI.getURL('support.html'));
-            supportURL.searchParams.set('pageURL', request.pageURL);
-            supportURL.searchParams.set('popupPanel', JSON.stringify(request.popupPanel));
-            µb.openNewTab({ url: supportURL.href, select: true, index: -1 });
-        });
-        return;
-    }
     default:
         break;
     }
@@ -659,6 +686,15 @@ const onMessage = function(request, sender, callback) {
         response = lastModified !== request.contentLastModified;
         break;
     }
+
+    case 'launchReporter': {
+        launchReporter(request).then(url => {
+            if ( typeof url !== 'string' ) { return; }
+            µb.openNewTab({ url, select: true, index: -1 });
+        });
+        break;
+    }
+
     case 'revertFirewallRules':
         // TODO: use Set() to message around sets of hostnames
         sessionFirewall.copyRules(
@@ -807,8 +843,20 @@ const retrieveContentScriptParameters = async function(sender, request) {
     // https://github.com/uBlockOrigin/uBlock-issues/issues/688#issuecomment-748179731
     //   For non-network URIs, scriptlet injection is deferred to here. The
     //   effective URL is available here in `request.url`.
-    if ( request.needScriptlets ) {
-        response.scriptlets = scriptletFilteringEngine.injectNow(request);
+    if ( logger.enabled || request.needScriptlets ) {
+        const scriptletDetails = scriptletFilteringEngine.injectNow(request);
+        if ( scriptletDetails !== undefined ) {
+            if ( logger.enabled ) {
+                scriptletFilteringEngine.logFilters(
+                    tabId,
+                    request.url,
+                    scriptletDetails.filters
+                );
+            }
+            if ( request.needScriptlets ) {
+                response.scriptletDetails = scriptletDetails;
+            }
+        }
     }
 
     // https://github.com/NanoMeow/QuickReports/issues/6#issuecomment-414516623
@@ -945,7 +993,7 @@ const onMessage = function(request, sender, callback) {
                 zap: µb.epickerArgs.zap,
                 eprom: µb.epickerArgs.eprom,
                 pickerURL: vAPI.getURL(
-                    `/web_accessible_resources/epicker-ui.html?secret=${vAPI.warSecret()}`
+                    `/web_accessible_resources/epicker-ui.html?secret=${vAPI.warSecret.short()}`
                 ),
             });
             µb.epickerArgs.target = '';
@@ -1392,6 +1440,22 @@ const getSupportData = async function() {
         filterset.push(line);
     }
 
+    const now = Date.now();
+
+    const formatDelayFromNow = time => {
+        if ( (time || 0) === 0 ) { return '?'; }
+        const delayInSec = (now - time) / 1000;
+        const days = (delayInSec / 86400) | 0;
+        const hours = (delayInSec % 86400) / 3600 | 0;
+        const minutes = (delayInSec % 3600) / 60 | 0;
+        const parts = [];
+        if ( days > 0 ) { parts.push(`${days}d`); }
+        if ( hours > 0 ) { parts.push(`${hours}h`); }
+        if ( minutes > 0 ) { parts.push(`${minutes}m`); }
+        if ( parts.length === 0 ) { parts.push('now'); }
+        return parts.join('.');
+    };
+
     const lists = µb.availableFilterLists;
     let defaultListset = {};
     let addedListset = {};
@@ -1409,16 +1473,7 @@ const getSupportData = async function() {
             if ( typeof list.writeTime !== 'number' || list.writeTime === 0 ) {
                 listDetails.push('never');
             } else {
-                const delta = (Date.now() - list.writeTime) / 1000 | 0;
-                const days = (delta / 86400) | 0;
-                const hours = (delta % 86400) / 3600 | 0;
-                const minutes = (delta % 3600) / 60 | 0;
-                const parts = [];
-                if ( days > 0 ) { parts.push(`${days}d`); }
-                if ( hours > 0 ) { parts.push(`${hours}h`); }
-                if ( minutes > 0 ) { parts.push(`${minutes}m`); }
-                if ( parts.length === 0 ) { parts.push('now'); }
-                listDetails.push(parts.join('.'));
+                listDetails.push(formatDelayFromNow(list.writeTime));
             }
         }
         if ( list.isDefault || listKey === µb.userFiltersPath ) {
@@ -1436,13 +1491,15 @@ const getSupportData = async function() {
     }
     if ( Object.keys(addedListset).length === 0 ) {
         addedListset = undefined;
-    } else if ( Object.keys(addedListset).length > 20 ) {
+    } else {
         const added = Object.keys(addedListset);
-        const truncated = added.slice(20);
+        const truncated = added.slice(12);
         for ( const key of truncated ) {
             delete addedListset[key];
         }
-        addedListset[`[${truncated.length} lists not shown]`] = '[too many]';
+        if ( truncated.length !== 0 ) {
+            addedListset[`[${truncated.length} lists not shown]`] = '[too many]';
+        }
     }
     if ( Object.keys(removedListset).length === 0 ) {
         removedListset = undefined;
@@ -1488,8 +1545,8 @@ const getSupportData = async function() {
             sessionURLFiltering.toArray(),
             []
         ),
-        modifiedUserSettings,
-        modifiedHiddenSettings,
+        'userSettings': modifiedUserSettings,
+        'hiddenSettings': modifiedHiddenSettings,
         supportStats: µb.supportStats,
     };
 };
@@ -1519,6 +1576,7 @@ const onMessage = function(request, sender, callback) {
 
     case 'readUserFilters':
         return µb.loadUserFilters().then(result => {
+            result.trustedSource = µb.isTrustedList(µb.userFiltersPath);
             callback(result);
         });
 
@@ -1545,12 +1603,8 @@ const onMessage = function(request, sender, callback) {
         response = {};
         if ( (request.hintUpdateToken || 0) === 0 ) {
             response.redirectResources = redirectEngine.getResourceDetails();
-            response.preparseDirectiveTokens =
-                sfp.utils.preparser.getTokens(vAPI.webextFlavor.env);
-            response.preparseDirectiveHints =
-                sfp.utils.preparser.getHints();
-            response.expertMode = µb.hiddenSettings.filterAuthorMode;
-            response.filterOnHeaders = µb.hiddenSettings.filterOnHeaders;
+            response.preparseDirectiveEnv = vAPI.webextFlavor.env.slice();
+            response.preparseDirectiveHints = sfp.utils.preparser.getHints();
         }
         if ( request.hintUpdateToken !== µb.pageStoresToken ) {
             response.originHints = getOriginHints();
@@ -1577,9 +1631,10 @@ const onMessage = function(request, sender, callback) {
         }
         break;
 
-    case 'purgeCache':
-        io.purge(request.assetKey);
-        io.remove('compiled/' + request.assetKey);
+    case 'purgeCaches':
+        for ( const assetKey of request.assetKeys ) {
+            io.purge(assetKey);
+        }
         break;
 
     case 'readHiddenSettings':
@@ -2003,6 +2058,21 @@ const onMessage = function(request, sender, callback) {
             url: `/asset-viewer.html?url=${url}&title=${title}&subscribe=1${hash}`,
             select: true,
         });
+        break;
+
+    case 'updateLists':
+        const listkeys = request.listkeys.split(',').filter(s => s !== '');
+        if ( listkeys.length === 0 ) { return; }
+        for ( const listkey of listkeys ) {
+            io.purge(listkey);
+            io.remove(`compiled/${listkey}`);
+        }
+        µb.scheduleAssetUpdater(0);
+        µb.openNewTab({
+            url: 'dashboard.html#3p-filters.html',
+            select: true,
+        });
+        io.updateStart({ delay: 100, auto: request.manual !== true });
         break;
 
     default:

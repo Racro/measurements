@@ -26,6 +26,7 @@
 import './codemirror/ubo-static-filtering.js';
 
 import { hostnameFromURI } from './uri-utils.js';
+import punycode from '../lib/punycode.js';
 import * as sfp from './static-filtering-parser.js';
 
 /******************************************************************************/
@@ -50,7 +51,7 @@ const svgOcean = svgRoot.children[0];
 const svgIslands = svgRoot.children[1];
 const NoPaths = 'M0 0';
 
-const reCosmeticAnchor = /^#[$?]?#/;
+const reCosmeticAnchor = /^#(\$|\?|\$\?)?#/;
 
 const epickerId = (( ) => {
     const url = new URL(self.location.href);
@@ -88,13 +89,10 @@ const cmEditor = new CodeMirror(document.querySelector('.codeMirrorContainer'), 
 
 vAPI.messaging.send('dashboard', {
     what: 'getAutoCompleteDetails'
-}).then(response => {
+}).then(hints => {
     // For unknown reasons, `instanceof Object` does not work here in Firefox.
-    if ( typeof response !== 'object' ) { return; }
-    const mode = cmEditor.getMode();
-    if ( mode.setHints instanceof Function ) {
-        mode.setHints(response);
-    }
+    if ( hints instanceof Object === false ) { return; }
+    cmEditor.setOption('uboHints', hints);
 });
 
 /******************************************************************************/
@@ -147,7 +145,10 @@ const renderRange = function(id, value, invert = false) {
 const userFilterFromCandidate = function(filter) {
     if ( filter === '' || filter === '!' ) { return; }
 
-    const hn = hostnameFromURI(docURL.href);
+    let hn = hostnameFromURI(docURL.href);
+    if ( hn.startsWith('xn--') ) {
+        hn = punycode.toUnicode(hn);
+    }
 
     // Cosmetic filter?
     if ( reCosmeticAnchor.test(filter) ) {

@@ -280,7 +280,7 @@
     "description": "Appears as an option to filter out firewall rows"
   },
   "popup3pFrameFilter": {
-    "message": "frame",
+    "message": "מסגרת",
     "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
@@ -456,7 +456,7 @@
     "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
   },
   "3pSuspendUntilListsAreLoaded": {
-    "message": "השהיית פעילות רשת עד לסיום טעינת כל רשימות הסינון",
+    "message": "השהה פעילות רשת עד לסיום טעינת כל רשימות הסינון",
     "description": "A checkbox in the 'Filter lists' pane"
   },
   "3pListsOfBlockedHostsHeader": {
@@ -469,35 +469,35 @@
   },
   "3pGroupDefault": {
     "message": "מובנה",
-    "description": "Header for the uBlock filters section in 'Filter lists pane'"
+    "description": "Filter lists section name"
   },
   "3pGroupAds": {
     "message": "פרסומות",
-    "description": "English: Ads"
+    "description": "Filter lists section name"
   },
   "3pGroupPrivacy": {
     "message": "פרטיות",
-    "description": "English: Privacy"
+    "description": "Filter lists section name"
   },
   "3pGroupMalware": {
-    "message": "דומיינים של תוכנות זדוניות",
-    "description": "English: Malware domains"
+    "message": "ביטחון והגנה מפני נוזקה",
+    "description": "Filter lists section name"
   },
   "3pGroupAnnoyances": {
     "message": "מטרדים",
-    "description": "The header identifying the filter lists in the category 'annoyances'"
+    "description": "Filter lists section name"
   },
   "3pGroupMultipurpose": {
     "message": "רב תכליתי",
-    "description": "English: Multipurpose"
+    "description": "Filter lists section name"
   },
   "3pGroupRegions": {
     "message": "אזורים, שפות",
-    "description": "English: Regions, languages"
+    "description": "Filter lists section name"
   },
   "3pGroupCustom": {
     "message": "מותאם אישית",
-    "description": "English: Custom"
+    "description": "Filter lists section name"
   },
   "3pImport": {
     "message": "ייבא…",
@@ -531,13 +531,17 @@
     "message": "מסנן אחד לכל שורה. המסנן יכול להיות דומיין פשוט, או מסנן התואם ל- EasyList. שורות עם קידומת <code>!</code> לא יפורשו.",
     "description": "Short information about how to create custom filters"
   },
+  "1pTrustWarning": {
+    "message": "Do not add filters from untrusted sources.",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
   "1pImport": {
     "message": "ייבא וצרף",
-    "description": "English: Import and append"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExport": {
     "message": "ייצוא",
-    "description": "English: Export"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExportFilename": {
     "message": "my-ublock-static-filters_{{datetime}}.txt",
@@ -581,7 +585,7 @@
   },
   "rulesExport": {
     "message": "ייצא לקובץ...",
-    "description": ""
+    "description": "Button in the 'My rules' pane"
   },
   "rulesDefaultFileName": {
     "message": "my-ublock-dynamic-rules_{{datetime}}.txt",
@@ -617,11 +621,11 @@
   },
   "whitelistImport": {
     "message": "ייבא וצרף",
-    "description": "English: Import and append"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExport": {
     "message": "ייצוא",
-    "description": "English: Export"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExportFilename": {
     "message": "my-ublock-trusted-sites_{{datetime}}.txt",
@@ -912,7 +916,7 @@
     "description": "Header of 'Filter issues' section in Support pane"
   },
   "supportS3P1": {
-    "message": "דווח סוגיות יישומון uBlock Origin ל'מעקב הסוגייות' <span data-url=\"https://github.com/uBlockOrigin/uBlock-issues/issues?q=is%3Aissue\"><code>uBlockOrigin/uBlock-issue</code> issue tracker</span>.\n<u>נידרש חשבון גיטהאב (GitHub)</u>",
+    "message": "דווח על בעיות סינון באתרים קונקרטיים <span data-url=\"https://github.com/uBlockOrigin/uAssets/issues?q=is%3Aissue\">בלוח הבעיות <code>uBlockOrigin/uAssets</code></span>. נדרש משתמש GitHub.",
     "description": "First paragraph of 'Filter issues' section in Support pane"
   },
   "supportS3P2": {
@@ -928,7 +932,7 @@
     "description": "Header of 'Bug report' section in Support pane"
   },
   "supportS4P1": {
-    "message": "דווח סוגיות יישומון uBlock Origin ל'מעקב הסוגייות' <span data-url=\"https://github.com/uBlockOrigin/uBlock-issues/issues?q=is%3Aissue\"><code>uBlockOrigin/uBlock-issue</code> issue tracker</span>.\n<u>נידרש חשבון גיטהאב (GitHub)</u>",
+    "message": "דווח על בעיות ב uBlock Origin עצמו ל <span data-url=\"https://github.com/uBlockOrigin/uBlock-issues/issues?q=is%3Aissue\"> מעקב הסוגייות <code>uBlockOrigin/uBlock-issue</code></span>.\n<u>נידרש חשבון גיטהאב (GitHub)</u>",
     "description": "First paragraph of 'Bug report' section in Support pane"
   },
   "supportS5H": {
@@ -948,7 +952,15 @@
     "description": "Header of 'Report a filter issue' section in Support pane"
   },
   "supportS6P1S1": {
-    "message": "כדי להימנע מהכבדה על מתנדבים בדווחים כפולים, נא לודא שסוגיה דומה טרם דווחה.",
+    "message": "כדי להימנע מהכבדה על מתנדבים בדווחים כפולים, נא לודא שבעיה דומה טרם דווחה.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S1": {
+    "message": "רשימות הסינון מתעדכנות מדי יום. וודא שהבעיה שלך עדיין לא טופלה ברשימות הסינון המעודכנות.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "וודא כי הבעיה עדיין קיימת לאחר רענון הדף הבעייתי.",
     "description": "A paragraph in the filter issue reporter section"
   },
   "supportS6URL": {
@@ -976,11 +988,11 @@
     "description": "An entry in the widget used to select the type of issue"
   },
   "supportS6Select1Option4": {
-    "message": " קיימות בעיות הקשורות לפרטיות",
+    "message": "בעיות הקשורות לפרטיות",
     "description": "An entry in the widget used to select the type of issue"
   },
   "supportS6Select1Option5": {
-    "message": "כשל תפעולי בעת איפשור uBlock Origin",
+    "message": "כשל תפעולי כאשר uBlock Origin פעיל",
     "description": "An entry in the widget used to select the type of issue"
   },
   "supportS6Select1Option6": {
@@ -988,7 +1000,7 @@
     "description": "An entry in the widget used to select the type of issue"
   },
   "supportS6Checkbox1": {
-    "message": "תיוג דף האינטרנט כ־לב\"ל ((<a href=\"https://wikipedia.org/wiki/Not_safe_for_work\">'לא בטוח לעבודה'</a>)",
+    "message": "תיוג דף האינטרנט כ- לב\"ל (<a href=\"https://wikipedia.org/wiki/Not_safe_for_work\">'לא בטוח לעבודה'</a>)",
     "description": "A checkbox to use for NSFW sites"
   },
   "supportRedact": {
@@ -1036,11 +1048,11 @@
     "description": "Shown in the About pane"
   },
   "aboutCDNsInfo": {
-    "message": "כאשר רשימת מסננים צריכה להתעדכן, נבחר באקראי לטובת זאת שירות CDN  ",
+    "message": "שרות CDN אקראי נבחר לשם עדכון רשימת מסננים",
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
-    "message": "גיבוי לקובץ...",
+    "message": "גבה לקובץ…",
     "description": "Text for button to create a backup of all settings"
   },
   "aboutBackupFilename": {
@@ -1216,7 +1228,7 @@
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
   "contextMenuViewSource": {
-    "message": "צפייה בקוד המקור...",
+    "message": "צפה בקוד המקור…",
     "description": "A context menu entry, to view the source code of the target resource"
   },
   "shortcutCapturePlaceholder": {
@@ -1264,12 +1276,12 @@
     "description": "Message used in frame placeholders"
   },
   "linterMainReport": {
-    "message": "Errors: {{count}}",
+    "message": "שגיאות: {{count}}",
     "description": "Summary of number of errors as reported by the linter "
   },
   "unprocessedRequestTooltip": {
-    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
-    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
+    "message": "לא ניתן היה לסנן כראוי בעת הפעלת הדפדפן. טען מחדש את הדף כדי להבטיח סינון מתאים.",
+    "description": "A warning which will appear in the popup panel if needed"
   },
   "dummy": {
     "message": "ערך זה חייב להיות האחרון",

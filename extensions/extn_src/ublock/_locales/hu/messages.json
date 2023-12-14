@@ -244,7 +244,7 @@
     "description": ""
   },
   "popup3pPassiveRulePrompt": {
-    "message": "harmadik féltől származó css/képek",
+    "message": "külső féltől származó css/képek",
     "description": ""
   },
   "popupInlineScriptRulePrompt": {
@@ -276,11 +276,11 @@
     "description": "Example of use: Version 1.26.4"
   },
   "popup3pScriptFilter": {
-    "message": "script",
+    "message": "szkript",
     "description": "Appears as an option to filter out firewall rows"
   },
   "popup3pFrameFilter": {
-    "message": "frame",
+    "message": "keret",
     "description": "Appears as an option to filter out firewall rows"
   },
   "pickerCreate": {
@@ -469,35 +469,35 @@
   },
   "3pGroupDefault": {
     "message": "Beépített",
-    "description": "Header for the uBlock filters section in 'Filter lists pane'"
+    "description": "Filter lists section name"
   },
   "3pGroupAds": {
     "message": "Hirdetések",
-    "description": "English: Ads"
+    "description": "Filter lists section name"
   },
   "3pGroupPrivacy": {
     "message": "Adatvédelem",
-    "description": "English: Privacy"
+    "description": "Filter lists section name"
   },
   "3pGroupMalware": {
     "message": "Malware domainek",
-    "description": "English: Malware domains"
+    "description": "Filter lists section name"
   },
   "3pGroupAnnoyances": {
     "message": "Kellemetlenségek",
-    "description": "The header identifying the filter lists in the category 'annoyances'"
+    "description": "Filter lists section name"
   },
   "3pGroupMultipurpose": {
     "message": "Többcélú",
-    "description": "English: Multipurpose"
+    "description": "Filter lists section name"
   },
   "3pGroupRegions": {
     "message": "Régiók, nyelvek",
-    "description": "English: Regions, languages"
+    "description": "Filter lists section name"
   },
   "3pGroupCustom": {
     "message": "Saját",
-    "description": "English: Custom"
+    "description": "Filter lists section name"
   },
   "3pImport": {
     "message": "Importálás...",
@@ -531,13 +531,17 @@
     "message": "Soronként egy szűrő. A szűrő lehet egy hostnév, vagy egy Adblock Plus kompatibilis szűrő.\nA <code>!</code> kezdetű sorok figyelmen kívül maradnak.",
     "description": "Short information about how to create custom filters"
   },
+  "1pTrustWarning": {
+    "message": "Ne adj hozzá szűrőket megbízhatatlan forrásokból.",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
   "1pImport": {
     "message": "Importál és hozzáad",
-    "description": "English: Import and append"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExport": {
     "message": "Exportál",
-    "description": "English: Export"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExportFilename": {
     "message": "ublock-statikus-szabalyaim_{{datetime}}.txt",
@@ -580,8 +584,8 @@
     "description": ""
   },
   "rulesExport": {
-    "message": "Exportálás fájlba",
-    "description": ""
+    "message": "Exportálás fájlba…",
+    "description": "Button in the 'My rules' pane"
   },
   "rulesDefaultFileName": {
     "message": "ublock-dinamikus-szabalyaim_{{datetime}}.txt",
@@ -617,11 +621,11 @@
   },
   "whitelistImport": {
     "message": "Importál és hozzáad",
-    "description": "English: Import and append"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExport": {
     "message": "Exportál",
-    "description": "English: Export"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExportFilename": {
     "message": "ublock-feherlistam_{{datetime}}.txt",
@@ -951,6 +955,14 @@
     "message": "Az önkéntesek terhelésének csökkentése érdekében győződjön meg róla, hogy a hiba még nem lett bejelentve.",
     "description": "A paragraph in the filter issue reporter section"
   },
+  "supportS6P2S1": {
+    "message": "A szűrőlisták naponta frissülnek. Ügyeljen arra, hogy az Ön problémája ne szerepeljen már a legfrissebb szűrőlistákon.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "Ellenőrizze, hogy a probléma a problémás weboldal újratöltése után is fennáll-e.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
   "supportS6URL": {
     "message": "A  weboldal címe:",
     "description": "Label for the URL of the page"
@@ -1216,7 +1228,7 @@
     "description": "A context menu entry, present when large media elements have been blocked on the current site"
   },
   "contextMenuViewSource": {
-    "message": "View source code…",
+    "message": "Forráskód megtekintése…",
     "description": "A context menu entry, to view the source code of the target resource"
   },
   "shortcutCapturePlaceholder": {
@@ -1264,12 +1276,12 @@
     "description": "Message used in frame placeholders"
   },
   "linterMainReport": {
-    "message": "Errors: {{count}}",
+    "message": "Hibák: {{count}}",
     "description": "Summary of number of errors as reported by the linter "
   },
   "unprocessedRequestTooltip": {
-    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
-    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
+    "message": "Nem sikerült megfelelően szűrni a böngésző indításakor. Töltse újra az oldalt a megfelelő szűrés biztosítása érdekében.",
+    "description": "A warning which will appear in the popup panel if needed"
   },
   "dummy": {
     "message": "Ez a bejegyzés utolsó kell hogy legyen",

@@ -27,6 +27,7 @@
 
 import logger from './logger.js';
 import { FilteringContext } from './filtering-context.js';
+import { ubologSet } from './console.js';
 
 import {
     domainFromHostname,
@@ -48,9 +49,9 @@ const hiddenSettingsDefault = {
     allowGenericProceduralFilters: false,
     assetFetchTimeout: 30,
     autoCommentFilterTemplate: '{{date}} {{origin}}',
-    autoUpdateAssetFetchPeriod: 60,
+    autoUpdateAssetFetchPeriod: 15,
     autoUpdateDelayAfterLaunch: 105,
-    autoUpdatePeriod: 2,
+    autoUpdatePeriod: 1,
     benchmarkDatasetURL: 'unset',
     blockingProfiles: '11111/#F00 11010/#C0F 11001/#00F 00001',
     cacheStorageAPI: 'unset',
@@ -68,10 +69,10 @@ const hiddenSettingsDefault = {
     debugAssetsJson: false,
     debugScriptlets: false,
     debugScriptletInjector: false,
+    differentialUpdate: true,
     disableWebAssembly: false,
     extensionUpdateForceReload: false,
     filterAuthorMode: false,
-    filterOnHeaders: false,
     loggerPopupType: 'popup',
     manualUpdateAssetFetchPeriod: 500,
     modifyWebextFlavor: 'unset',
@@ -83,11 +84,18 @@ const hiddenSettingsDefault = {
     selfieAfter: 2,
     strictBlockingBypassDuration: 120,
     toolbarWarningTimeout: 60,
+    trustedListPrefixes: 'ublock-',
     uiPopupConfig: 'unset',
     uiStyles: 'unset',
     updateAssetBypassBrowserCache: false,
     userResourcesLocation: 'unset',
 };
+
+if ( vAPI.webextFlavor.soup.has('devbuild') ) {
+    hiddenSettingsDefault.consoleLogLevel = 'info';
+    hiddenSettingsDefault.trustedListPrefixes += ' user-';
+    ubologSet(true);
+}
 
 const userSettingsDefault = {
     advancedUserEnabled: false,
@@ -176,8 +184,8 @@ const µBlock = {  // jshint ignore:line
 
     // Read-only
     systemSettings: {
-        compiledMagic: 55,  // Increase when compiled format changes
-        selfieMagic: 55,    // Increase when selfie format changes
+        compiledMagic: 57,  // Increase when compiled format changes
+        selfieMagic: 57,    // Increase when selfie format changes
     },
 
     // https://github.com/uBlockOrigin/uBlock-issues/issues/759#issuecomment-546654501
@@ -204,6 +212,9 @@ const µBlock = {  // jshint ignore:line
     // lists to enable by default when uBO is first installed.
     assetsBootstrapLocation: undefined,
 
+    assetsJsonPath: vAPI.webextFlavor.soup.has('devbuild')
+        ? '/assets/assets.dev.json'
+        : '/assets/assets.json',
     userFiltersPath: 'user-filters',
     pslAssetKey: 'public_suffix_list.dat',
 
@@ -253,6 +264,7 @@ const µBlock = {  // jshint ignore:line
 
     liveBlockingProfiles: [],
     blockingProfileColorCache: new Map(),
+    parsedTrustedListPrefixes: [],
     uiAccentStylesheet: '',
 };
 

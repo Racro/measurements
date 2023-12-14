@@ -85,6 +85,7 @@ export const AST_FLAG_HAS_ERROR                     = 1 << iota++;
 export const AST_FLAG_IS_EXCEPTION                  = 1 << iota++;
 export const AST_FLAG_EXT_STRONG                    = 1 << iota++;
 export const AST_FLAG_EXT_STYLE                     = 1 << iota++;
+export const AST_FLAG_EXT_SCRIPTLET_ADG             = 1 << iota++;
 export const AST_FLAG_NET_PATTERN_LEFT_HNANCHOR     = 1 << iota++;
 export const AST_FLAG_NET_PATTERN_RIGHT_PATHANCHOR  = 1 << iota++;
 export const AST_FLAG_NET_PATTERN_LEFT_ANCHOR       = 1 << iota++;
@@ -98,7 +99,10 @@ export const AST_ERROR_PATTERN                      = 1 << iota++;
 export const AST_ERROR_DOMAIN_NAME                  = 1 << iota++;
 export const AST_ERROR_OPTION_DUPLICATE             = 1 << iota++;
 export const AST_ERROR_OPTION_UNKNOWN               = 1 << iota++;
+export const AST_ERROR_OPTION_BADVALUE              = 1 << iota++;
+export const AST_ERROR_OPTION_EXCLUDED              = 1 << iota++;
 export const AST_ERROR_IF_TOKEN_UNKNOWN             = 1 << iota++;
+export const AST_ERROR_UNTRUSTED_SOURCE             = 1 << iota++;
 
 iota = 0;
 const NODE_RIGHT_INDEX                              = iota++;
@@ -177,15 +181,18 @@ export const NODE_TYPE_NET_OPTION_NAME_MP4          = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_NOOP         = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_OBJECT       = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_OTHER        = iota++;
+export const NODE_TYPE_NET_OPTION_NAME_PERMISSIONS  = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_PING         = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_POPUNDER     = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_POPUP        = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_REDIRECT     = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_REDIRECTRULE = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_REMOVEPARAM  = iota++;
+export const NODE_TYPE_NET_OPTION_NAME_REPLACE      = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_SCRIPT       = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_SHIDE        = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_TO           = iota++;
+export const NODE_TYPE_NET_OPTION_NAME_URLTRANSFORM = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_XHR          = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_WEBRTC       = iota++;
 export const NODE_TYPE_NET_OPTION_NAME_WEBSOCKET    = iota++;
@@ -251,6 +258,7 @@ export const nodeTypeFromOptionName = new Map([
     [ 'object', NODE_TYPE_NET_OPTION_NAME_OBJECT ],
     /* synonym */ [ 'object-subrequest', NODE_TYPE_NET_OPTION_NAME_OBJECT ],
     [ 'other', NODE_TYPE_NET_OPTION_NAME_OTHER ],
+    [ 'permissions', NODE_TYPE_NET_OPTION_NAME_PERMISSIONS ],
     [ 'ping', NODE_TYPE_NET_OPTION_NAME_PING ],
     /* synonym */ [ 'beacon', NODE_TYPE_NET_OPTION_NAME_PING ],
     [ 'popunder', NODE_TYPE_NET_OPTION_NAME_POPUNDER ],
@@ -259,11 +267,13 @@ export const nodeTypeFromOptionName = new Map([
     /* synonym */ [ 'rewrite', NODE_TYPE_NET_OPTION_NAME_REDIRECT ],
     [ 'redirect-rule', NODE_TYPE_NET_OPTION_NAME_REDIRECTRULE ],
     [ 'removeparam', NODE_TYPE_NET_OPTION_NAME_REMOVEPARAM ],
+    [ 'replace', NODE_TYPE_NET_OPTION_NAME_REPLACE ],
     /* synonym */ [ 'queryprune', NODE_TYPE_NET_OPTION_NAME_REMOVEPARAM ],
     [ 'script', NODE_TYPE_NET_OPTION_NAME_SCRIPT ],
     [ 'shide', NODE_TYPE_NET_OPTION_NAME_SHIDE ],
     /* synonym */ [ 'specifichide', NODE_TYPE_NET_OPTION_NAME_SHIDE ],
     [ 'to', NODE_TYPE_NET_OPTION_NAME_TO ],
+    [ 'urltransform', NODE_TYPE_NET_OPTION_NAME_URLTRANSFORM ],
     [ 'xhr', NODE_TYPE_NET_OPTION_NAME_XHR ],
     /* synonym */ [ 'xmlhttprequest', NODE_TYPE_NET_OPTION_NAME_XHR ],
     [ 'webrtc', NODE_TYPE_NET_OPTION_NAME_WEBRTC ],
@@ -592,6 +602,102 @@ const exCharCodeAt = (s, i) => {
 
 /******************************************************************************/
 
+class ArgListParser {
+    constructor(separatorChar = ',', mustQuote = false) {
+        this.separatorChar = this.actualSeparatorChar = separatorChar;
+        this.separatorCode = this.actualSeparatorCode = separatorChar.charCodeAt(0);
+        this.mustQuote = mustQuote;
+        this.quoteBeg = 0; this.quoteEnd = 0;
+        this.argBeg = 0; this.argEnd = 0;
+        this.separatorBeg = 0; this.separatorEnd = 0;
+        this.transform = false;
+        this.failed = false;
+        this.reWhitespaceStart = /^\s+/;
+        this.reWhitespaceEnd = /\s+$/;
+        this.reOddTrailingEscape = /(?:^|[^\\])(?:\\\\)*\\$/;
+        this.reTrailingEscapeChars = /\\+$/;
+    }
+    nextArg(pattern, beg = 0) {
+        const len = pattern.length;
+        this.quoteBeg = beg + this.leftWhitespaceCount(pattern.slice(beg));
+        this.failed = false;
+        const qc = pattern.charCodeAt(this.quoteBeg);
+        if ( qc === 0x22 /* " */ || qc === 0x27 /* ' */ || qc === 0x60 /* ` */ ) {
+            this.indexOfNextArgSeparator(pattern, qc);
+            if ( this.argEnd !== len ) {
+                this.quoteEnd = this.argEnd + 1;
+                this.separatorBeg = this.separatorEnd = this.quoteEnd;
+                this.separatorEnd += this.leftWhitespaceCount(pattern.slice(this.quoteEnd));
+                if ( this.separatorEnd === len ) { return this; }
+                if ( pattern.charCodeAt(this.separatorEnd) === this.separatorCode ) {
+                    this.separatorEnd += 1;
+                    return this;
+                }
+            }
+        }
+        this.indexOfNextArgSeparator(pattern, this.separatorCode);
+        this.separatorBeg = this.separatorEnd = this.argEnd;
+        if ( this.separatorBeg < len ) {
+            this.separatorEnd += 1;
+        }
+        this.argEnd -= this.rightWhitespaceCount(pattern.slice(0, this.separatorBeg));
+        this.quoteEnd = this.argEnd;
+        if ( this.mustQuote ) {
+            this.failed = true;
+        }
+        return this;
+    }
+    normalizeArg(s, char = '') {
+        if ( char === '' ) { char = this.actualSeparatorChar; }
+        let out = '';
+        let pos = 0;
+        while ( (pos = s.lastIndexOf(char)) !== -1 ) {
+            out = s.slice(pos) + out;
+            s = s.slice(0, pos);
+            const match = this.reTrailingEscapeChars.exec(s);
+            if ( match === null ) { continue; }
+            const tail = (match[0].length & 1) !== 0
+                ? match[0].slice(0, -1)
+                : match[0];
+            out = tail + out;
+            s = s.slice(0, -match[0].length);
+        }
+        if ( out === '' ) { return s; }
+        return s + out;
+    }
+    leftWhitespaceCount(s) {
+        const match = this.reWhitespaceStart.exec(s);
+        return match === null ? 0 : match[0].length;
+    }
+    rightWhitespaceCount(s) {
+        const match = this.reWhitespaceEnd.exec(s);
+        return match === null ? 0 : match[0].length;
+    }
+    indexOfNextArgSeparator(pattern, separatorCode) {
+        this.argBeg = this.argEnd = separatorCode !== this.separatorCode
+            ? this.quoteBeg + 1
+            : this.quoteBeg;
+        this.transform = false;
+        if ( separatorCode !== this.actualSeparatorCode ) {
+            this.actualSeparatorCode = separatorCode;
+            this.actualSeparatorChar = String.fromCharCode(separatorCode);
+        }
+        while ( this.argEnd < pattern.length ) {
+            const pos = pattern.indexOf(this.actualSeparatorChar, this.argEnd);
+            if ( pos === -1 ) {
+                return (this.argEnd = pattern.length);
+            }
+            if ( this.reOddTrailingEscape.test(pattern.slice(0, pos)) === false ) {
+                return (this.argEnd = pos);
+            }
+            this.transform = true;
+            this.argEnd = pos + 1;
+        }
+    }
+}
+
+/******************************************************************************/
+
 class AstWalker {
     constructor(parser, from = 0) {
         this.parser = parser;
@@ -740,7 +846,6 @@ export class AstFilterParser {
         // Options
         this.options = options;
         this.interactive = options.interactive || false;
-        this.expertMode = options.expertMode || false;
         this.badTypes = new Set(options.badTypes || []);
         this.maxTokenLength = options.maxTokenLength || 7;
         // TODO: rethink this
@@ -762,11 +867,11 @@ export class AstFilterParser {
         this.reNetHosts1 = /^127\.0\.0\.1 (?:[\da-z][\da-z_-]*\.)+[\da-z-]*[a-z]$/;
         this.reNetHosts2 = /^0\.0\.0\.0 (?:[\da-z][\da-z_-]*\.)+[\da-z-]*[a-z]$/;
         this.rePlainGenericCosmetic = /^##[.#][A-Za-z_][\w-]*$/;
-        this.reHostnameAscii = /^(?:[\da-z][\da-z_-]*\.)*[\da-z-]*[\da-z]$/;
+        this.reHostnameAscii = /^(?:[\da-z][\da-z_-]*\.)*[\da-z][\da-z-]*[\da-z]$/;
         this.rePlainEntity = /^(?:[\da-z][\da-z_-]*\.)+\*$/;
         this.reHostsSink = /^[\w%.:\[\]-]+\s+/;
         this.reHostsRedirect = /(?:0\.0\.0\.0|broadcasthost|local|localhost(?:\.localdomain)?|ip6-\w+)(?:[^\w.-]|$)/;
-        this.reNetOptionComma = /,(?!\d*\})/g;
+        this.reNetOptionComma = /,(?:~?[13a-z-]+(?:=.*?)?|_+)(?:,|$)/;
         this.rePointlessLeftAnchor = /^\|\|?\*+/;
         this.reIsTokenChar = /^[%0-9A-Za-z]/;
         this.rePointlessLeadingWildcards = /^(\*+)[^%0-9A-Za-z\u{a0}-\u{10FFFF}]/u;
@@ -779,7 +884,7 @@ export class AstFilterParser {
         this.reBadHostnameChars = /[\x00-\x24\x26-\x29\x2b\x2c\x2f\x3b-\x40\x5c\x5e\x60\x7b-\x7f]/;
         this.reIsEntity = /^[^*]+\.\*$/;
         this.rePreparseDirectiveIf = /^!#if /;
-        this.rePreparseDirectiveAny = /^!#(?:endif|if |include )/;
+        this.rePreparseDirectiveAny = /^!#(?:else|endif|if |include )/;
         this.reURL = /\bhttps?:\/\/\S+/;
         this.reHasPatternSpecialChars = /[\*\^]/;
         this.rePatternAllSpecialChars = /[\*\^]+|[^\x00-\x7f]+/g;
@@ -790,9 +895,14 @@ export class AstFilterParser {
         this.reHostnameLabel = /[^.]+/g;
         this.reResponseheaderPattern = /^\^responseheader\(.*\)$/;
         this.rePatternScriptletJsonArgs = /^\{.*\}$/;
-        // TODO: mind maxTokenLength
         this.reGoodRegexToken = /[^\x01%0-9A-Za-z][%0-9A-Za-z]{7,}|[^\x01%0-9A-Za-z][%0-9A-Za-z]{1,6}[^\x01%0-9A-Za-z]/;
         this.reBadCSP = /(?:=|;)\s*report-(?:to|uri)\b/;
+        this.reNoopOption = /^_+$/;
+        this.scriptletArgListParser = new ArgListParser(',');
+    }
+
+    finish() {
+        this.selectorCompiler.finish();
     }
 
     parse(raw) {
@@ -1117,10 +1227,7 @@ export class AstFilterParser {
             this.linkRight(head, next);
             if ( type === NODE_TYPE_PREPARSE_DIRECTIVE_IF_VALUE ) {
                 const rawToken = this.getNodeString(next).trim();
-                const token = rawToken.charCodeAt(0) === 0x21 /* ! */
-                    ? rawToken.slice(1)
-                    : rawToken;
-                if ( preparserIfTokens.has(token) === false ) {
+                if ( utils.preparser.evaluateExpr(rawToken) === undefined ) {
                     this.addNodeFlags(next, NODE_FLAG_ERROR);
                     this.addFlags(AST_FLAG_HAS_ERROR);
                     this.astError = AST_ERROR_IF_TOKEN_UNKNOWN;
@@ -1197,6 +1304,7 @@ export class AstFilterParser {
             if ( this.badTypes.has(type) ) {
                 this.addNodeFlags(NODE_FLAG_ERROR);
                 this.addFlags(AST_FLAG_HAS_ERROR);
+                this.astError = AST_ERROR_OPTION_EXCLUDED;
             }
             const flags = this.getNodeFlags(targetNode);
             if ( (flags & NODE_FLAG_ERROR) !== 0 ) { continue; }
@@ -1275,7 +1383,7 @@ export class AstFilterParser {
                     realBad = isException === false || isNegated || hasValue;
                     break;
                 case NODE_TYPE_NET_OPTION_NAME_HEADER:
-                    realBad = this.options.filterOnHeaders !== true || isNegated || hasValue === false;
+                    realBad = isNegated || hasValue === false;
                     break;
                 case NODE_TYPE_NET_OPTION_NAME_IMPORTANT:
                     realBad = isException || isNegated || hasValue;
@@ -1289,6 +1397,11 @@ export class AstFilterParser {
                     break;
                 case NODE_TYPE_NET_OPTION_NAME_MATCHCASE:
                     realBad = this.isRegexPattern() === false;
+                    break;
+                case NODE_TYPE_NET_OPTION_NAME_PERMISSIONS:
+                    realBad = modifierType !== 0 || (hasValue || isException) === false;
+                    if ( realBad ) { break; }
+                    modifierType = type;
                     break;
                 case NODE_TYPE_NET_OPTION_NAME_PING:
                 case NODE_TYPE_NET_OPTION_NAME_WEBSOCKET:
@@ -1306,6 +1419,8 @@ export class AstFilterParser {
                     break;
                 case NODE_TYPE_NET_OPTION_NAME_REDIRECT:
                 case NODE_TYPE_NET_OPTION_NAME_REDIRECTRULE:
+                case NODE_TYPE_NET_OPTION_NAME_REPLACE:
+                case NODE_TYPE_NET_OPTION_NAME_URLTRANSFORM:
                     realBad = isNegated || (isException || hasValue) === false ||
                         modifierType !== 0;
                     if ( realBad ) { break; }
@@ -1346,6 +1461,7 @@ export class AstFilterParser {
                 realBad = abstractTypeCount || behaviorTypeCount || requestTypeCount;
                 break;
             case NODE_TYPE_NET_OPTION_NAME_CSP:
+            case NODE_TYPE_NET_OPTION_NAME_PERMISSIONS:
                 realBad = abstractTypeCount || behaviorTypeCount || requestTypeCount;
                 break;
             case NODE_TYPE_NET_OPTION_NAME_INLINEFONT:
@@ -1364,6 +1480,35 @@ export class AstFilterParser {
                 realBad = abstractTypeCount || behaviorTypeCount || unredirectableTypeCount;
                 break;
             }
+            case NODE_TYPE_NET_OPTION_NAME_REPLACE: {
+                realBad = abstractTypeCount || behaviorTypeCount || unredirectableTypeCount;
+                if ( realBad ) { break; }
+                if ( isException !== true && this.options.trustedSource !== true ) {
+                    this.astError = AST_ERROR_UNTRUSTED_SOURCE;
+                    realBad = true;
+                    break;
+                }
+                const value = this.getNetOptionValue(NODE_TYPE_NET_OPTION_NAME_REPLACE);
+                if ( parseReplaceValue(value) === undefined ) {
+                    this.astError = AST_ERROR_OPTION_BADVALUE;
+                    realBad = true;
+                }
+                break;
+            }
+            case NODE_TYPE_NET_OPTION_NAME_URLTRANSFORM:
+                realBad = abstractTypeCount || behaviorTypeCount || unredirectableTypeCount;
+                if ( realBad ) { break; }
+                if ( isException !== true && this.options.trustedSource !== true ) {
+                    this.astError = AST_ERROR_UNTRUSTED_SOURCE;
+                    realBad = true;
+                    break;
+                }
+                const value = this.getNetOptionValue(NODE_TYPE_NET_OPTION_NAME_URLTRANSFORM);
+                if ( parseReplaceValue(value) === undefined ) {
+                    this.astError = AST_ERROR_OPTION_BADVALUE;
+                    realBad = true;
+                }
+                break;
             case NODE_TYPE_NET_OPTION_NAME_REMOVEPARAM:
                 realBad = abstractTypeCount || behaviorTypeCount;
                 break;
@@ -1384,9 +1529,17 @@ export class AstFilterParser {
         if ( j === -1 ) { return end; }
         if ( (j+1) === end ) { return end; }
         for (;;) {
-            if ( j !== start && s.charCodeAt(j-1) === 0x24 /* $ */ ) { return -1; }
-            const c = s.charCodeAt(j+1);
-            if ( c !== 0x29 /* ) */ && c !== 0x2F /* / */ && c !== 0x7C /* | */ ) { return j; }
+            const before = s.charCodeAt(j-1);
+            if ( j !== start && before === 0x24 /* $ */ ) { return -1; }
+            const after = s.charCodeAt(j+1);
+            if (
+                after !== 0x29 /* ) */ &&
+                after !== 0x2F /* / */ &&
+                after !== 0x7C /* | */ &&
+                before !== 0x5C /* \ */
+            ) {
+                return j;
+            }
             if ( j <= start ) { break; }
             j = s.lastIndexOf('$', j-1);
             if ( j === -1 ) { break; }
@@ -1638,12 +1791,14 @@ export class AstFilterParser {
             pattern = pattern.slice(0, -ignoreLen);
         }
 
+        const patternHasWhitespace = this.hasWhitespace &&
+            this.reHasWhitespaceChar.test(pattern);
         const needNormalization = this.needPatternNormalization(pattern);
         const normal = needNormalization
             ? this.normalizePattern(pattern)
             : pattern;
         next = this.allocTypedNode(NODE_TYPE_NET_PATTERN, patternBeg, patternEnd);
-        if ( normal === undefined ) {
+        if ( patternHasWhitespace || normal === undefined ) {
             this.astTypeFlavor = AST_TYPE_NETWORK_PATTERN_BAD;
             this.addFlags(AST_FLAG_HAS_ERROR);
             this.astError = AST_ERROR_PATTERN;
@@ -1825,9 +1980,8 @@ export class AstFilterParser {
     }
 
     endOfNetOption(s, beg) {
-        this.reNetOptionComma.lastIndex = beg;
-        const match = this.reNetOptionComma.exec(s);
-        return match !== null ? match.index : s.length;
+        const match = this.reNetOptionComma.exec(s.slice(beg));
+        return match !== null ? beg + match.index : s.length;
     }
 
     parseNetOption(parent) {
@@ -1850,13 +2004,21 @@ export class AstFilterParser {
         const equalPos = s.indexOf('=');
         const nameEnd = equalPos !== -1 ? equalPos : s.length;
         const name = s.slice(nameBeg, nameEnd);
-        const nodeOptionType = nodeTypeFromOptionName.get(name) || NODE_TYPE_NET_OPTION_NAME_UNKNOWN;
+        let nodeOptionType = nodeTypeFromOptionName.get(name);
+        if ( nodeOptionType === undefined ) {
+            nodeOptionType = this.reNoopOption.test(name)
+                ? NODE_TYPE_NET_OPTION_NAME_NOOP
+                : NODE_TYPE_NET_OPTION_NAME_UNKNOWN;
+        }
         next = this.allocTypedNode(
             nodeOptionType,
             parentBeg + nameBeg,
             parentBeg + nameEnd
         );
-        if ( this.getBranchFromType(nodeOptionType) !== 0 ) {
+        if (
+            nodeOptionType !== NODE_TYPE_NET_OPTION_NAME_NOOP &&
+            this.getBranchFromType(nodeOptionType) !== 0
+        ) {
             this.addNodeFlags(parent, NODE_FLAG_ERROR);
             this.addFlags(AST_FLAG_HAS_ERROR);
             this.astError = AST_ERROR_OPTION_DUPLICATE;
@@ -2068,7 +2230,13 @@ export class AstFilterParser {
             parentEnd
         );
         this.addNodeToRegister(NODE_TYPE_EXT_PATTERN_RAW, next);
-        this.linkDown(next, this.parseExtPattern(next));
+        const down = this.parseExtPattern(next);
+        if ( down !== 0 ) {
+            this.linkDown(next, down);
+        } else {
+            this.addNodeFlags(next, NODE_FLAG_ERROR);
+            this.addFlags(AST_FLAG_HAS_ERROR);
+        }
         this.linkRight(prev, next);
         this.validateExt();
         return this.throwHeadNode(head);
@@ -2077,6 +2245,7 @@ export class AstFilterParser {
     extFlagsFromAnchor(anchorBeg) {
         let c = this.charCodeAt(anchorBeg+1) ;
         if ( c === 0x23 /* # */ ) { return 0; }
+        if ( c === 0x25 /* % */ ) { return AST_FLAG_EXT_SCRIPTLET_ADG; }
         if ( c === 0x3F /* ? */ ) { return AST_FLAG_EXT_STRONG; }
         if ( c === 0x24 /* $ */ ) {
             c = this.charCodeAt(anchorBeg+2);
@@ -2102,12 +2271,25 @@ export class AstFilterParser {
             if ( (flags & NODE_FLAG_ERROR) !== 0 ) { continue; }
             realBad = false;
             switch ( type ) {
-                case NODE_TYPE_EXT_PATTERN_RESPONSEHEADER:
+                case NODE_TYPE_EXT_PATTERN_RESPONSEHEADER: {
                     const pattern = this.getNodeString(targetNode);
                     realBad =
                         pattern !== '' && removableHTTPHeaders.has(pattern) === false ||
                         pattern === '' && isException === false;
                     break;
+                }
+                case NODE_TYPE_EXT_PATTERN_SCRIPTLET_TOKEN: {
+                    if ( this.interactive !== true ) { break; }
+                    if ( isException ) { break; }
+                    const { trustedSource, trustedScriptletTokens } = this.options;
+                    if ( trustedScriptletTokens instanceof Set === false ) { break; }
+                    const token = this.getNodeString(targetNode);
+                    if ( trustedScriptletTokens.has(token) && trustedSource !== true ) {
+                        this.astError = AST_ERROR_UNTRUSTED_SOURCE;
+                        realBad = true;
+                    }
+                    break;
+                }
                 default:
                     break;
             }
@@ -2121,15 +2303,24 @@ export class AstFilterParser {
     parseExtPattern(parent) {
         const c = this.charCodeAt(this.nodes[parent+NODE_BEG_INDEX]);
         // ##+js(...)
-        if ( c === 0x2B /* '+' */ ) {
+        if ( c === 0x2B /* + */ ) {
             const s = this.getNodeString(parent);
             if ( /^\+js\(.*\)$/.exec(s) !== null ) {
                 this.astTypeFlavor = AST_TYPE_EXTENDED_SCRIPTLET;
                 return this.parseExtPatternScriptlet(parent);
             }
         }
+        // #%#//scriptlet(...)
+        if ( this.getFlags(AST_FLAG_EXT_SCRIPTLET_ADG) ) {
+            const s = this.getNodeString(parent);
+            if ( /^\/\/scriptlet\(.*\)$/.exec(s) !== null ) {
+                this.astTypeFlavor = AST_TYPE_EXTENDED_SCRIPTLET;
+                return this.parseExtPatternScriptlet(parent);
+            }
+            return 0;
+        }
         // ##^... | ##^responseheader(...)
-        if ( c === 0x5E /* '^' */ ) {
+        if ( c === 0x5E /* ^ */ ) {
             const s = this.getNodeString(parent);
             if ( this.reResponseheaderPattern.test(s) ) {
                 this.astTypeFlavor = AST_TYPE_EXTENDED_RESPONSEHEADER;
@@ -2147,24 +2338,14 @@ export class AstFilterParser {
         const beg = this.nodes[parent+NODE_BEG_INDEX];
         const end = this.nodes[parent+NODE_END_INDEX];
         const s = this.getNodeString(parent);
-        const rawArg0 = beg + 4;
+        const rawArg0 = beg + (s.startsWith('+js') ? 4 : 12);
         const rawArg1 = end - 1;
         const head = this.allocTypedNode(NODE_TYPE_EXT_DECORATION, beg, rawArg0);
         let prev = head, next = 0;
-        const trimmedArg0 = rawArg0 + this.leftWhitespaceCount(s);
-        const trimmedArg1 = rawArg1 - this.rightWhitespaceCount(s);
-        if ( trimmedArg0 !== rawArg0 ) {
-            next = this.allocTypedNode(NODE_TYPE_WHITESPACE, rawArg0, trimmedArg0);
-            prev = this.linkRight(prev, next);
-        }
-        next = this.allocTypedNode(NODE_TYPE_EXT_PATTERN_SCRIPTLET, trimmedArg0, trimmedArg1);
+        next = this.allocTypedNode(NODE_TYPE_EXT_PATTERN_SCRIPTLET, rawArg0, rawArg1);
         this.addNodeToRegister(NODE_TYPE_EXT_PATTERN_SCRIPTLET, next);
         this.linkDown(next, this.parseExtPatternScriptletArgs(next));
         prev = this.linkRight(prev, next);
-        if ( trimmedArg1 !== rawArg1 ) {
-            next = this.allocTypedNode(NODE_TYPE_WHITESPACE, trimmedArg1, rawArg1);
-            prev = this.linkRight(prev, next);
-        }
         next = this.allocTypedNode(NODE_TYPE_EXT_DECORATION, rawArg1, end);
         this.linkRight(prev, next);
         return head;
@@ -2179,65 +2360,54 @@ export class AstFilterParser {
         const s = this.getNodeString(parent);
         const argsEnd = s.length;
         // token
-        let argEnd = this.indexOfNextScriptletArgSeparator(s, 0);
-        let rawArg = s.slice(0, argEnd);
-        let argBodyBeg = this.leftWhitespaceCount(rawArg);
-        if ( argBodyBeg !== 0 ) {
+        this.scriptletArgListParser.mustQuote = 
+            this.getFlags(AST_FLAG_EXT_SCRIPTLET_ADG) !== 0;
+        const details = this.scriptletArgListParser.nextArg(s, 0);
+        if ( details.argBeg > 0 ) {
             next = this.allocTypedNode(
                 NODE_TYPE_EXT_DECORATION,
                 parentBeg,
-                parentBeg + argBodyBeg
+                parentBeg + details.argBeg
             );
             prev = this.linkRight(prev, next);
         }
-        let argBodyEnd = argEnd - this.rightWhitespaceCount(rawArg);
-        rawArg = s.slice(argBodyBeg, argBodyEnd);
-        const tokenEnd = rawArg.endsWith('.js')
-            ? argBodyEnd - 3
-            : argBodyEnd;
+        const token = s.slice(details.argBeg, details.argEnd);
+        const tokenEnd = details.argEnd - (token.endsWith('.js') ? 3 : 0);
         next = this.allocTypedNode(
             NODE_TYPE_EXT_PATTERN_SCRIPTLET_TOKEN,
-            parentBeg + argBodyBeg,
+            parentBeg + details.argBeg,
             parentBeg + tokenEnd
         );
+        this.addNodeToRegister(NODE_TYPE_EXT_PATTERN_SCRIPTLET_TOKEN, next);
+        if ( details.failed ) {
+            this.addNodeFlags(next, NODE_FLAG_ERROR);
+            this.addFlags(AST_FLAG_HAS_ERROR);
+        }
         prev = this.linkRight(prev, next);
-        // ignore pointless `.js`
-        if ( tokenEnd !== argBodyEnd ) {
+        if ( tokenEnd < details.argEnd ) {
             next = this.allocTypedNode(
                 NODE_TYPE_IGNORE,
-                parentBeg + argBodyEnd - 3,
-                parentBeg + argBodyEnd
+                parentBeg + tokenEnd,
+                parentBeg + details.argEnd
+            );
+            prev = this.linkRight(prev, next);
+        }
+        if ( details.quoteEnd < argsEnd ) {
+            next = this.allocTypedNode(
+                NODE_TYPE_EXT_DECORATION,
+                parentBeg + details.argEnd,
+                parentBeg + details.separatorEnd
             );
             prev = this.linkRight(prev, next);
         }
         // all args
-        argBodyBeg = argEnd + 1;
-        const rawArgs = s.slice(argBodyBeg, argsEnd);
-        argBodyBeg += this.leftWhitespaceCount(rawArgs);
         next = this.allocTypedNode(
-            NODE_TYPE_EXT_DECORATION,
-            parentBeg + argBodyEnd,
-            parentBeg + argBodyBeg
+            NODE_TYPE_EXT_PATTERN_SCRIPTLET_ARGS,
+            parentBeg + details.separatorEnd,
+            parentBeg + argsEnd
         );
+        this.linkDown(next, this.parseExtPatternScriptletArglist(next));
         prev = this.linkRight(prev, next);
-        argBodyEnd = argsEnd - this.rightWhitespaceCount(rawArgs);
-        if ( argBodyBeg !== argBodyEnd ) {
-            next = this.allocTypedNode(
-                NODE_TYPE_EXT_PATTERN_SCRIPTLET_ARGS,
-                parentBeg + argBodyBeg,
-                parentBeg + argBodyEnd
-            );
-            this.linkDown(next, this.parseExtPatternScriptletArglist(next));
-            prev = this.linkRight(prev, next);
-        }
-        if ( argBodyEnd !== argsEnd ) {
-            next = this.allocTypedNode(
-                NODE_TYPE_EXT_DECORATION,
-                parentBeg + argBodyEnd,
-                parentBeg + argsEnd
-            );
-            prev = this.linkRight(prev, next);
-        }
         return this.throwHeadNode(head);
     }
 
@@ -2246,69 +2416,61 @@ export class AstFilterParser {
         const parentEnd = this.nodes[parent+NODE_END_INDEX];
         if ( parentEnd === parentBeg ) { return 0; }
         const s = this.getNodeString(parent);
-        let next = 0;
-        // json-based arg?
-        const match = this.rePatternScriptletJsonArgs.exec(s);
-        if ( match !== null ) {
-            next = this.allocTypedNode(
-                NODE_TYPE_EXT_PATTERN_SCRIPTLET_ARG,
-                parentBeg,
-                parentEnd
-            );
-            try { 
-                void JSON.parse(s);
-            } catch(ex) {
-                this.addNodeFlags(next, NODE_FLAG_ERROR);
-                this.addFlags(AST_FLAG_HAS_ERROR);
-            }
-            return next;
-        }
-        // positional args
-        const head = this.allocHeadNode();
         const argsEnd = s.length;
-        let prev = head;
-        let argBodyBeg = 0, argBodyEnd = 0, argEnd = 0;
-        let t = '';
-        while ( argBodyBeg < argsEnd ) {
-            argEnd = this.indexOfNextScriptletArgSeparator(s, argBodyBeg);
-            t = s.slice(argBodyBeg, argEnd);
-            argBodyEnd = argEnd - this.rightWhitespaceCount(t);
-            next = this.allocTypedNode(
-                NODE_TYPE_EXT_PATTERN_SCRIPTLET_ARG,
-                parentBeg + argBodyBeg,
-                parentBeg + argBodyEnd
-            );
-            prev = this.linkRight(prev, next);
-            if ( argEnd === argsEnd ) { break; }
-            t = s.slice(argEnd + 1);
-            argBodyBeg = argEnd + 1 + this.leftWhitespaceCount(t);
-            if ( argBodyEnd !== argBodyBeg ) {
+        const head = this.allocHeadNode();
+        let prev = head, next = 0;
+        let decorationBeg = 0;
+        let i = 0;
+        for (;;) {
+            const details = this.scriptletArgListParser.nextArg(s, i);
+            if ( decorationBeg < details.argBeg ) {
                 next = this.allocTypedNode(
                     NODE_TYPE_EXT_DECORATION,
-                    parentBeg + argBodyEnd,
-                    parentBeg + argBodyBeg
+                    parentBeg + decorationBeg,
+                    parentBeg + details.argBeg
                 );
                 prev = this.linkRight(prev, next);
             }
+            if ( i === argsEnd ) { break; }
+            next = this.allocTypedNode(
+                NODE_TYPE_EXT_PATTERN_SCRIPTLET_ARG,
+                parentBeg + details.argBeg,
+                parentBeg + details.argEnd
+            );
+            if ( details.transform ) {
+                const arg = s.slice(details.argBeg, details.argEnd);
+                this.setNodeTransform(next,
+                    this.scriptletArgListParser.normalizeArg(arg)
+                );
+            }
+            prev = this.linkRight(prev, next);
+            if ( details.failed ) {
+                this.addNodeFlags(next, NODE_FLAG_ERROR);
+                this.addFlags(AST_FLAG_HAS_ERROR);
+            }
+            decorationBeg = details.argEnd;
+            i = details.separatorEnd;
         }
         return this.throwHeadNode(head);
     }
 
-    indexOfNextScriptletArgSeparator(pattern, beg = 0) {
-        const patternEnd = pattern.length;
-        if ( beg >= patternEnd ) { return patternEnd; }
-        const nextComma = pattern.indexOf(',', beg);
-        if ( nextComma === -1 ) { return patternEnd; }
-        // An odd number of backslashes immediately before the comma means
-        // it's being escaped
-        let backslashCount = 0;
-        for ( let i = nextComma; i > beg; i-- ) {
-            if ( pattern.charCodeAt(i-1) !== 0x5C /* \ */ ) { break; }
-            backslashCount += 1;
+    getScriptletArgs() {
+        const args = [];
+        if ( this.isScriptletFilter() === false ) { return args; }
+        const root = this.getBranchFromType(NODE_TYPE_EXT_PATTERN_SCRIPTLET);
+        const walker = this.getWalker(root);
+        for ( let node = walker.next(); node !== 0; node = walker.next() ) {
+            switch ( this.getNodeType(node) ) {
+                case NODE_TYPE_EXT_PATTERN_SCRIPTLET_TOKEN:
+                case NODE_TYPE_EXT_PATTERN_SCRIPTLET_ARG:
+                    args.push(this.getNodeTransform(node));
+                    break;
+                default:
+                    break;
+            }
         }
-        return (backslashCount & 1) === 0
-            ? nextComma
-            : this.indexOfNextScriptletArgSeparator(pattern, nextComma + 1);
+        walker.dispose();
+        return args;
     }
 
     parseExtPatternResponseheader(parent) {
@@ -2833,6 +2995,35 @@ export function parseHeaderValue(arg) {
     return out;
 }
 
+
+// https://adguard.com/kb/general/ad-filtering/create-own-filters/#replace-modifier
+
+export function parseReplaceValue(s) {
+    if ( s.charCodeAt(0) !== 0x2F /* / */ ) { return; }
+    const parser = new ArgListParser('/');
+    parser.nextArg(s, 1);
+    let pattern = s.slice(parser.argBeg, parser.argEnd);
+    if ( parser.transform ) {
+        pattern = parser.normalizeArg(pattern);
+    }
+    if ( pattern === '' ) { return; }
+    pattern = parser.normalizeArg(pattern, '$');
+    pattern = parser.normalizeArg(pattern, ',');
+    parser.nextArg(s, parser.separatorEnd);
+    let replacement = s.slice(parser.argBeg, parser.argEnd);
+    if ( parser.separatorEnd === parser.separatorBeg ) { return; }
+    if ( parser.transform ) {
+        replacement = parser.normalizeArg(replacement);
+    }
+    replacement = parser.normalizeArg(replacement, '$');
+    replacement = parser.normalizeArg(replacement, ',');
+    const flags = s.slice(parser.separatorEnd);
+    try {
+        return { re: new RegExp(pattern, flags), replacement };
+    } catch(_) {
+    }
+}
+
 /******************************************************************************/
 
 export const netOptionTokenDescriptors = new Map([
@@ -2883,11 +3074,13 @@ export const netOptionTokenDescriptors = new Map([
     /* synonym */ [ 'rewrite', { mustAssign: true } ],
     [ 'redirect-rule', { mustAssign: true } ],
     [ 'removeparam', { } ],
+    [ 'replace', { mustAssign: true } ],
     /* synonym */ [ 'queryprune', { } ],
     [ 'script', { canNegate: true } ],
     [ 'shide', { } ],
     /* synonym */ [ 'specifichide', { } ],
     [ 'to', { mustAssign: true } ],
+    [ 'urltransform', { mustAssign: true } ],
     [ 'xhr', { canNegate: true } ],
     /* synonym */ [ 'xmlhttprequest', { canNegate: true } ],
     [ 'webrtc', { } ],
@@ -2924,7 +3117,7 @@ class ExtSelectorCompiler {
             `${cssClassOrId}(?:${cssClassOrId})*(?:${cssAttribute})*` + '|' +
             `${cssAttribute}(?:${cssAttribute})*` +
             ')';
-        const cssCombinator = '(?:\\s+|\\s*[+>~]\\s*)';
+        const cssCombinator = '(?: | [+>~] )';
         this.reCommonSelector = new RegExp(
             `^${cssSimple}(?:${cssCombinator}${cssSimple})*$`
         );
@@ -3029,6 +3222,14 @@ class ExtSelectorCompiler {
         this.error = undefined;
     }
 
+    // CSSTree library holds onto last string parsed, and this is problematic
+    // when the string is a slice of a huge parent string (typically a whole
+    // filter list), it causes the huge parent string to stay in memory.
+    // Asking CSSTree to parse an empty string resolves this issue.
+    finish() {
+        cssTree.parse('');
+    }
+
     compile(raw, out, compileOptions = {}) {
         this.asProcedural = compileOptions.asProcedural === true;
 
@@ -3110,9 +3311,14 @@ class ExtSelectorCompiler {
     isCssable(r) {
         if ( r instanceof Object === false ) { return false; }
         if ( Array.isArray(r.action) && r.action[0] !== 'style' ) { return false; }
-        if ( r.tasks === undefined ) { return true; }
-        if ( r.tasks.length > 1 ) { return false; }
-        if ( r.tasks[0][0] === 'matches-media' ) { return true; }
+        if ( Array.isArray(r.tasks) === false ) { return true; }
+        if ( r.tasks[0][0] === 'matches-media' ) {
+            if ( r.tasks.length === 1 ) { return true; }
+            if ( r.tasks.length === 2 ) {
+                if ( r.selector !== '' ) { return false; }
+                if ( r.tasks[1][0] === 'spath' ) { return true; }
+            }
+        }
         return false;
     }
 
@@ -3274,7 +3480,7 @@ class ExtSelectorCompiler {
             out.push(`.${data.name}`);
             break;
         case 'Combinator':
-            out.push(data.name === ' ' ? ' ' : ` ${data.name} `);
+            out.push(data.name);
             break;
         case 'Identifier':
             if ( this.reInvalidIdentifier.test(data.name) ) { return; }
@@ -3353,15 +3559,30 @@ class ExtSelectorCompiler {
             switch ( data.type ) {
             case 'AttributeSelector':
             case 'ClassSelector':
-            case 'Combinator':
             case 'Identifier':
             case 'IdSelector':
             case 'Nth':
             case 'PseudoClassSelector':
-            case 'PseudoElementSelector':
+            case 'PseudoElementSelector': {
+                const s = this.astSerializePart(part);
+                if ( s === undefined ) { return; }
+                out.push(s);
+                break;
+            }
+            case 'Combinator': {
+                const s = this.astSerializePart(part);
+                if ( s === undefined ) { return; }
+                if ( out.length !== 0 ) { out.push(' '); }
+                if ( s !== ' ' ) { out.push(s, ' '); }
+                break;
+            }
             case 'TypeSelector': {
                 const s = this.astSerializePart(part);
-                if ( typeof s !== 'string' ) { return; }
+                if ( s === undefined ) { return; }
+                if ( s === '*' && out.length !== 0 ) {
+                    const before = out[out.length-1];
+                    if ( before.endsWith(' ') === false ) { return; }
+                }
                 out.push(s);
                 break;
             }
@@ -3370,7 +3591,7 @@ class ExtSelectorCompiler {
                 out.push(this.astSerializePart(part));
                 break;
             case 'Selector':
-                if ( out.length !== 0 ) { out.push(','); }
+                if ( out.length !== 0 ) { out.push(', '); }
                 break;
             case 'SelectorList':
                 break;
@@ -3388,12 +3609,13 @@ class ExtSelectorCompiler {
         const out = { selector: '' };
         const prelude = [];
         const tasks = [];
+        let startOfSelector = true;
         for ( const part of parts ) {
+            if ( out.action !== undefined ) { return; }
             const { data } = part;
             switch ( data.type ) {
             case 'ActionSelector': {
                 if ( details.noaction ) { return; }
-                if ( out.action !== undefined ) { return; }
                 if ( prelude.length !== 0 ) {
                     if ( tasks.length === 0 ) {
                         out.selector = prelude.join('');
@@ -3409,14 +3631,24 @@ class ExtSelectorCompiler {
             }
             case 'AttributeSelector':
             case 'ClassSelector':
-            case 'Combinator':
             case 'IdSelector':
             case 'PseudoClassSelector':
             case 'PseudoElementSelector':
             case 'TypeSelector': {
-                const component = this.astSerializePart(part);
-                if ( component === undefined ) { return; }
-                prelude.push(component);
+                const s = this.astSerializePart(part);
+                if ( s === undefined ) { return; }
+                prelude.push(s);
+                startOfSelector = false;
+                break;
+            }
+            case 'Combinator': {
+                const s = this.astSerializePart(part);
+                if ( s === undefined ) { return; }
+                if ( startOfSelector === false || prelude.length !== 0 ) {
+                    prelude.push(' ');
+                }
+                if ( s !== ' ' ) { prelude.push(s, ' '); }
+                startOfSelector = false;
                 break;
             }
             case 'ProceduralSelector': {
@@ -3433,14 +3665,17 @@ class ExtSelectorCompiler {
                 const args = this.compileArgumentAst(data.name, part.args);
                 if ( args === undefined ) { return; }
                 tasks.push([ data.name, args ]);
+                startOfSelector = false;
                 break;
             }
             case 'Selector':
                 if ( prelude.length !== 0 ) {
                     prelude.push(', ');
                 }
+                startOfSelector = true;
                 break;
             case 'SelectorList':
+                startOfSelector = true;
                 break;
             default:
                 return;
@@ -3563,7 +3798,7 @@ class ExtSelectorCompiler {
         case 'has': {
             let r = this.astCompile(parts, { noaction: true });
             if ( typeof r === 'string' ) {
-                r = { selector: r.replace(/^\s*:scope\s*/, ' ') };
+                r = { selector: r.replace(/^\s*:scope\s*/, '') };
             }
             return r;
         }
@@ -3686,11 +3921,12 @@ class ExtSelectorCompiler {
         return { attr, value };
     }
 
-    // When dealing with literal text, we must first eat _some_
-    // backslash characters.
     // Remove potentially present quotes before processing.
     compileText(s) {
-        if ( s === '' ) { return; }
+        if ( s === '' ) {
+            this.error = 'argument missing';
+            return;
+        }
         const r = this.unquoteString(s);
         if ( r.i !== s.length ) { return; }
         return r.s;
@@ -4049,15 +4285,68 @@ export const utils = (( ) => {
         }
     };
 
+    // Useful reference:
+    // https://adguard.com/kb/general/ad-filtering/create-own-filters/#conditions-directive
+
     class preparser {
+        static evaluateExprToken(token, env = []) {
+            const not = token.charCodeAt(0) === 0x21 /* ! */;
+            if ( not ) { token = token.slice(1); }
+            const state = preparserTokens.get(token);
+            if ( state === undefined ) { return; }
+            return state === 'false' && not || env.includes(state) !== not;
+        }
+
+        static evaluateExpr(expr, env = []) {
+            if ( expr.startsWith('(') && expr.endsWith(')') ) {
+                expr = expr.slice(1, -1);
+            }
+            const matches = Array.from(expr.matchAll(/(?:(?:&&|\|\|)\s+)?\S+/g));
+            if ( matches.length === 0 ) { return; }
+            if ( matches[0][0].startsWith('|') || matches[0][0].startsWith('&') ) { return; }
+            let result = this.evaluateExprToken(matches[0][0], env);
+            for ( let i = 1; i < matches.length; i++ ) {
+                const parts = matches[i][0].split(/ +/);
+                if ( parts.length !== 2 ) { return; }
+                const state = this.evaluateExprToken(parts[1], env);
+                if ( state === undefined ) { return; }
+                if ( parts[0] === '||' ) {
+                    result = result || state;
+                } else if ( parts[0] === '&&' ) {
+                    result = result && state;
+                } else {
+                    return;
+                }
+            }
+            return result;
+        }
+
         // This method returns an array of indices, corresponding to position in
         // the content string which should alternatively be parsed and discarded.
         static splitter(content, env = []) {
-            const reIf = /^!#(if|endif)\b([^\n]*)(?:[\n\r]+|$)/gm;
+            const reIf = /^!#(if|else|endif)\b([^\n]*)(?:[\n\r]+|$)/gm;
             const stack = [];
-            const shouldDiscard = ( ) => stack.some(v => v);
             const parts = [ 0 ];
             let discard = false;
+
+            const shouldDiscard = ( ) => stack.some(v => v);
+
+            const begif = (startDiscard, match) => {
+                if ( discard === false && startDiscard ) {
+                    parts.push(match.index);
+                    discard = true;
+                }
+                stack.push(startDiscard);
+            };
+
+            const endif = match => {
+                stack.pop();
+                const stopDiscard = shouldDiscard() === false;
+                if ( discard && stopDiscard ) {
+                    parts.push(match.index + match[0].length);
+                    discard = false;
+                }
+            };
 
             for (;;) {
                 const match = reIf.exec(content);
@@ -4065,27 +4354,19 @@ export const utils = (( ) => {
 
                 switch ( match[1] ) {
                 case 'if': {
-                    let expr = match[2].trim();
-                    const target = expr.charCodeAt(0) === 0x21 /* '!' */;
-                    if ( target ) { expr = expr.slice(1); }
-                    const token = preparserTokens.get(expr);
-                    const startDiscard =
-                        token === 'false' && target === false ||
-                        token !== undefined && env.includes(token) === target;
-                    if ( discard === false && startDiscard ) {
-                        parts.push(match.index);
-                        discard = true;
-                    }
-                    stack.push(startDiscard);
+                    const startDiscard = this.evaluateExpr(match[2].trim(), env) === false;
+                    begif(startDiscard, match);
+                    break;
+                }
+                case 'else': {
+                    if ( stack.length === 0 ) { break; }
+                    const startDiscard = stack[stack.length-1] === false;
+                    endif(match);
+                    begif(startDiscard, match);
                     break;
                 }
                 case 'endif': {
-                    stack.pop();
-                    const stopDiscard = shouldDiscard() === false;
-                    if ( discard && stopDiscard ) {
-                        parts.push(match.index + match[0].length);
-                        discard = false;
-                    }
+                    endif(match);
                     break;
                 }
                 default:

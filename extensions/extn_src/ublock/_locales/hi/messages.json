@@ -469,35 +469,35 @@
   },
   "3pGroupDefault": {
     "message": "बिल्ट-इन ",
-    "description": "Header for the uBlock filters section in 'Filter lists pane'"
+    "description": "Filter lists section name"
   },
   "3pGroupAds": {
     "message": "विज्ञापन",
-    "description": "English: Ads"
+    "description": "Filter lists section name"
   },
   "3pGroupPrivacy": {
     "message": "गोपनीयता",
-    "description": "English: Privacy"
+    "description": "Filter lists section name"
   },
   "3pGroupMalware": {
     "message": "मैलवेयर डोमेन",
-    "description": "English: Malware domains"
+    "description": "Filter lists section name"
   },
   "3pGroupAnnoyances": {
     "message": "सतानेवाले विज्ञापन",
-    "description": "The header identifying the filter lists in the category 'annoyances'"
+    "description": "Filter lists section name"
   },
   "3pGroupMultipurpose": {
     "message": "बहुउद्देशीय",
-    "description": "English: Multipurpose"
+    "description": "Filter lists section name"
   },
   "3pGroupRegions": {
     "message": "क्षेत्र, भाषा",
-    "description": "English: Regions, languages"
+    "description": "Filter lists section name"
   },
   "3pGroupCustom": {
     "message": "कस्टम",
-    "description": "English: Custom"
+    "description": "Filter lists section name"
   },
   "3pImport": {
     "message": "इम्पोर्ट ",
@@ -531,13 +531,17 @@
     "message": "एक लाइन में एक फ़िल्टर। एक फ़िल्टर सीधा होस्टनाम, या एक Adblock Plus- योग्य फ़िल्टर हो सकता है। <code>!<code></code>से  शुरू होने वाली लाइनों को नज़रअंदाज किया जायेगा।",
     "description": "Short information about how to create custom filters"
   },
+  "1pTrustWarning": {
+    "message": "अविश्वसनीय स्रोतों से फ़िल्टर न जोड़ें.",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
   "1pImport": {
     "message": "इम्पोर्ट करें और जोड़ें",
-    "description": "English: Import and append"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExport": {
     "message": "निर्यात करें",
-    "description": "English: Export"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExportFilename": {
     "message": "मेरे-ublock-स्‍थिर-फिल्टेरें_{{datetime}}.txt",
@@ -581,7 +585,7 @@
   },
   "rulesExport": {
     "message": "फाइल में एक्सपोर्ट करें ",
-    "description": ""
+    "description": "Button in the 'My rules' pane"
   },
   "rulesDefaultFileName": {
     "message": "मेरे-ublock-डायनामिक-नियम_{{datetime}}.txt",
@@ -617,11 +621,11 @@
   },
   "whitelistImport": {
     "message": "इम्पोर्ट करें और जोड़ें",
-    "description": "English: Import and append"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExport": {
     "message": "निर्यात करें",
-    "description": "English: Export"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExportFilename": {
     "message": "मेरे-उबलॉक-व्हाइटलिस्ट_{{datetime}}.txt",
@@ -951,6 +955,14 @@
     "message": "स्वयंसेवकों पर डुप्लीकेट रिपोर्ट का बोझ डालने से बचने के लिए, कृपया सत्यापित करें कि समस्या की रिपोर्ट पहले ही नहीं की गई है।",
     "description": "A paragraph in the filter issue reporter section"
   },
+  "supportS6P2S1": {
+    "message": "फ़िल्टर सूचियों को रोजाना अपडेट किया जाता है। सुनिश्चित करें कि आपकी समस्या का समाधान पहले से ही नवीनतम फ़िल्टर सूचियों में नहीं किया गया है।",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "सत्यापित करें कि समस्यात्मक वेबपेज को रीलोड करने के बाद समस्या अभी भी बनी हुई है।",
+    "description": "A paragraph in the filter issue reporter section"
+  },
   "supportS6URL": {
     "message": "वेब पेज का पता:",
     "description": "Label for the URL of the page"
@@ -1268,8 +1280,8 @@
     "description": "Summary of number of errors as reported by the linter "
   },
   "unprocessedRequestTooltip": {
-    "message": "Could not filter properly at browser launch.\nReload the page to ensure proper filtering.",
-    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
+    "message": "ब्राउज़र खोलने पर ठीक से फ़िल्टर नहीं कर सका। उचित फ़िल्टरिंग सुनिश्चित करने के लिए वेबपेज को रीलोड करें।",
+    "description": "A warning which will appear in the popup panel if needed"
   },
   "dummy": {
     "message": "This entry must be the last one",

@@ -64,6 +64,18 @@
         "https://*.letsblock.it/*"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "all_frames": false,
+      "js": [
+        "/js/scriptlets/updater.js"
+      ],
+      "matches": [
+        "https://github.com/uBlockOrigin/*",
+        "https://ublockorigin.github.io/*",
+        "https://*.reddit.com/r/uBlockOrigin/*"
+      ],
+      "run_at": "document_idle"
     }
   ],
   "content_security_policy": "script-src 'self'; object-src 'self'",
@@ -98,7 +110,7 @@
   "storage": {
     "managed_schema": "managed_storage.json"
   },
-  "version": "1.49.2",
+  "version": "1.54.0",
   "web_accessible_resources": [
     "/web_accessible_resources/*"
   ]

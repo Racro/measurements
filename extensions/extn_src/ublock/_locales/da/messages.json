@@ -352,7 +352,7 @@
     "description": ""
   },
   "settingsAdvancedUserPrompt": {
-    "message": "Jeg er en erfarne bruger",
+    "message": "Jeg er en erfaren bruger",
     "description": "Checkbox to let user access advanced, technical features"
   },
   "settingsPrefetchingDisabledPrompt": {
@@ -469,35 +469,35 @@
   },
   "3pGroupDefault": {
     "message": "Integreret",
-    "description": "Header for the uBlock filters section in 'Filter lists pane'"
+    "description": "Filter lists section name"
   },
   "3pGroupAds": {
     "message": "Annoncer",
-    "description": "English: Ads"
+    "description": "Filter lists section name"
   },
   "3pGroupPrivacy": {
     "message": "Privatliv",
-    "description": "English: Privacy"
+    "description": "Filter lists section name"
   },
   "3pGroupMalware": {
-    "message": "Malware-domæner",
-    "description": "English: Malware domains"
+    "message": "Malware-beskyttelse, sikkerhed",
+    "description": "Filter lists section name"
   },
   "3pGroupAnnoyances": {
     "message": "Gener",
-    "description": "The header identifying the filter lists in the category 'annoyances'"
+    "description": "Filter lists section name"
   },
   "3pGroupMultipurpose": {
     "message": "Universalfiltre",
-    "description": "English: Multipurpose"
+    "description": "Filter lists section name"
   },
   "3pGroupRegions": {
     "message": "Regioner, sprog",
-    "description": "English: Regions, languages"
+    "description": "Filter lists section name"
   },
   "3pGroupCustom": {
     "message": "Tilpasset",
-    "description": "English: Custom"
+    "description": "Filter lists section name"
   },
   "3pImport": {
     "message": "Importér...",
@@ -531,13 +531,17 @@
     "message": "Ét filter pr. linje. Et filter kan være et almindeligt værtsnavn eller et EasyList-kompatibelt filter. Linjer startende med <code>!</code> ignoreres.",
     "description": "Short information about how to create custom filters"
   },
+  "1pTrustWarning": {
+    "message": "Tilføj ikke filtre fra ikke-betroede kilder.",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
   "1pImport": {
     "message": "Importér og tilføj",
-    "description": "English: Import and append"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExport": {
     "message": "Eksportér",
-    "description": "English: Export"
+    "description": "Button in the 'My filters' pane"
   },
   "1pExportFilename": {
     "message": "mine-ublock-statiske-filtre_{{datetime}}.txt",
@@ -581,7 +585,7 @@
   },
   "rulesExport": {
     "message": "Eksportér til fil",
-    "description": ""
+    "description": "Button in the 'My rules' pane"
   },
   "rulesDefaultFileName": {
     "message": "mine-ublock-dynamiske-regler_{{datetime}}.txt",
@@ -617,11 +621,11 @@
   },
   "whitelistImport": {
     "message": "Importér og tilføj",
-    "description": "English: Import and append"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExport": {
     "message": "Eksportér",
-    "description": "English: Export"
+    "description": "Button in the 'Trusted sites' pane"
   },
   "whitelistExportFilename": {
     "message": "mine-ublock-betroede-websteder_{{datetime}}.txt",
@@ -951,6 +955,14 @@
     "message": "For at undgå at belaste frivillige med dubletanmeldelser, så tjek venligst, at problemet ikke allerede er anmeldt.",
     "description": "A paragraph in the filter issue reporter section"
   },
+  "supportS6P2S1": {
+    "message": "Filterlister opdateres dagligt. Sørg for, at problematikken ikke allerede er blevet behandlet i de seneste filterlister.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "Bekræft problematikkens fortsatte eksistens efter genindlæsning af den problematiske webside.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
   "supportS6URL": {
     "message": "Websideadressen",
     "description": "Label for the URL of the page"
@@ -1036,7 +1048,7 @@
     "description": "Shown in the About pane"
   },
   "aboutCDNsInfo": {
-    "message": "En tilfældigt valgt CDN vil blive brugt, når en filterliste kræver opdatering",
+    "message": "En tilfældigt valgt CDN anvendes, når en filterliste kræver opdatering.",
     "description": "Shown in the About pane"
   },
   "aboutBackupDataButton": {
@@ -1268,8 +1280,8 @@
     "description": "Summary of number of errors as reported by the linter "
   },
   "unprocessedRequestTooltip": {
-    "message": "Kunne ikke filtrere korrekt ved browserstart.\nGenindlæs siden for at sikre korrekt filtrering",
-    "description": "Tooltip for the toolbar icon. Use newline character(s) where appropriate to prevent tooltip from being too long horizontally"
+    "message": "Kunne ikke filtrere korrekt ved webbrowserstart. Genindlæs siden for at sikre korrekt filtrering.",
+    "description": "A warning which will appear in the popup panel if needed"
   },
   "dummy": {
     "message": "Denne post skal være den sidste",

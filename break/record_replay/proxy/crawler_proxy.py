@@ -59,14 +59,14 @@ def main(num_tries, args_lst, proxy):
     # Start X
     data_usage = {}
     contacted_urls = []
-    vdisplay = Display(visible=False, size=(1920, 1080))
-    vdisplay.start()
+    # vdisplay = Display(visible=False, size=(1920, 1080))
+    # vdisplay.start()
 
     # Initialize Selenium
     options = Options()
     # options.add_argument('headless=new')
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument("--proxy-server={0}".format(proxy.proxy))
+    # options.add_argument('--ignore-certificate-errors')
+    # options.add_argument("--proxy-server={0}".format(proxy.proxy))
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
@@ -76,9 +76,10 @@ def main(num_tries, args_lst, proxy):
     options.add_argument("--disable-web-security")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
-    # options.add_argument("auto-open-devtools-for-tabs")
-    options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36") 
-    options.add_extension("/home/ritik/work/pes/measurements/extensions/extn_crx/ublock.crx")
+    options.add_argument("auto-open-devtools-for-tabs")
+    options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
+
+    options.add_extension("/home/ritik/work/pes/measurements/extensions/extn_crx/adblock.crx")
     options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
     # options.binary_location = "/usr/bin/google-chrome"
     # options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
@@ -92,15 +93,32 @@ def main(num_tries, args_lst, proxy):
         try:
             # Launch Chrome and install our extension for getting HARs
             driver = webdriver.Chrome(service=service, options=options)
+            # time.sleep(5)
+
+            # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
+            # element.click()
+
+            # time.sleep(2)
+
             driver.set_page_load_timeout(args_lst[1])
+            time.sleep(2)
+
+            # driver.get('chrome-extension://mlomiejdfkolichcflejclcbmpeaniij/app/templates/onboarding.html')
+            # time.sleep(12)
+
+            # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
+            # element.click()
+
             time.sleep(5)
-            
+
             # Create a new HAR with the following options
-            proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
+            # proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
 
             # Use Selenium to navigate to a webpage
             # valid = 0
             # i += 1
+            website = args_lst[0]
+
             print(website)
             driver.get(website)
             wait_until_loaded(driver, args_lst[1])
@@ -141,7 +159,7 @@ def main(num_tries, args_lst, proxy):
         driver.quit()
         time.sleep(2)
     
-    vdisplay.stop()
+    # vdisplay.stop()
     return data_usage
 
 if __name__ == '__main__':
@@ -160,7 +178,8 @@ if __name__ == '__main__':
     websites = []
     for key in website_dict:
         websites.append(website_dict[key][0])
-    websites = websites[:100]
+    # websites = websites[:100]
+    websites = ['https://www.forbes.com']
 
     print(f'data --- {websites}')
 
@@ -171,6 +190,7 @@ if __name__ == '__main__':
 
     data_dict = {}
     # extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
+    extensions_path = pathlib.Path("/home/ritik/work/pes/extensions/extn_crx")
 
     extension = 0    
     if extension:
@@ -196,13 +216,13 @@ if __name__ == '__main__':
     else:
         for website in websites:
             try:
-                fname = './ublock/' + website.split('//')[1].split('/')[0]
+                fname = './data/' + website.split('//')[1].split('/')[0]
                 extn = fname
                 args_lst = [website, args.timeout]
                 new_args = args_lst
                 new_args.append("")
 
-                ret = main(5, new_args, proxy)
+                ret = main(1, new_args, proxy)
                 data_dict[fname] = ret
                 with open(fname, 'w') as f:
                     json.dump(ret, f)
