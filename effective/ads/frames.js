@@ -42,7 +42,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         // headless: "new",
         // ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
         args: p_args,
-        executablePath: '/home/ritik/work/pes/chrome_113/chrome' 
+        executablePath: './../../../chrome_113/chrome' 
         // executablePath: '/snap/bin/chromium' 
     });
 
