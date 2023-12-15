@@ -32,8 +32,6 @@ options.add_argument("--disable-web-animations")
 # options.add_argument("--incognito")
 # options.add_argument("--single-process")
 options.add_argument("--disable-gpu")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-web-security")
 options.add_argument("--disable-features=IsolateOrigins,site-per-process")
 options.add_argument("--disable-features=AudioServiceOutOfProcess")
 # options.add_argument("auto-open-devtools-for-tabs")
@@ -46,13 +44,14 @@ options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537
 
 #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
 # options.add_extension(f'/home/ritik/work/pes/extensions/extn_crx/Consent-O-Matic.crx')
-options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/ublock.crx')
+# options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/adblock.crx')
 options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
 # service = Service(executable_path='/usr/local/bin/chromedriver')
 
 sites = [
+    'https://www.mrdonn.org'
     # 'https://www.forbes.com'
-          'https://www.geeksforgeeks.org/data-structures/?ref=shm_outind'
+    # 'https://www.geeksforgeeks.org/data-structures/?ref=shm_outind'
     #      'https://www.wayfair.com'
     #      , 'https://www.godaddy.com', 
         #  'https://www.groupon.com',
@@ -61,35 +60,38 @@ sites = [
         # 'https://www.wayfair.com',
         # 'https://www.wayfair.com',
         # 'https://www.wayfair.com'
-        ]
+]
 
 for site in sites:
     driver = webdriver.Chrome(options=options)
-    time.sleep(10)
+    # time.sleep(15)
     driver.get(site)
     wait_until_loaded(driver)
-    time.sleep(2)
+    time.sleep(5)
+    driver.get(site)
+
     
-    close_button = []
-    close_anchor = []
-    # Find the close button (this uses a common convention of 'x' or 'close' text)
-    try:
-        close_button = driver.find_elements(By.XPATH, "//button[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
-        close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
-    except Exception as e:
-        print(close_button, close_anchor)
-        print(1, e)
+        
+    # close_button = []
+    # close_anchor = []
+    # # Find the close button (this uses a common convention of 'x' or 'close' text)
+    # try:
+    #     close_button = driver.find_elements(By.XPATH, "//button[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
+    #     close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
+    # except Exception as e:
+    #     print(close_button, close_anchor)
+    #     print(1, e)
 
-    close_button.extend(close_anchor)
-    if len(close_button) > 0:
-        for i in close_button:
-            try:
-                print(i.text)
-                # i.click()
+    # close_button.extend(close_anchor)
+    # if len(close_button) > 0:
+    #     for i in close_button:
+    #         try:
+    #             print(i.text)
+    #             # i.click()
 
-            except Exception as e:
-                print(i)
-                print(2, e)
+    #         except Exception as e:
+    #             print(i)
+    #             print(2, e)
     
     
     # alert = ''

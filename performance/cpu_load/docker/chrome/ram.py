@@ -15,6 +15,7 @@ from datetime import datetime
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
 def is_loaded(webdriver):
     return webdriver.execute_script("return document.readyState") == "complete"
@@ -57,7 +58,6 @@ def main(number_of_tries):
     # options.add_argument("--headless=new")
     options.add_argument("no-sandbox")
     options.add_argument("--disable-gpu")
-    options.add_argument("auto-open-devtools-for-tabs")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
     options.binary_location = "/usr/bin/google-chrome"
@@ -78,8 +78,23 @@ def main(number_of_tries):
     driver = webdriver.Chrome(options=options)
     driver.set_page_load_timeout(args.timeout)
 
-    # We need to wait for everything to open up properly
-    time.sleep(args.extensions_wait)
+    time.sleep(2) # wait for extension to load
+    if extn == 'adblock':
+        time.sleep(15)
+    elif extn == 'ghostery':
+        windows = driver.window_handles
+        for window in windows:
+            try:
+                driver.switch_to.window(window)
+                url_start = driver.current_url[:16]
+                if url_start == 'chrome-extension':
+                    element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                    element.click()
+                    time.sleep(2)
+                    break
+            except Exception as e:
+                continue
+
     stat_data = {}
     try:
         # started = datetime.now()

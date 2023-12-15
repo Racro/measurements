@@ -29,14 +29,9 @@ extensions_configurations = [
     "decentraleyes",
     "disconnect",
     "ghostery",
-    "https",
-    "noscript",
     "privacy-badger",
     "ublock",
-    "scriptsafe",
-    "canvas-antifp",
     "adguard",
-    "user-agent"  
     # Combinations
 #    "decentraleyes,privacy_badger,ublock_origin"
 ]
@@ -72,8 +67,6 @@ def main(num_tries, args_lst, proxy):
     options.add_argument("--disable-web-animations")
     # options.add_argument("--single-process")
     options.add_argument("--disable-gpu")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-web-security")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
     # options.add_argument("auto-open-devtools-for-tabs")
@@ -82,7 +75,9 @@ def main(num_tries, args_lst, proxy):
     options.binary_location = "/usr/local/bin/chrome_113/chrome"
     # options.binary_location = "/usr/bin/google-chrome"
     # options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
+    extn = ''
     if args_lst[-1] != "":
+        extn = args_lst[-2]
         options.add_extension(args_lst[-1])
 
     # Initialize service
@@ -92,7 +87,24 @@ def main(num_tries, args_lst, proxy):
         # Launch Chrome and install our extension for getting HARs
         driver = webdriver.Chrome(service=service, options=options)
         driver.set_page_load_timeout(args_lst[1])
-        time.sleep(2)
+
+        # extension load
+        time.sleep(2) # wait for extension to load
+        if extn == 'adblock':
+            time.sleep(15)
+        elif extn == 'ghostery':
+            windows = driver.window_handles
+            for window in windows:
+                try:
+                    driver.switch_to.window(window)
+                    url_start = driver.current_url[:16]
+                    if url_start == 'chrome-extension':
+                        element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                        element.click()
+                        time.sleep(2)
+                        break
+                except Exception as e:
+                    continue
         
         try:
             # Create a new HAR with the following options
@@ -158,12 +170,13 @@ if __name__ == '__main__':
     parser.add_argument('--timeout', type=int, default=60)
     # parser.add_argument('--extensions')
     parser.add_argument('--extensions-wait', type=int, default=10)
+    parser.add_argument('--extension', type=str)
     args = parser.parse_args()
 
     websites = ast.literal_eval(args.website)
     print(f'data --- {websites}')
-    fname = '/data/' + websites[0].split('//')[1]
-    extn = fname
+    fname = './data/' + websites[0].split('//')[1]
+    extn = args.extension
     args_lst = [websites, args.timeout]
 
     # calibrate
@@ -171,7 +184,8 @@ if __name__ == '__main__':
     #     main(3, 1, args_lst)
 
     data_dict = {}
-    extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
+    # extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
+    extensions_path = pathlib.Path("~/pes/measurements/extensions/extn_crx")
     
     # Initialize BrowserMob Proxy
     # server = Server("/home/ritik/work/pes/browsermob-proxy/bin/browsermob-proxy")
@@ -179,24 +193,23 @@ if __name__ == '__main__':
     server.start()
     proxy = server.create_proxy()
     
-    for extn in extensions_configurations:
-        new_args = args_lst
-        new_args.append(extn)
-        if extn != "":
-            for extension in args_lst[-1].split(","):
-                matches = list(extensions_path.glob("{}*.crx".format(extension)))
-                if matches and len(matches) == 1:
-                    new_args.append(str(matches[0]))
-                    # options.add_extension(str(matches[0]))
-                    # extn = extension
-                else:
-                    print(f"{args_lst[-1]} - Extension not found", file=sys.stderr)
-                    sys.exit(1)
-        ret, contacted_urls = main(3, new_args, proxy)
-        if extn == "":
-            data_dict[fname] = [ret, contacted_urls]
-        else:
-            data_dict[extn] = [ret, contacted_urls]
+    new_args = args_lst
+    new_args.append(extn)
+    if extn != "":
+        for extension in args_lst[-1].split(","):
+            matches = list(extensions_path.glob("{}*.crx".format(extension)))
+            if matches and len(matches) == 1:
+                new_args.append(str(matches[0]))
+                # options.add_extension(str(matches[0]))
+                # extn = extension
+            else:
+                print(f"{args_lst[-1]} - Extension not found", file=sys.stderr)
+                sys.exit(1)
+    ret, contacted_urls = main(3, new_args, proxy)
+    if extn == "":
+        data_dict[fname] = [ret, contacted_urls]
+    else:
+        data_dict[extn] = [ret, contacted_urls]
     
     with open(fname, 'w') as f:
         json.dump(data_dict, f)

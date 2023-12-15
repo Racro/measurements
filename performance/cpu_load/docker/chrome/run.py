@@ -17,6 +17,7 @@ import stats
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 
 extensions_configurations = [
     # No extensions
@@ -26,14 +27,9 @@ extensions_configurations = [
     "decentraleyes",
     "disconnect",
     "ghostery",
-    "https",
-    "noscript",
     "privacy-badger",
     "ublock",
-    "scriptsafe",
-    "canvas-antifp",
     "adguard",
-    "user-agent"  
     # Combinations
 #    "decentraleyes,privacy_badger,ublock_origin"
 ]
@@ -80,10 +76,8 @@ def main(number_of_tries, flag, args_lst):
     # options.add_argument("--single-process")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-web-security")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
-    options.add_argument("auto-open-devtools-for-tabs")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
     options.binary_location = "/usr/bin/google-chrome"
@@ -131,7 +125,23 @@ def main(number_of_tries, flag, args_lst):
         #perf = perfevents.PerfEvents(args.timeout)
         stat = stats.Stats(args_lst[1]+10, fname, args_lst[2])
         # We need to wait for everything to open up properly
-        time.sleep(10)
+
+        time.sleep(2) # wait for extension to load
+        if extn == 'adblock':
+            time.sleep(15)
+        elif extn == 'ghostery':
+            windows = driver.window_handles
+            for window in windows:
+                try:
+                    driver.switch_to.window(window)
+                    url_start = driver.current_url[:16]
+                    if url_start == 'chrome-extension':
+                        element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                        element.click()
+                        time.sleep(2)
+                        break
+                except Exception as e:
+                    continue
 
         try:
             # Make a page load
