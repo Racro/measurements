@@ -48,7 +48,7 @@ def run(sites, extn, return_dict, l):
     
     frames = []
     docs = []
-    for i in range(1):
+    for i in range(3):
         try:
             cmd = ["node", "frames.js", input_str, extn, fname]
             process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, timeout = 180)
@@ -147,14 +147,14 @@ if __name__ == "__main__":
                 for val in return_dict[extn][site]:
                     result_dict[extn][site].append(val)
 
-            f = open('frames_2.json', 'w')
+            f = open('frames_3.json', 'w')
             json.dump(result_dict, f)
             f.close()
 
     except KeyboardInterrupt:
         print('Interrupted')
 
-        f = open('frames_2.json', 'w')
+        f = open('frames_3.json', 'w')
         json.dump(result_dict, f)
         f.close()
 
@@ -166,6 +166,6 @@ if __name__ == "__main__":
     except Exception:
         print('Interrupted')
 
-        f = open('frames_2.json', 'w')
+        f = open('frames_3.json', 'w')
         json.dump(result_dict, f)
         f.close()
