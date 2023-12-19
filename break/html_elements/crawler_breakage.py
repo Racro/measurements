@@ -9,6 +9,15 @@ import time
 import multiprocessing
 import json
 import argparse
+import os
+import subprocess
+from pyvirtualdisplay import Display
+import sys
+
+def divide_chunks(l, n):
+    # looping till length l
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
 
 def is_loaded(webdriver):
     return webdriver.execute_script("return document.readyState") == "complete"
@@ -33,7 +42,7 @@ def remove_popup(driver):
         close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
     except Exception as e:
         # print(close_button, close_anchor)
-        print(1, e)
+        print('popup', 1, e)
 
     close_button.extend(close_anchor)
     if len(close_button) > 0:
@@ -44,7 +53,7 @@ def remove_popup(driver):
 
             except Exception as e:
                 print(i.text)
-                print(2, e)
+                print('popup', 2, e)
 
 # could possibly make the driver stale. plz check!
 def remove_alert(driver):
@@ -54,7 +63,7 @@ def remove_alert(driver):
         # Wait for the alert to be present
         WebDriverWait(driver, 10).until(EC.alert_is_present())
     except Exception as e:
-        print("No alert present.", e)
+        print("No alert present.", 1, e)
 
     # Wait for the modal to be visible
     try: 
@@ -62,8 +71,7 @@ def remove_alert(driver):
             EC.visibility_of_element_located((By.XPATH, "//*[contains(@class, 'modal') and contains(@role, 'dialog')]"))
         )
     except Exception as e:
-        print(e)
-        print('modal element not found')
+        print('modal element not found', 2, e)
 
     if alert:
         try:
@@ -77,29 +85,33 @@ def remove_alert(driver):
 
             # If you need to dismiss the alert (clicks "Cancel"), use: alert.dismiss()
         except Exception as e:
-            print(e)
-            print("couldn't switch to alert")
+            print("couldn't switch to alert", 3, e)
 
 def remove_cmp_banner(options):
-    options.add_extension(options.add_extension(f'/home/ritik/work/pes/extensions/extn_crx/Consent-O-Matic.crx'))
+    options.add_extension(f'/home/ritik/work/pes/extensions/extn_crx/Consent-O-Matic.crx')
     return options
         
 # this removes captcha and brings determinism
 def use_catapult(options, fname):
-    options.add_argument(f"--user-data-dir=/home/ritik/wpr_data_{fname}")
+    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}"
+    if not os.path.exists(folder_path):
+    # Create the folder
+        os.makedirs(folder_path)
+
+    options.add_argument(folder_path)
     options.add_argument('--host-resolver-rules="MAP *:80 127.0.0.1:9090,MAP *:443 127.0.0.1:9091,EXCLUDE localhost')
     options.add_argument('--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=')
     return options
 
         
 extn_lst = [
-     'control', 'adblock', 'ublock', 'privacy-badger',
-        "decentraleyes",
-        "disconnect",
-        "ghostery",
-        "adguard"]
+     'control'
+    #  , 'adblock', 'ublock', 'privacy-badger',
+    #     "ghostery",
+    #     "adguard"
+    ]
 
-SIZE = 15 # number of browser windows that will open
+SIZE = 10 # number of browser windows that will open
 
 def run(site, extn, return_dict, l, replay):
     # Prepare Chrome
@@ -118,8 +130,11 @@ def run(site, extn, return_dict, l, replay):
     options = use_catapult(options, extn)
 
     if extn != 'control':
-        options.add_extension(f'/home/ritik/work/pes/extensions/extn_crx/{extn}.crx')
-            
+        options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
+
+    vdisplay = Display(visible=False, size=(1920, 1080))
+    vdisplay.start()
+
     driver = webdriver.Chrome(options=options)
     time.sleep(2) # wait for extension to load
 
@@ -137,19 +152,40 @@ def run(site, extn, return_dict, l, replay):
                     time.sleep(2)
                     break
             except Exception as e:
-                continue
+                print('ghostery', 1, e)
+                return
 
     driver.get(site)
     wait_until_loaded(driver)
     time.sleep(2)
-        
+
     remove_popup(driver)
     remove_alert(driver) # optional
 
-    if replay:
-            
-        breakages = [] # list of breakages found
+    curr_scroll_position = -1
+    curr_time = time.time()
+    while True:
+        # Define the scroll step size
+        scroll_step = 50  # Adjust this value to control the scroll speed
+        # Get the current scroll position
+        scroll_position = driver.execute_script("return window.pageYOffset;")
+        # Check if we've reached the bottom
+        if curr_scroll_position == scroll_position:
+            break
+        else:
+            curr_scroll_position = scroll_position
+
+        # Scroll down by the step size
+        driver.execute_script(f"window.scrollBy(0, {scroll_step});")
         
+        # Wait for a bit (this controls the scroll speed indirectly)
+        time.sleep(0.1)  # Adjust this value to control the scroll speed
+        if time.time() - curr_time >= 45:
+            break
+
+    if replay:
+        breakages = [] # list of breakages found
+
         # function to test breakages
         
         
@@ -162,14 +198,20 @@ def run(site, extn, return_dict, l, replay):
             print(e)
             l.release()
 
+    driver.quit()
+    vdisplay.stop()
+
 if __name__ == "__main__":
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--replay', type=int, default=1)
+    parser.add_argument('--replay', type=int)
+    if len(sys.argv) < 2:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
     args = parser.parse_args()
                   
     try:
-        with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
+        with open("../../break/adblock_detect/inner_pages_custom_break.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
 
@@ -177,6 +219,10 @@ if __name__ == "__main__":
         websites = []
         for key in updated_dict:
             websites.append(updated_dict[key][0])
+        
+        # websites = websites[4:5]
+        # for i in range(len(websites)):
+        #     websites[i] = 'https://' + websites[i].split('://')[1]
         # sites = [
         # # 'https://www.forbes.com'
         #     'https://www.spirit.com'
@@ -193,14 +239,68 @@ if __name__ == "__main__":
 
         # deciding on the number of workers
         # latest_list = list(updated_dict.keys())
-        print(len(websites))
+        print(len(websites), websites)
+
         chunks_list = list(divide_chunks(websites, SIZE))
         
         # multiprocess
         manager = multiprocessing.Manager()
         return_dict = manager.dict()
         result_dict = {}
-        for extn in extn_lst:       
+        for extn in extn_lst:
+            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            if not os.path.exists(folder_path):
+            # Create the folder
+                os.makedirs(folder_path)
+
+            original_directory = os.getcwd()
+            target_directory = '/home/ritik/go/src/github.com/catapult-project/catapult/web_page_replay_go/'
+
+            # Change to the target directory
+            os.chdir(target_directory)
+
+            if args.replay == 0:
+                try:
+                    cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port=9090', '--https_port=9091', f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}.wprgo']
+
+                    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, timeout = 180)
+
+                except subprocess.TimeoutExpired as t:
+                    print(f'Timeout for site: {site} {extn}')
+                    sys.exit(0)
+                except subprocess.CalledProcessError as e:
+                    print(f'Error for site: {site} {extn}')
+                    sys.exit(0)
+
+                except Exception as e:
+                    print(e)
+                    sys.exit(0)
+
+            elif args.replay == 1:
+                try:
+                    cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port=9090', '--https_port=9091', f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}.wprgo']
+
+                    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)#, timeout = 180)
+
+                except subprocess.TimeoutExpired as t:
+                    print(f'Timeout for site: {site} {extn}')
+                    sys.exit(0)
+                except subprocess.CalledProcessError as e:
+                    print(f'Error for site: {site} {extn}')
+                    sys.exit(0)
+
+                except Exception as e:
+                    print(e)
+                    sys.exit(0)
+            
+            else:
+                print('Proceeding with no record-replay')
+
+
+            os.chdir(original_directory)
+            
+            time.sleep(5) # wait for proxy to start
+
             return_dict[extn] = manager.dict()
             result_dict[extn] = {}
             for i in range(len(chunks_list)):
@@ -225,8 +325,11 @@ if __name__ == "__main__":
                 json.dump(result_dict, f)
                 f.close()
 
+            # process.terminate()
+            time.sleep(2) # time for port to be available again
+
     except KeyboardInterrupt:
-        print('Interrupted')
+        print('KeyboardInterrupt', 'Interrupted')
 
         if args.replay:
             f = open('html_breakages.json', 'w')
@@ -234,6 +337,7 @@ if __name__ == "__main__":
             f.close()
 
         try:
+            # process.terminate()
             sys.exit(130)
         except SystemExit:
             os._exit(130)
@@ -245,3 +349,9 @@ if __name__ == "__main__":
             f = open('html_breakages.json', 'w')
             json.dump(result_dict, f)
             f.close()
+
+        try:
+            # process.terminate()
+            sys.exit(130)
+        except SystemExit:
+            os._exit(130)
