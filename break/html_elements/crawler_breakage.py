@@ -13,6 +13,7 @@ import os
 import subprocess
 from pyvirtualdisplay import Display
 import sys
+import random
 
 def divide_chunks(l, n):
     # looping till length l
@@ -97,7 +98,8 @@ def use_catapult(options, fname):
     if not os.path.exists(folder_path):
     # Create the folder
         os.makedirs(folder_path)
-
+        
+    options.add_argument('--ignore-certificate-errors')
     options.add_argument(folder_path)
     options.add_argument('--host-resolver-rules="MAP *:80 127.0.0.1:9090,MAP *:443 127.0.0.1:9091,EXCLUDE localhost')
     options.add_argument('--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=')
@@ -111,7 +113,7 @@ extn_lst = [
     #     "adguard"
     ]
 
-SIZE = 10 # number of browser windows that will open
+SIZE = 15 # number of browser windows that will open
 
 def run(site, extn, return_dict, l, replay):
     # Prepare Chrome
@@ -132,7 +134,7 @@ def run(site, extn, return_dict, l, replay):
     if extn != 'control':
         options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
 
-    vdisplay = Display(visible=False, size=(1920, 1080))
+    vdisplay = Display(visible=False, size=(1920, 1280))
     vdisplay.start()
 
     driver = webdriver.Chrome(options=options)
@@ -188,7 +190,6 @@ def run(site, extn, return_dict, l, replay):
 
         # function to test breakages
         
-        
         try:
             l.acquire()
             # print(fname)
@@ -220,7 +221,12 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        # websites = websites[4:5]
+        websites = random.sample(websites, 150)
+        with open('manual_analysis.txt', 'w') as f:
+            for site in websites:
+                f.write(site)
+                f.write('\n')
+        f.close()
         # for i in range(len(websites)):
         #     websites[i] = 'https://' + websites[i].split('://')[1]
         # sites = [
