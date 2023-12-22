@@ -123,7 +123,9 @@ if __name__ == "__main__":
         parser.print_help(sys.stderr)
         sys.exit(1)
     args = parser.parse_args()
-                  
+
+    # processes = []
+
     try:
         with open("../../break/adblock_detect/inner_pages_custom_break.json", "r") as f:
             updated_dict = json.load(f)
@@ -134,9 +136,10 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 200)
+        websites = random.sample(websites, 10)
         
-        num_servers = math.ceil(websites/100)
+        num_servers = math.ceil(len(websites)/100)
+        print(num_servers)
 
         website_dict = {}
         for i in range(num_servers):
@@ -180,9 +183,11 @@ if __name__ == "__main__":
             result_dict[extn] = {}
             
             num_chunks = len(chunks_list)
-            i = 0
             for i in range(num_chunks):
-                chunks_list[i] = divide_chunks(chunks_list[i], 10)
+                chunks_list[i] = list(divide_chunks(chunks_list[i], 10))
+            
+            print(chunks_list)
+            i = 0
             while i < num_chunks:
                 processes = start_servers(args.replay, i, extn)
 
@@ -208,15 +213,23 @@ if __name__ == "__main__":
                 i = i+2
                 time.sleep(2)
                 
-                print(f"Closing opened servers with ports: {port+2*i} {port+2*(i+1)}")
-                
-                for process in processes:
-                    print(process)
-                    os.kill(process.pid, signal.SIGINT)
-                    # process.wait()
+                print(f"Closing opened servers with ports: {port+2*(i-2)} {port+2*(i-1)}")
+
+                try:
+                    pid1 = get_pid_by_port(port+2*(i-2))
+                    pid2 = get_pid_by_port(port+2*(i-1))
+                    print(pid1, pid2)
+                    
+                    os.kill(int(pid1), signal.SIGINT)
                     time.sleep(2)
 
+                    os.kill(int(pid2), signal.SIGINT)
+                    time.sleep(2)
 
+                except ProcessLookupError:
+                    print(f"No process with PID {pid1} found.")
+                except PermissionError:
+                    print(f"Permission denied to send signal to process {pid1}.")
                 
             if args.replay:                
                 for site in websites:
@@ -239,14 +252,28 @@ if __name__ == "__main__":
             json.dump(result_dict, f)
             f.close()
 
+        print(f"Closing any open servers")
+        # for process in processes:
+        #     print(process)
+        #     os.kill(process.pid, signal.SIGINT)
+        #     # process.wait()
+        #     time.sleep(2)
+
         try:
             # process.terminate()
             sys.exit(130)
         except SystemExit:
             os._exit(130)
 
-    except Exception:
-        print('Interrupted')
+    except Exception as e:
+        print('Interrupted', e)
+
+        print(f"Closing any open servers")
+        # for process in processes:
+        #     print(process)
+        #     os.kill(process.pid, signal.SIGINT)
+        #     # process.wait()
+        #     time.sleep(2)
 
         if args.replay:
             f = open('html_breakages.json', 'w')

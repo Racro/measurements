@@ -1,3 +1,22 @@
+import os
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoAlertPresentException
+
+import time 
+import multiprocessing
+import json
+import argparse
+import os
+import subprocess
+from pyvirtualdisplay import Display
+import sys
+import random
+import math
+import signal
+
 def check_port(port):
     try:
         # Run netstat command and grep the port
@@ -110,23 +129,23 @@ def start_servers(replay, index, extn):
         os.makedirs(folder_path)
 
     original_directory = os.getcwd()
-    target_directory = '/home/ritik/go/src/github.com/catapult-project/catapult/web_page_replay_go/'
+    target_directory = '/home/ritik/go/src/catapult/web_page_replay_go/'
 
     # Change to the target directory
     os.chdir(target_directory)
-    
+
     for i in range(2):
         temp_port1 = port + 2*(index + i)
-        temp_port2 = port + 2*(index + i + 1)
-
+        temp_port2 = port + 2*(index + i) + 1
+        print(f'starting servers with ports: {temp_port1} {temp_port2}')
         try:
-            print(f'starting servers with ports: {temp_port1} {temp_port2}')
             if replay:
                 cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/control_{index+i}.wprgo']
             else:
                 cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/control_{index+i}.wprgo']
 
             process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            print('functions.py', process, process.pid)
             processes.append(process)
             # os.system(" ".join(cmd))
             while True:
@@ -139,13 +158,29 @@ def start_servers(replay, index, extn):
 
         except subprocess.TimeoutExpired as t:
             print(f'Timeout for num_server: {num_server}')
-            sys.exit(0)
+            sys.exit(1)
         except subprocess.CalledProcessError as e:
             print(f'Error for num_server: {num_server}')
-            sys.exit(0)
+            sys.exit(1)
 
         except Exception as e:
             print(e)
-            sys.exit(0)
+            sys.exit(1)
+
+    os.chdir(original_directory)
     
     return processes
+
+def get_pid_by_port(port):
+    try:
+        output = subprocess.check_output(['lsof', '-i', f'tcp:{port}']).decode()
+    except subprocess.CalledProcessError as e:
+        print("Error:", e.output.decode())
+        return None
+
+    for line in output.splitlines():
+        if "LISTEN" in line:
+            parts = line.split()
+            return parts[1]  # PID is typically in the second column
+
+    return None
