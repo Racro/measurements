@@ -89,12 +89,12 @@ def remove_alert(driver):
             print("couldn't switch to alert", 3, e)
 
 def remove_cmp_banner(options):
-    options.add_extension(f'/home/ritik/work/pes/extensions/extn_crx/Consent-O-Matic.crx')
+    options.add_extension(f'/home/ritik/pes/measurements/extensions/extn_crx/Consent-O-Matic.crx')
     return options
         
 # this removes captcha and brings determinism
 def use_catapult(options, fname):
-    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}"
+    folder_path = f"/home/ritik/pes/measurements/break/html_elements/wpr_data/{fname}"
     if not os.path.exists(folder_path):
     # Create the folder
         os.makedirs(folder_path)
@@ -126,13 +126,13 @@ def run(site, extn, return_dict, l, replay):
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
-    options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
+    options.binary_location = "/home/ritik/pes/chrome_113/chrome"
             
     options = remove_cmp_banner(options)
     options = use_catapult(options, extn)
 
     if extn != 'control':
-        options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
+        options.add_extension(f'/home/ritik/pes/measurements/extensions/extn_crx/{extn}.crx')
 
     vdisplay = Display(visible=False, size=(1920, 1280))
     vdisplay.start()
@@ -202,6 +202,7 @@ def run(site, extn, return_dict, l, replay):
     driver.quit()
     vdisplay.stop()
 
+SIZE = 1
 if __name__ == "__main__":
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
@@ -221,7 +222,7 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 150)
+        websites = random.sample(websites, 10)
         with open('manual_analysis.txt', 'w') as f:
             for site in websites:
                 f.write(site)
@@ -254,13 +255,13 @@ if __name__ == "__main__":
         return_dict = manager.dict()
         result_dict = {}
         for extn in extn_lst:
-            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            folder_path = f'/home/ritik/pes/measurements/break/html_elements/wpr_data/{extn}'
             if not os.path.exists(folder_path):
             # Create the folder
                 os.makedirs(folder_path)
 
             original_directory = os.getcwd()
-            target_directory = '/home/ritik/go/src/github.com/catapult-project/catapult/web_page_replay_go/'
+            target_directory = '/home/ritik/go/src/catapult/web_page_replay_go/'
 
             # Change to the target directory
             os.chdir(target_directory)
@@ -284,7 +285,7 @@ if __name__ == "__main__":
 
             elif args.replay == 1:
                 try:
-                    cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port=9090', '--https_port=9091', f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}.wprgo']
+                    cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port=9090', '--https_port=9091', f'/home/ritik/pes/measurements/break/html_elements/archive/{extn}.wprgo']
 
                     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)#, timeout = 180)
 

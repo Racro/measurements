@@ -22,7 +22,7 @@ from threading import Timer
 import os
 
 extn_lst = [
-     'control', 
+     '', 
      'adblock', 
      'ublock'
      , 'privacy-badger',
@@ -41,7 +41,7 @@ def run(sites, extn, return_dict, l):
 
     for i in range(3):
         try:
-            cmd = ["python3", "chrome/data.py", "--extension", extn, sites]
+            cmd = ["python3", "chrome/data.py", "--extension", extn, str(sites)]
             process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, timeout = 180)
 
         except subprocess.TimeoutExpired as t:
@@ -67,7 +67,7 @@ def run(sites, extn, return_dict, l):
 
 if __name__ == "__main__":
     try:
-        with open("../../break/adblock_detect/inner_pages_custom.json", "r") as f:
+        with open("../../../break/adblock_detect/inner_pages_custom.json", "r") as f:
             updated_dict = json.load(f)
         f.close()
         # with open("../../adblock_detect/failed_sites.txt", "r") as f:
@@ -125,5 +125,6 @@ if __name__ == "__main__":
         except SystemExit:
             os._exit(130)
 
-    except Exception:
+    except Exception as e:
+        print(e)
         print('Interrupted')
