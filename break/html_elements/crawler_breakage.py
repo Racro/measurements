@@ -42,7 +42,7 @@ def run(site, extn, return_dict, l, replay, temp_port1):
     options = use_catapult(options, extn, temp_port1)
 
     if extn != 'control':
-        options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
+        options.add_extension(f'/home/ritik/pes/measurements/extensions/extn_crx/{extn}.crx')
 
     vdisplay = Display(visible=False, size=(1920, 1280))
     vdisplay.start()
@@ -171,7 +171,7 @@ if __name__ == "__main__":
         return_dict = manager.dict()
         result_dict = {}
         for extn in extn_lst:
-            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            folder_path = f'/home/ritik/pes/measurements/break/html_elements/wpr_data/{extn}'
             if not os.path.exists(folder_path):
             # Create the folder
                 os.makedirs(folder_path)

@@ -1,1 +1,0 @@
-{"/data/www.addthis.com": [[], []], "adblock": [[], []], "decentraleyes": [[], []], "disconnect": [[], []], "ghostery": [[], []], "https": [[22.48], ["www.addthis.com", "clients2.google.com"]], "noscript": [[], []], "privacy-badger": [[], []], "ublock": [[], []], "scriptsafe": [[0.0, 0.0, 0.0], []], "canvas-antifp": [[], []], "adguard": [[], []], "user-agent": [[], []]}

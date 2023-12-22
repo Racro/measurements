@@ -72,7 +72,7 @@ def main(num_tries, args_lst, proxy):
     # options.add_argument("auto-open-devtools-for-tabs")
     options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36") 
     #options.add_extension("/home/seluser/measure/harexporttrigger-0.6.3.crx")
-    options.binary_location = "/usr/local/bin/chrome_113/chrome"
+    options.binary_location = "/home/ritik/pes/chrome_113/chrome"
     # options.binary_location = "/usr/bin/google-chrome"
     # options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
     extn = ''
@@ -114,7 +114,7 @@ def main(num_tries, args_lst, proxy):
             valid = 0
             for website in args_lst[0]:
                 # i += 1
-                print(website)
+                # print(website)
                 driver.get(website)
                 wait_until_loaded(driver, args_lst[1])
 
@@ -175,7 +175,7 @@ if __name__ == '__main__':
 
     websites = ast.literal_eval(args.website)
     print(f'data --- {websites}')
-    fname = './data/' + websites[0].split('//')[1]
+    fname = './chrome/data/' + websites[0].split('//')[1]
     extn = args.extension
     args_lst = [websites, args.timeout]
 
@@ -185,11 +185,11 @@ if __name__ == '__main__':
 
     data_dict = {}
     # extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
-    extensions_path = pathlib.Path("~/pes/measurements/extensions/extn_crx")
+    extensions_path = pathlib.Path("/home/ritik/pes/measurements/extensions/extn_crx")
     
     # Initialize BrowserMob Proxy
     # server = Server("/home/ritik/work/pes/browsermob-proxy/bin/browsermob-proxy")
-    server = Server("/usr/local/bin/browsermob-proxy-2.1.4/bin/browsermob-proxy")
+    server = Server("/home/ritik/pes/browsermob-proxy/bin/browsermob-proxy")
     server.start()
     proxy = server.create_proxy()
     
