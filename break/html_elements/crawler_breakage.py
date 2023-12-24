@@ -74,7 +74,8 @@ def run(site, extn, return_dict, l, replay, temp_port1):
     remove_popup(driver)
     remove_alert(driver) # optional
 
-    if replay == 0:
+    if replay == 0: # can add clicking on the buttons
+        # scroll
         curr_scroll_position = -1
         curr_time = time.time()
         while True:
@@ -96,7 +97,14 @@ def run(site, extn, return_dict, l, replay, temp_port1):
             if time.time() - curr_time >= 45:
                 break
 
+        # click
+
     if replay:
+        # click and compare
+
+
+
+
         breakages = [] # list of breakages found
 
         # function to test breakages
@@ -115,6 +123,7 @@ def run(site, extn, return_dict, l, replay, temp_port1):
 
 SIZE = 20
 port = 9090
+
 if __name__ == "__main__":
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
@@ -123,6 +132,8 @@ if __name__ == "__main__":
         parser.print_help(sys.stderr)
         sys.exit(1)
     args = parser.parse_args()
+
+    ports_list = []
 
     # processes = []
 
@@ -136,7 +147,7 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 10)
+        websites = random.sample(websites, 200)
         
         num_servers = math.ceil(len(websites)/100)
         print(num_servers)
@@ -151,20 +162,6 @@ if __name__ == "__main__":
         with open('manual_analysis.json', 'w') as f:
             json.dump(website_dict, f)
         f.close()
-        # for i in range(len(websites)):
-        #     websites[i] = 'https://' + websites[i].split('://')[1]
-        # sites = [
-        # # 'https://www.forbes.com'
-        #     'https://www.spirit.com'
-        # #      'https://www.wayfair.com'
-        # #      , 'https://www.godaddy.com', 
-        #     #  'https://www.groupon.com',
-        #     # 'https://www.wayfair.com',
-        #     # 'https://www.wayfair.com',
-        #     # 'https://www.wayfair.com',
-        #     # 'https://www.wayfair.com',
-        #     # 'https://www.wayfair.com'
-        #     ]        
 
         # chunks_list = list(divide_chunks(websites, SIZE))
         chunks_list = list(website_dict.values())
@@ -190,8 +187,12 @@ if __name__ == "__main__":
             i = 0
             while i < num_chunks:
                 processes = start_servers(args.replay, i, extn)
+                ports_list.append(port + 2*i)
+                ports_list.append(port + 2*(i+1))
 
                 for j in range(len(chunks_list[i])):
+                    print('-'*50)
+                    print('j:', j)
                     jobs = []
                     for k in range(len(chunks_list[i][j])):
                         return_dict[extn][chunks_list[i][j][k]] = manager.list()
@@ -220,11 +221,15 @@ if __name__ == "__main__":
                     pid2 = get_pid_by_port(port+2*(i-1))
                     print(pid1, pid2)
                     
-                    os.kill(int(pid1), signal.SIGINT)
-                    time.sleep(2)
+                    if pid1 != None:
+                        os.kill(int(pid1), signal.SIGINT)
+                        time.sleep(2)
+                    ports_list.remove(port+2*(i-2))
 
-                    os.kill(int(pid2), signal.SIGINT)
-                    time.sleep(2)
+                    if pid2 != None:
+                        os.kill(int(pid2), signal.SIGINT)
+                        time.sleep(2)
+                    ports_list.remove(port+2*(i-1))
 
                 except ProcessLookupError:
                     print(f"No process with PID {pid1} found.")
@@ -245,7 +250,7 @@ if __name__ == "__main__":
             time.sleep(2) # time for port to be available again
 
     except KeyboardInterrupt:
-        print('KeyboardInterrupt', 'Interrupted')
+        print('KeyboardInterrupt:', 'Interrupted')
 
         if args.replay:
             f = open('html_breakages.json', 'w')
@@ -253,11 +258,20 @@ if __name__ == "__main__":
             f.close()
 
         print(f"Closing any open servers")
-        # for process in processes:
-        #     print(process)
-        #     os.kill(process.pid, signal.SIGINT)
-        #     # process.wait()
-        #     time.sleep(2)
+        try:
+            print(ports_list)
+            for port in ports_list:
+                pid = get_pid_by_port(port)
+                print('pid:', pid)
+                
+                if pid != None:
+                    os.kill(int(pid), signal.SIGINT)
+                    time.sleep(2)
+
+        except ProcessLookupError:
+            print(f"No process with PID {pid1} found.")
+        except PermissionError:
+            print(f"Permission denied to send signal to process {pid1}.")
 
         try:
             # process.terminate()
@@ -269,11 +283,20 @@ if __name__ == "__main__":
         print('Interrupted', e)
 
         print(f"Closing any open servers")
-        # for process in processes:
-        #     print(process)
-        #     os.kill(process.pid, signal.SIGINT)
-        #     # process.wait()
-        #     time.sleep(2)
+        try:
+            print(ports_list)
+            for port in ports_list:
+                pid = get_pid_by_port(port)
+                print(pid)
+                
+                if pid != None:
+                    os.kill(int(pid), signal.SIGINT)
+                    time.sleep(2)
+
+        except ProcessLookupError:
+            print(f"No process with PID {pid1} found.")
+        except PermissionError:
+            print(f"Permission denied to send signal to process {pid1}.")
 
         if args.replay:
             f = open('html_breakages.json', 'w')

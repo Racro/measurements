@@ -37,7 +37,7 @@ def divide_chunks(l, n):
 def is_loaded(webdriver):
     return webdriver.execute_script("return document.readyState") == "complete"
 
-def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
+def wait_until_loaded(webdriver, timeout=30, period=0.25, min_time=0):
     start_time = time.time()
     mustend = time.time() + timeout
     while time.time() < mustend:
@@ -49,6 +49,7 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
     return False
 
 def remove_popup(driver):
+    print('popup:', driver.current_url)
     close_button = []
     close_anchor = []
     # Find the close button (this uses a common convention of 'x' or 'close' text)
@@ -57,7 +58,7 @@ def remove_popup(driver):
         close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
     except Exception as e:
         # print(close_button, close_anchor)
-        print('popup', 1, e)
+        print('close_button find element error', 1, e)
 
     close_button.extend(close_anchor)
     if len(close_button) > 0:
@@ -67,28 +68,30 @@ def remove_popup(driver):
                 i.click()
 
             except Exception as e:
-                print(i.text)
                 print('popup', 2, e)
 
 # could possibly make the driver stale. plz check!
 def remove_alert(driver):
-    alert = ''
+    print('alert:', driver.current_url)
+    alert_find = 1
     # Alert
     try:
         # Wait for the alert to be present
-        WebDriverWait(driver, 10).until(EC.alert_is_present())
+        WebDriverWait(driver, 5).until(EC.alert_is_present())
     except Exception as e:
+        alert_find = 0
         print("No alert present.", 1, e)
 
     # Wait for the modal to be visible
     try: 
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.XPATH, "//*[contains(@class, 'modal') and contains(@role, 'dialog')]"))
         )
     except Exception as e:
+        alert_find = 0
         print('modal element not found', 2, e)
 
-    if alert:
+    if alert_find:
         try:
             # Switch to the alert
             alert = driver.switch_to.alert
