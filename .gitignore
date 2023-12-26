@@ -13,3 +13,4 @@ out
 **/archive
 **/*.wprgo
 **/wpr_data
+**/*.xlsx
