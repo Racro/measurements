@@ -17,6 +17,10 @@ import random
 import math
 from functions import *
 import signal
+
+from base_code import *
+from Excel import *
+
         
 extn_lst = [
      'control'
@@ -25,7 +29,8 @@ extn_lst = [
     #     "adguard"
     ]
 
-def run(site, extn, return_dict, l, replay, temp_port1):
+def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
+    print(site)
     # Prepare Chrome
     options = Options()
     options.add_argument("--no-sandbox")
@@ -43,86 +48,69 @@ def run(site, extn, return_dict, l, replay, temp_port1):
 
     if extn != 'control':
         options.add_extension(f'/home/ritik/pes/measurements/extensions/extn_crx/{extn}.crx')
+    
 
     vdisplay = Display(visible=False, size=(1920, 1280))
     vdisplay.start()
 
-    driver = webdriver.Chrome(options=options)
-    time.sleep(2) # wait for extension to load
-
-    if extn == 'adblock':
-        time.sleep(15)
-    elif extn == 'ghostery':
-        windows = driver.window_handles
-        for window in windows:
-            try:
-                driver.switch_to.window(window)
-                url_start = driver.current_url[:16]
-                if url_start == 'chrome-extension':
-                    element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
-                    element.click()
-                    time.sleep(2)
-                    break
-            except Exception as e:
-                print('ghostery', 1, e)
-                return
-
-    driver.get(site)
-    wait_until_loaded(driver)
-    time.sleep(2)
-
-    remove_popup(driver)
-    remove_alert(driver) # optional
-
-    if replay == 0: # can add clicking on the buttons
-        # scroll
-        curr_scroll_position = -1
-        curr_time = time.time()
-        while True:
-            # Define the scroll step size
-            scroll_step = 50  # Adjust this value to control the scroll speed
-            # Get the current scroll position
-            scroll_position = driver.execute_script("return window.pageYOffset;")
-            # Check if we've reached the bottom
-            if curr_scroll_position == scroll_position:
-                break
-            else:
-                curr_scroll_position = scroll_position
-
-            # Scroll down by the step size
-            driver.execute_script(f"window.scrollBy(0, {scroll_step});")
-            
-            # Wait for a bit (this controls the scroll speed indirectly)
-            time.sleep(0.1)  # Adjust this value to control the scroll speed
-            if time.time() - curr_time >= 45:
-                break
-
-        # click
-
-    if replay:
-        # click and compare
-
-
-
-
-        breakages = [] # list of breakages found
-
-        # function to test breakages
+    #### MITCH
         
-        try:
-            l.acquire()
-            # print(fname)
-            return_dict[extn][site].extend([breakages])
-            l.release()
-        except Exception as e:
-            print(e)
-            l.release()
+    for html in driver_dict.keys():
+        driver_dict[html].initialize(options)
 
-    driver.quit()
+    # driver = webdriver.Chrome(options=options)
+    # time.sleep(2) # wait for extension to load
+
+        # driver_dict[html].load_site(site)
+        # driver_dict[html].remove_stuff()
+
+        if replay == 0: # can add clicking on the buttons
+            # scroll
+            # driver_dict[html].scroll()
+
+            # scan + click
+            try:
+                url = site
+
+                if driver_dict[html].load_site(url):
+                    # driver_dict[html].remove_stuff()
+                    driver_dict[html].scan_page()
+                else:
+                    write_noscan_row(url)
+            except TimeoutException:
+                write_noscan_row(driver_dict[html].url)
+            except Exception as e:
+                error = str(e).split("\n")[0]
+                write_results([error, "N/A", "N/A", driver_dict[html].initial_outer_html, driver_dict[html].tries])
+
+        if replay:
+            # click and compare
+
+
+
+
+            breakages = [] # list of breakages found
+
+            # function to test breakages
+            
+            try:
+                l.acquire()
+                # print(fname)
+                return_dict[extn][site].extend([breakages])
+                l.release()
+            except Exception as e:
+                print(e)
+                l.release()
+
+        driver_dict[html].close()
     vdisplay.stop()
 
-SIZE = 20
+SIZE = 10
 port = 9090
+
+#### MITCH
+
+HTML_TEST = {'buttons', "drop downs", "links", "login"}
 
 if __name__ == "__main__":
     # Parse the command line arguments
@@ -134,8 +122,27 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ports_list = []
+    manager = multiprocessing.Manager()
+    data_dict = manager.dict()
 
-    # processes = []
+    if args.replay == 0:
+        os.system('rm -f json/*.json')
+
+    #### MITCH
+
+    driver_class_dict = {}
+    for extn in extn_lst:
+        data_dict[extn] = manager.dict()
+        driver_class_dict[extn] = {}
+        for html in HTML_TEST:
+            data_dict[extn][html] = manager.dict()
+            if not os.path.isfile(f"json/{html}_{extn}.json"):
+                storeDictionary({}, html, extn)
+            else:
+                data_dict[extn][html] = loadDictionary(html, extn)
+            driver_class_dict[extn][html] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, html, data_dict)
+            # shared_driver.initialize()
+            initialize_xlsx(html, extn)
 
     try:
         with open("../../break/adblock_detect/inner_pages_custom_break.json", "r") as f:
@@ -147,7 +154,9 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 200)
+        websites = random.sample(websites, 1000)
+        # print(websites)
+        # websites = ['https://www.amazon.com', 'https://www.microsoft.com']
         
         num_servers = math.ceil(len(websites)/100)
         print(num_servers)
@@ -167,7 +176,6 @@ if __name__ == "__main__":
         chunks_list = list(website_dict.values())
         
         # multiprocess
-        manager = multiprocessing.Manager()
         return_dict = manager.dict()
         result_dict = {}
         for extn in extn_lst:
@@ -182,8 +190,7 @@ if __name__ == "__main__":
             num_chunks = len(chunks_list)
             for i in range(num_chunks):
                 chunks_list[i] = list(divide_chunks(chunks_list[i], 10))
-            
-            print(chunks_list)
+            print(num_chunks, chunks_list)
             i = 0
             while i < num_chunks:
                 processes = start_servers(args.replay, i, extn)
@@ -197,13 +204,13 @@ if __name__ == "__main__":
                     for k in range(len(chunks_list[i][j])):
                         return_dict[extn][chunks_list[i][j][k]] = manager.list()
                         result_dict[extn][chunks_list[i][j][k]] = []
-                        p1 = multiprocessing.Process(target=run, args=(chunks_list[i][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*i, ))
+                        p1 = multiprocessing.Process(target=run, args=(chunks_list[i][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*i, driver_class_dict[extn], ))
                         jobs.append(p1)
                         
                         if i+1 != num_chunks:
                             return_dict[extn][chunks_list[i+1][j][k]] = manager.list()
                             result_dict[extn][chunks_list[i+1][j][k]] = []
-                            p2 = multiprocessing.Process(target=run, args=(chunks_list[i+1][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*(i+1), ))
+                            p2 = multiprocessing.Process(target=run, args=(chunks_list[i+1][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*(i+1), driver_class_dict[extn], ))
                             jobs.append(p2)
                     
                     for job in jobs:
@@ -308,3 +315,23 @@ if __name__ == "__main__":
             sys.exit(130)
         except SystemExit:
             os._exit(130)
+    
+    save_dict = {}
+    for extn in extn_lst:
+        save_dict[extn] = {}
+        for html in HTML_TEST:
+            save_dict[extn][html] = {}
+            a = dict(data_dict[extn][html])
+            print('-'*50)
+            print(data_dict[extn][html])
+            print('-'*25)
+            print(a.keys())
+            print('-'*50)
+            # print(a)
+            # for site in websites:
+            #     print(a[site+'/'])
+            for site in a.keys():
+                save_dict[extn][html][site] = data_dict[extn][html][site]
+            json.dump(a, open(f"json/{html}_{extn}.json", 'w'))
+    
+    json.dump(save_dict, open(f"json/master.json", 'w'))

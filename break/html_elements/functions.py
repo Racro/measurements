@@ -132,7 +132,7 @@ def start_servers(replay, index, extn):
         os.makedirs(folder_path)
 
     original_directory = os.getcwd()
-    target_directory = '/home/ritik/go/src/catapult/web_page_replay_go/'
+    target_directory = '/home/ritik/go/src/github.com/catapult-project/catapult/web_page_replay_go/'
 
     # Change to the target directory
     os.chdir(target_directory)
