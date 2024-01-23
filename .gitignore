@@ -15,3 +15,4 @@ out
 **/wpr_data
 **/*.xlsx
 **/*.pyc
+**/json/*json
