@@ -24,7 +24,10 @@ from Excel import *
         
 extn_lst = [
      'control'
-    #  , 'adblock', 'ublock', 'privacy-badger',
+     ,
+    #  'adblock', 
+    'ublock'
+    # , 'privacy-badger',
     #     "ghostery",
     #     "adguard"
     ]
@@ -47,11 +50,11 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
     options = use_catapult(options, extn, temp_port1)
 
     if extn != 'control':
-        options.add_extension(f'/home/ritik/pes/measurements/extensions/extn_crx/{extn}.crx')
+        options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
     
 
     vdisplay = Display(visible=False, size=(1920, 1280))
-    vdisplay.start()
+    # vdisplay.start()
 
     #### MITCH
         
@@ -103,7 +106,7 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
                 l.release()
 
         driver_dict[html].close()
-    vdisplay.stop()
+    # vdisplay.stop()
 
 SIZE = 10
 port = 9090
@@ -154,7 +157,7 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 1000)
+        websites = random.sample(websites, 5)
         # print(websites)
         # websites = ['https://www.amazon.com', 'https://www.microsoft.com']
         
@@ -174,12 +177,16 @@ if __name__ == "__main__":
 
         # chunks_list = list(divide_chunks(websites, SIZE))
         chunks_list = list(website_dict.values())
+        num_chunks = len(chunks_list)
+        for i in range(num_chunks):
+            chunks_list[i] = list(divide_chunks(chunks_list[i], 10))
+        print(num_chunks, chunks_list)
         
         # multiprocess
         return_dict = manager.dict()
         result_dict = {}
         for extn in extn_lst:
-            folder_path = f'/home/ritik/pes/measurements/break/html_elements/wpr_data/{extn}'
+            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
             if not os.path.exists(folder_path):
             # Create the folder
                 os.makedirs(folder_path)
@@ -187,10 +194,6 @@ if __name__ == "__main__":
             return_dict[extn] = manager.dict()
             result_dict[extn] = {}
             
-            num_chunks = len(chunks_list)
-            for i in range(num_chunks):
-                chunks_list[i] = list(divide_chunks(chunks_list[i], 10))
-            print(num_chunks, chunks_list)
             i = 0
             while i < num_chunks:
                 processes = start_servers(args.replay, i, extn)
@@ -214,12 +217,17 @@ if __name__ == "__main__":
                             jobs.append(p2)
                     
                     for job in jobs:
+                        print(f"starting {job}")
                         job.start()
+
+                    time.sleep(5)
+
                     for job in jobs:
+                        print(f"joining {job}")
                         job.join()
                 
                 i = i+2
-                time.sleep(2)
+                time.sleep(5)
                 
                 print(f"Closing opened servers with ports: {port+2*(i-2)} {port+2*(i-1)}")
 
@@ -287,7 +295,7 @@ if __name__ == "__main__":
             os._exit(130)
 
     except Exception as e:
-        print('Interrupted', e)
+        print('Interrupted:', e)
 
         print(f"Closing any open servers")
         try:

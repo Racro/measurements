@@ -132,7 +132,7 @@ def start_servers(replay, index, extn):
         os.makedirs(folder_path)
 
     original_directory = os.getcwd()
-    target_directory = '/home/ritik/go/src/github.com/catapult-project/catapult/web_page_replay_go/'
+    target_directory = '/home/ritik/go/src/catapult/web_page_replay_go/'
 
     # Change to the target directory
     os.chdir(target_directory)
@@ -143,9 +143,9 @@ def start_servers(replay, index, extn):
         print(f'starting servers with ports: {temp_port1} {temp_port2}')
         try:
             if replay:
-                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/control_{index+i}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{index+i}.wprgo']
             else:
-                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/control_{index+i}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{index+i}.wprgo']
 
             process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = subprocess.PIPE, stderr = subprocess.PIPE)
             print('functions.py', process, process.pid)

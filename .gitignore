@@ -14,3 +14,4 @@ out
 **/*.wprgo
 **/wpr_data
 **/*.xlsx
+**/*.pyc
