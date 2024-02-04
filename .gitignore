@@ -16,3 +16,4 @@ out
 **/*.xlsx
 **/*.pyc
 **/json/*json
+**/__pycache__

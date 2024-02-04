@@ -184,14 +184,25 @@ class Driver:
         #### RITIK
         self.options = ''
 
-    def initialize(self, options):
+    def initialize(self, options, num_tries):
         """
             This function will start a Chrome instance with the option of installing an ad blocker.
             Adjust the seconds parameter so that it will wait for the ad blocker to finish downloading.
         """
-        
-        self.options = options
-        self.driver = webdriver.Chrome(options=options)
+
+        while num_tries > 0:
+            try:
+                self.options = options
+                self.driver = webdriver.Chrome(options=options)
+                time.sleep(2)
+                break
+            except Exception as e:
+                if num_tries == 0:
+                    print(e)
+                    return 0
+                else:
+                    print("couldn't create browser session... trying again")
+                    num_tries = num_tries - 1
 
         # file_path = f"json/{self.html_obj}_{self.adBlocker_name}.json"
         # if os.path.isfile(file_path):
@@ -217,7 +228,9 @@ class Driver:
                         break
                 except Exception as e:
                     print('ghostery', 1, e)
-                    return
+                    return 0
+                
+        return 1
 
     def is_loaded(self):
         return self.driver.execute_script("return document.readyState") == "complete"
@@ -286,7 +299,7 @@ class Driver:
                 break
 
     def close(self):
-        print("closing driver...", self.adBlocker_name, self.html_obj)
+        print("closing driver...", self.adBlocker_name, self.html_obj, self.url)
         self.driver.quit()
 
     def click_button(self, button):

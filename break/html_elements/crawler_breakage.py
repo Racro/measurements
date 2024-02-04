@@ -45,6 +45,10 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
     options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
+
+    # # only use when vdisplay off
+    # options.add_argument("--window-size=1920,1280")
+
     
     options = remove_cmp_banner(options)
     options = use_catapult(options, extn, temp_port1)
@@ -54,12 +58,18 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
     
 
     vdisplay = Display(visible=False, size=(1920, 1280))
-    # vdisplay.start()
+    vdisplay.start()
 
     #### MITCH
         
     for html in driver_dict.keys():
-        driver_dict[html].initialize(options)
+        retval = driver_dict[html].initialize(options, 3)
+        
+        if retval == 0:
+            print(f'error open browser instance for extn:{extn} and html:{html}')
+            driver_dict[html] = None
+            continue
+
 
     # driver = webdriver.Chrome(options=options)
     # time.sleep(2) # wait for extension to load
@@ -106,7 +116,7 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
                 l.release()
 
         driver_dict[html].close()
-    # vdisplay.stop()
+    vdisplay.stop()
 
 SIZE = 10
 port = 9090
@@ -157,9 +167,10 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 5)
+        # websites = random.sample(websites, 5)
         # print(websites)
-        # websites = ['https://www.amazon.com', 'https://www.microsoft.com']
+        websites = ['https://www.amazon.com', 'https://www.microsoft.com', 'https://www.softonic.com', 'https://www.cricbuzz.com', 'https://www.nytimes.com']
+        # websites = [websites[1]]
         
         num_servers = math.ceil(len(websites)/100)
         print(num_servers)
