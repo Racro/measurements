@@ -24,9 +24,9 @@ from Excel import *
         
 extn_lst = [
      'control'
-     ,
-    #  'adblock', 
-    'ublock'
+    #  ,
+    # #  'adblock', 
+    # 'ublock'
     # , 'privacy-badger',
     #     "ghostery",
     #     "adguard"
@@ -167,9 +167,9 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        # websites = random.sample(websites, 5)
+        websites = random.sample(websites, 100)
         # print(websites)
-        websites = ['https://www.amazon.com', 'https://www.microsoft.com', 'https://www.softonic.com', 'https://www.cricbuzz.com', 'https://www.nytimes.com']
+        # websites = ['https://www.amazon.com', 'https://www.microsoft.com', 'https://www.softonic.com', 'https://www.cricbuzz.com', 'https://www.nytimes.com']
         # websites = [websites[1]]
         
         num_servers = math.ceil(len(websites)/100)
@@ -190,7 +190,7 @@ if __name__ == "__main__":
         chunks_list = list(website_dict.values())
         num_chunks = len(chunks_list)
         for i in range(num_chunks):
-            chunks_list[i] = list(divide_chunks(chunks_list[i], 10))
+            chunks_list[i] = list(divide_chunks(chunks_list[i], 20))
         print(num_chunks, chunks_list)
         
         # multiprocess
@@ -341,11 +341,11 @@ if __name__ == "__main__":
         for html in HTML_TEST:
             save_dict[extn][html] = {}
             a = dict(data_dict[extn][html])
-            print('-'*50)
-            print(data_dict[extn][html])
-            print('-'*25)
-            print(a.keys())
-            print('-'*50)
+            # print('-'*50)
+            # print(data_dict[extn][html])
+            # print('-'*25)
+            # print(a.keys())
+            # print('-'*50)
             # print(a)
             # for site in websites:
             #     print(a[site+'/'])

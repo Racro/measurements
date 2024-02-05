@@ -65,21 +65,21 @@ def main(num_tries, args_lst, proxy):
     # Initialize Selenium
     options = Options()
     # options.add_argument('headless=new')
-    # options.add_argument('--ignore-certificate-errors')
-    # options.add_argument("--proxy-server={0}".format(proxy.proxy))
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument("--proxy-server={0}".format(proxy.proxy))
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
     # options.add_argument("--single-process")
     options.add_argument("--disable-gpu")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-web-security")
+    # options.add_argument("--disable-dev-shm-usage")
+    # options.add_argument("--disable-web-security")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
-    options.add_argument("auto-open-devtools-for-tabs")
+    # options.add_argument("auto-open-devtools-for-tabs")
     options.add_argument("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
 
-    options.add_extension("/home/ritik/work/pes/measurements/extensions/extn_crx/adblock.crx")
+    # options.add_extension("/home/ritik/work/pes/measurements/extensions/extn_crx/adblock.crx")
     options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
     # options.binary_location = "/usr/bin/google-chrome"
     # options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
@@ -87,12 +87,12 @@ def main(num_tries, args_lst, proxy):
         options.add_extension(args_lst[-1])
 
     # Initialize service
-    service = Service(executable_path='/usr/local/bin/chromedriver')
+    # service = Service(executable_path='/usr/local/bin/chromedriver')
 
     for i in range(num_tries):    
         try:
             # Launch Chrome and install our extension for getting HARs
-            driver = webdriver.Chrome(service=service, options=options)
+            driver = webdriver.Chrome(options=options)
             # time.sleep(5)
 
             # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
@@ -109,10 +109,10 @@ def main(num_tries, args_lst, proxy):
             # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
             # element.click()
 
-            time.sleep(5)
+            # time.sleep(5)
 
             # Create a new HAR with the following options
-            # proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
+            proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
 
             # Use Selenium to navigate to a webpage
             # valid = 0
@@ -122,6 +122,7 @@ def main(num_tries, args_lst, proxy):
             print(website)
             driver.get(website)
             wait_until_loaded(driver, args_lst[1])
+            time.sleep(2)
 
             curr_scroll_position = -1
             curr_time = time.time()
@@ -145,11 +146,13 @@ def main(num_tries, args_lst, proxy):
                     break
             # valid += 1
 
+            time.sleep(10)
             # Collect HAR data
             result = proxy.har
 
             # Analyze HAR data (this is a simplified example)
-            total_size = 0
+            # total_size = 0
+            # print(result)
             data_usage[i] = result['log']['entries']
             print(len(data_usage[i]))
         except Exception as e:
@@ -179,7 +182,7 @@ if __name__ == '__main__':
     for key in website_dict:
         websites.append(website_dict[key][0])
     # websites = websites[:100]
-    websites = ['https://www.forbes.com']
+    websites = ['https://www.nytimes.com']
 
     print(f'data --- {websites}')
 

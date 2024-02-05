@@ -300,7 +300,8 @@ class Driver:
 
     def close(self):
         print("closing driver...", self.adBlocker_name, self.html_obj, self.url)
-        self.driver.quit()
+        if self.driver != None:
+            self.driver.quit()
 
     def click_button(self, button):
         try:

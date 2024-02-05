@@ -160,10 +160,10 @@ def start_servers(replay, index, extn):
             # print(out.decode('utf-8'), err.decode('utf-8'))
 
         except subprocess.TimeoutExpired as t:
-            print(f'Timeout for num_server: {num_server}')
+            print(f'Timeout for num_server: {index}')
             sys.exit(1)
         except subprocess.CalledProcessError as e:
-            print(f'Error for num_server: {num_server}')
+            print(f'Error for num_server: {index}')
             sys.exit(1)
 
         except Exception as e:
@@ -178,7 +178,7 @@ def get_pid_by_port(port):
     try:
         output = subprocess.check_output(['lsof', '-i', f'tcp:{port}']).decode()
     except subprocess.CalledProcessError as e:
-        print("Error:", e.output.decode())
+        print("Error:", subprocess.check_output(['lsof', '-i', 'tcp']).decode())
         return None
 
     for line in output.splitlines():
