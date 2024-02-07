@@ -110,15 +110,16 @@ def remove_cmp_banner(options):
     return options
         
 # this removes captcha and brings determinism
-def use_catapult(options, fname, port):
-    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}"
+def use_catapult(options, fname, port, wpr_index):
+    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}_{wpr_index}"
     if not os.path.exists(folder_path):
     # Create the folder
         os.makedirs(folder_path)
 
     # options.add_argument('--ignore-certificate-errors')
-    options.add_argument(folder_path)
-    options.add_argument(f'--host-resolver-rules="MAP *:80 127.0.0.1:{port},MAP *:443 127.0.0.1:{port+1},EXCLUDE localhost')
+    options.add_argument(f'--user-data-dir={folder_path}')
+    # options.add_argument(folder_path)
+    options.add_argument(f'--host-resolver-rules="MAP *:80 127.0.0.1:{port},MAP *:443 127.0.0.1:{port+1},EXCLUDE localhost"')
     options.add_argument('--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=')
     return options
 

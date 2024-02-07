@@ -79,6 +79,10 @@ attributes_dict = {
         "attributes": ['button', 'submit', '#'],
         "xpaths": ['@role', '@type']
     }
+    , "manual": {
+        "attributes": [],
+        "xpaths": []
+    }
 
 }
 

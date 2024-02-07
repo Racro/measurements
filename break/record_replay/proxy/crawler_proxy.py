@@ -146,7 +146,7 @@ def main(num_tries, args_lst, proxy):
                     break
             # valid += 1
 
-            time.sleep(10)
+            time.sleep(30)
             # Collect HAR data
             result = proxy.har
 
@@ -157,7 +157,7 @@ def main(num_tries, args_lst, proxy):
             print(len(data_usage[i]))
         except Exception as e:
             print(e, args_lst[0], file=sys.stderr)
-
+        
         # Stop Selenium and BrowserMob Proxy
         driver.quit()
         time.sleep(2)
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     for key in website_dict:
         websites.append(website_dict[key][0])
     # websites = websites[:100]
-    websites = ['https://www.nytimes.com']
+    websites = ['https://www.geeksforgeeks.org/graph-and-its-representations/']
 
     print(f'data --- {websites}')
 

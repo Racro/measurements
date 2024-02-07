@@ -23,7 +23,8 @@ from Excel import *
 
         
 extn_lst = [
-     'control'
+    'manual'
+    #  'control'
     #  ,
     # #  'adblock', 
     # 'ublock'
@@ -32,7 +33,7 @@ extn_lst = [
     #     "adguard"
     ]
 
-def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
+def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index):
     print(site)
     # Prepare Chrome
     options = Options()
@@ -49,11 +50,10 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
     # # only use when vdisplay off
     # options.add_argument("--window-size=1920,1280")
 
-    
     options = remove_cmp_banner(options)
-    options = use_catapult(options, extn, temp_port1)
+    options = use_catapult(options, extn, temp_port1, wpr_index)
 
-    if extn != 'control':
+    if extn != 'control' and extn != 'manual':
         options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
     
 
@@ -61,7 +61,6 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
     vdisplay.start()
 
     #### MITCH
-        
     for html in driver_dict.keys():
         retval = driver_dict[html].initialize(options, 3)
         
@@ -78,23 +77,37 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict):
         # driver_dict[html].remove_stuff()
 
         if replay == 0: # can add clicking on the buttons
-            # scroll
-            # driver_dict[html].scroll()
+            #### Manual Analysis
+            if extn == 'manual':
+                try:
+                    url = site
 
+                    if driver_dict[html].load_site(url):
+                        # scroll
+                        driver_dict[html].scroll()
+                    else:
+                        write_noscan_row(url)
+                except TimeoutException:
+                    write_noscan_row(driver_dict[html].url)
+                except Exception as e:
+                    error = str(e).split("\n")[0]
+                    write_results([error, "N/A", "N/A", driver_dict[html].initial_outer_html, driver_dict[html].tries])
+
+            else:
             # scan + click
-            try:
-                url = site
+                try:
+                    url = site
 
-                if driver_dict[html].load_site(url):
-                    # driver_dict[html].remove_stuff()
-                    driver_dict[html].scan_page()
-                else:
-                    write_noscan_row(url)
-            except TimeoutException:
-                write_noscan_row(driver_dict[html].url)
-            except Exception as e:
-                error = str(e).split("\n")[0]
-                write_results([error, "N/A", "N/A", driver_dict[html].initial_outer_html, driver_dict[html].tries])
+                    if driver_dict[html].load_site(url):
+                        # driver_dict[html].remove_stuff()
+                        driver_dict[html].scan_page()
+                    else:
+                        write_noscan_row(url)
+                except TimeoutException:
+                    write_noscan_row(driver_dict[html].url)
+                except Exception as e:
+                    error = str(e).split("\n")[0]
+                    write_results([error, "N/A", "N/A", driver_dict[html].initial_outer_html, driver_dict[html].tries])
 
         if replay:
             # click and compare
@@ -123,7 +136,8 @@ port = 9090
 
 #### MITCH
 
-HTML_TEST = {'buttons', "drop downs", "links", "login"}
+# HTML_TEST = {'buttons', "drop downs", "links", "login"}
+HTML_TEST = {'manual'}
 
 if __name__ == "__main__":
     # Parse the command line arguments
@@ -140,6 +154,8 @@ if __name__ == "__main__":
 
     if args.replay == 0:
         os.system('rm -f json/*.json')
+        os.system('rm -f archive/*.wprgo')
+        os.system('rm -rf wpr_data/*')
 
     #### MITCH
 
@@ -169,7 +185,7 @@ if __name__ == "__main__":
         
         websites = random.sample(websites, 200)
         # print(websites)
-        # websites = ['https://www.amazon.com', 'https://www.microsoft.com', 'https://www.softonic.com', 'https://www.cricbuzz.com', 'https://www.nytimes.com']
+        # websites = ['https://www.amazon.com']#, 'https://www.microsoft.com', 'https://www.softonic.com', 'https://www.cricbuzz.com', 'https://www.nytimes.com']
         # websites = [websites[1]]
         
         num_servers = math.ceil(len(websites)/100)
@@ -190,17 +206,17 @@ if __name__ == "__main__":
         chunks_list = list(website_dict.values())
         num_chunks = len(chunks_list)
         for i in range(num_chunks):
-            chunks_list[i] = list(divide_chunks(chunks_list[i], 20))
+            chunks_list[i] = list(divide_chunks(chunks_list[i], SIZE))
         print(num_chunks, chunks_list)
         
         # multiprocess
         return_dict = manager.dict()
         result_dict = {}
         for extn in extn_lst:
-            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
-            if not os.path.exists(folder_path):
-            # Create the folder
-                os.makedirs(folder_path)
+            # folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            # if not os.path.exists(folder_path):
+            # # Create the folder
+            #     os.makedirs(folder_path)
 
             return_dict[extn] = manager.dict()
             result_dict[extn] = {}
@@ -218,13 +234,13 @@ if __name__ == "__main__":
                     for k in range(len(chunks_list[i][j])):
                         return_dict[extn][chunks_list[i][j][k]] = manager.list()
                         result_dict[extn][chunks_list[i][j][k]] = []
-                        p1 = multiprocessing.Process(target=run, args=(chunks_list[i][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*i, driver_class_dict[extn], ))
+                        p1 = multiprocessing.Process(target=run, args=(chunks_list[i][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*i, driver_class_dict[extn], k, ))
                         jobs.append(p1)
                         
                         if i+1 != num_chunks:
                             return_dict[extn][chunks_list[i+1][j][k]] = manager.list()
                             result_dict[extn][chunks_list[i+1][j][k]] = []
-                            p2 = multiprocessing.Process(target=run, args=(chunks_list[i+1][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*(i+1), driver_class_dict[extn], ))
+                            p2 = multiprocessing.Process(target=run, args=(chunks_list[i+1][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*(i+1), driver_class_dict[extn], k+SIZE, ))
                             jobs.append(p2)
                     
                     for job in jobs:
