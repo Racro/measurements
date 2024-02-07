@@ -23,11 +23,11 @@ from Excel import *
 
         
 extn_lst = [
-    'manual'
-    #  'control'
-    #  ,
+    # 'manual'
+     'control'
+     ,
     # #  'adblock', 
-    # 'ublock'
+    'ublock'
     # , 'privacy-badger',
     #     "ghostery",
     #     "adguard"
@@ -131,13 +131,13 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index):
         driver_dict[html].close()
     vdisplay.stop()
 
-SIZE = 10
+SIZE = 20
 port = 9090
 
 #### MITCH
 
-# HTML_TEST = {'buttons', "drop downs", "links", "login"}
-HTML_TEST = {'manual'}
+HTML_TEST = {'buttons', "drop downs", "links", "login"}
+# HTML_TEST = {'manual'}
 
 if __name__ == "__main__":
     # Parse the command line arguments
@@ -227,6 +227,7 @@ if __name__ == "__main__":
                 ports_list.append(port + 2*i)
                 ports_list.append(port + 2*(i+1))
 
+                error_code = 0
                 for j in range(len(chunks_list[i])):
                     print('-'*50)
                     print('j:', j)
@@ -242,6 +243,13 @@ if __name__ == "__main__":
                             result_dict[extn][chunks_list[i+1][j][k]] = []
                             p2 = multiprocessing.Process(target=run, args=(chunks_list[i+1][j][k], extn, return_dict, multiprocessing.Lock(), args.replay, port + 2*(i+1), driver_class_dict[extn], k+SIZE, ))
                             jobs.append(p2)
+
+                    # check if any record server has stopped
+                    pid1 = get_pid_by_port(port+2*i)
+                    pid2 = get_pid_by_port(port+2*(i+1))
+                    if pid1 == None or pid2 == None:
+                        error_code = 1
+                        break
                     
                     for job in jobs:
                         print(f"starting {job}")
@@ -253,31 +261,20 @@ if __name__ == "__main__":
                         print(f"joining {job}")
                         job.join()
                 
-                i = i+2
+                if error_code == 1:
+                    print(f"Found pid to be None for index: {i} and extn: {extn}")
+                    ports_list = stop_servers(i, ports_list)
+                    os.system(f'rm -f archive/{extn}_{i}.wprgo')
+                    os.system(f'rm -f archive/{extn}_{i+1}.wprgo')
+                    continue
+
                 time.sleep(5)
                 
-                print(f"Closing opened servers with ports: {port+2*(i-2)} {port+2*(i-1)}")
-
-                try:
-                    pid1 = get_pid_by_port(port+2*(i-2))
-                    pid2 = get_pid_by_port(port+2*(i-1))
-                    print(pid1, pid2)
-                    
-                    if pid1 != None:
-                        os.kill(int(pid1), signal.SIGINT)
-                        time.sleep(2)
-                    ports_list.remove(port+2*(i-2))
-
-                    if pid2 != None:
-                        os.kill(int(pid2), signal.SIGINT)
-                        time.sleep(2)
-                    ports_list.remove(port+2*(i-1))
-
-                except ProcessLookupError:
-                    print(f"No process with PID {pid1} found.")
-                except PermissionError:
-                    print(f"Permission denied to send signal to process {pid1}.")
+                print(f"Closing opened servers with ports: {port+2*(i)} {port+2*(i+1)}")
+                ports_list = stop_servers(i, ports_list)
                 
+                i = i+2
+
             if args.replay:                
                 for site in websites:
                     print(return_dict[extn][site])

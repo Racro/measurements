@@ -133,7 +133,7 @@ def start_servers(replay, index, extn):
         os.makedirs(folder_path)
 
     original_directory = os.getcwd()
-    target_directory = '/home/ritik/go/src/github.com/catapult-project/catapult/web_page_replay_go/'
+    target_directory = '/home/ritik/go/src/catapult/web_page_replay_go/'
 
     # Change to the target directory
     os.chdir(target_directory)
@@ -148,7 +148,7 @@ def start_servers(replay, index, extn):
             else:
                 cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{index+i}.wprgo']
 
-            process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = sys.stdout, stderr = sys.stdout)
             print('functions.py', process, process.pid)
             processes.append(process)
             # os.system(" ".join(cmd))
@@ -175,6 +175,30 @@ def start_servers(replay, index, extn):
     
     return processes
 
+def stop_servers(i, ports_list):
+    port = 9090
+    try:
+        pid1 = get_pid_by_port(port+2*(i))
+        pid2 = get_pid_by_port(port+2*(i+1))
+        print(pid1, pid2)
+        
+        if pid1 != None:
+            os.kill(int(pid1), signal.SIGINT)
+            time.sleep(2)
+        ports_list.remove(port+2*(i))
+
+        if pid2 != None:
+            os.kill(int(pid2), signal.SIGINT)
+            time.sleep(2)
+        ports_list.remove(port+2*(i+1))
+
+    except ProcessLookupError:
+        print(f"No process with PID {pid1} found.")
+    except PermissionError:
+        print(f"Permission denied to send signal to process {pid1}.")
+
+    return ports_list
+    
 def get_pid_by_port(port):
     try:
         output = subprocess.check_output(['lsof', '-i', f'tcp:{port}']).decode()
