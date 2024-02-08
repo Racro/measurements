@@ -51,7 +51,7 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index):
     # options.add_argument("--window-size=1920,1280")
 
     options = remove_cmp_banner(options)
-    options = use_catapult(options, extn, temp_port1, wpr_index)
+    # options = use_catapult(options, extn, temp_port1, wpr_index)
 
     if extn != 'control' and extn != 'manual':
         options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
@@ -131,7 +131,7 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index):
         driver_dict[html].close()
     vdisplay.stop()
 
-SIZE = 20
+SIZE = 10
 port = 9090
 
 #### MITCH
@@ -183,7 +183,7 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 200)
+        websites = random.sample(websites, 1000)
         # print(websites)
         # websites = ['https://www.amazon.com']#, 'https://www.microsoft.com', 'https://www.softonic.com', 'https://www.cricbuzz.com', 'https://www.nytimes.com']
         # websites = [websites[1]]
