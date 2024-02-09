@@ -131,7 +131,7 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index):
         driver_dict[html].close()
     vdisplay.stop()
 
-SIZE = 10
+SIZE = 20
 port = 9090
 
 #### MITCH
@@ -183,7 +183,7 @@ if __name__ == "__main__":
         for key in updated_dict:
             websites.append(updated_dict[key][0])
         
-        websites = random.sample(websites, 1000)
+        websites = random.sample(websites, 200)
         # print(websites)
         # websites = ['https://www.amazon.com']#, 'https://www.microsoft.com', 'https://www.softonic.com', 'https://www.cricbuzz.com', 'https://www.nytimes.com']
         # websites = [websites[1]]
