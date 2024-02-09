@@ -262,7 +262,7 @@ class Driver:
             time.sleep(2)
 
             self.url = self.driver.current_url
-            self.url_key = self.url
+            self.url_key = url
             if self.url not in self.seen_sites:
                 write_results(self.url)
                 self.seen_sites.append(self.url)
@@ -519,13 +519,13 @@ class Driver:
 
         while self.curr_elem < len(self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]):
             try:
-                xpath = self.generate_xpath(self.dictionary[self.adBlocker_name][self.html_obj][url_key][self.curr_elem])
+                xpath = self.generate_xpath(self.dictionary[self.adBlocker_name][self.html_obj][self.url_key][self.curr_elem])
                 elm = self.get_correct_elem(xpath)
                 elm.click()
                 sleep(1)
                 self.load_site(self.url)
             except Exception:
-                pass
+                print("error in clicking element or generating xpath")
             
             all_windows = self.driver.window_handles
 
