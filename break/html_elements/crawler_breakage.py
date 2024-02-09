@@ -259,7 +259,7 @@ if __name__ == "__main__":
 
                     for job in jobs:
                         print(f"joining {job}")
-                        job.join()
+                        job.join(timeout = 60)
                 
                 if error_code == 1:
                     print(f"Found pid to be None for index: {i} and extn: {extn}")

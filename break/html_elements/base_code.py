@@ -198,6 +198,7 @@ class Driver:
             try:
                 self.options = options
                 self.driver = webdriver.Chrome(options=options)
+                self.driver.set_page_load_timeout(45)
                 time.sleep(2)
                 break
             except Exception as e:

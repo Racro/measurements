@@ -59,7 +59,7 @@ def main(num_tries, args_lst, proxy):
     # Start X
     data_usage = {}
     contacted_urls = []
-    # vdisplay = Display(visible=False, size=(1920, 1080))
+    vdisplay = Display(visible=False, size=(1920, 1080))
     # vdisplay.start()
 
     # Initialize Selenium
@@ -126,7 +126,7 @@ def main(num_tries, args_lst, proxy):
 
             curr_scroll_position = -1
             curr_time = time.time()
-            while True:
+            while False:
                 # Define the scroll step size
                 scroll_step = 50  # Adjust this value to control the scroll speed
                 # Get the current scroll position
@@ -146,7 +146,7 @@ def main(num_tries, args_lst, proxy):
                     break
             # valid += 1
 
-            time.sleep(30)
+            time.sleep(5)
             # Collect HAR data
             result = proxy.har
 
@@ -182,7 +182,8 @@ if __name__ == '__main__':
     for key in website_dict:
         websites.append(website_dict[key][0])
     # websites = websites[:100]
-    websites = ['https://www.geeksforgeeks.org/graph-and-its-representations/']
+    # websites = ['https://www.geeksforgeeks.org/graph-and-its-representations/']
+    websites = ['https://www.velocityhub.com']
 
     print(f'data --- {websites}')
 
@@ -193,7 +194,7 @@ if __name__ == '__main__':
 
     data_dict = {}
     # extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
-    extensions_path = pathlib.Path("/home/ritik/work/pes/extensions/extn_crx")
+    extensions_path = pathlib.Path("/home/ritik/work/pes/measurements/extensions/extn_crx")
 
     extension = 0    
     if extension:
