@@ -5,12 +5,13 @@ import signal
 import functools
 import json
 from time import sleep
+from pyvirtualdisplay import Display
 
 # import pyautogui
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.common import NoSuchElementException, StaleElementReferenceException, ElementClickInterceptedException
+from selenium.common import NoSuchElementException, StaleElementReferenceException, InvalidSelectorException, ElementNotSelectableException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
@@ -86,16 +87,17 @@ attributes_dict = {
 
 }
 
-def error_catcher(e, tries, url):
-    if shared_driver.tries != 3:
-        shared_driver.reinitialize()
+def error_catcher(e, driver, tries, url):
+    error = ''
+    if driver.tries != 3:
+        driver.reinitialize()
         tries += 1
         return tries
 
-    if isinstance(e, ElementClickInterceptedException):
-        error = "N/A - Element Click Intercepted"
-    elif isinstance(e, ElementNotInteractableException):
-        error = "N/A - Not Interactable"
+    # if isinstance(e, ElementClickInterceptedException):
+    #     error = "N/A - Element Click Intercepted"
+    if isinstance(e, ElementNotSelectableException):
+        error = "N/A - Not Selectable"
     elif isinstance(e, StaleElementReferenceException):
         error = "StaleElementReferenceException"
     elif isinstance(e, NoSuchElementException):
@@ -103,16 +105,17 @@ def error_catcher(e, tries, url):
     elif isinstance(e, InvalidSelectorException):
         error = "N/A - InvalidSelectorException"
     elif isinstance(e, IndexError):
-        print("ok")
+        error = e
     elif isinstance(e, TimeoutError):
-        write_noscan_row(url)
+        print("Timeout")
+        # write_noscan_row(url)
         tries = 1
-        shared_driver.tries = 1
-        shared_driver.curr_elem += 1
+        driver.tries = 1
+        driver.curr_elem += 1
         print("TIME OUT EERRORRR")
         return tries
-
-    error = str(e).split("\n")[0]
+    else:
+        error = str(e).split("\n")[0]
     return error
 
 
@@ -140,7 +143,7 @@ def timeout(seconds):
 
 
 class Driver:
-    def __init__(self, attributes, xPATH, adB, html_obj, data_dict):
+    def __init__(self, attributes, xPATH, adB, html_obj, replay, data_dict, excel_dict):
         # specific test for these attributes
         self.attributes = attributes
         self.xPaths = xPATH
@@ -149,6 +152,7 @@ class Driver:
         self.adBlocker_name = adB
         self.driver = None
         self.tries = 1
+        self.vdisplay = ''
 
         # used for optimization
         self.keywords = [
@@ -180,6 +184,10 @@ class Driver:
 
         # used for random picking
         self.dictionary = data_dict
+        self.excel = excel_dict
+        self.excel_list = []
+        self.excel_errors_list = []
+
         self.all_sites = {}
         self.no_elms = 15
         self.chosen_elms = []
@@ -187,12 +195,14 @@ class Driver:
 
         #### RITIK
         self.options = ''
+        self.replay = replay
 
-    def initialize(self, options, num_tries):
+    def initialize(self, options, num_tries, url):
         """
             This function will start a Chrome instance with the option of installing an ad blocker.
             Adjust the seconds parameter so that it will wait for the ad blocker to finish downloading.
         """
+        self.url_key = url
 
         while num_tries > 0:
             try:
@@ -203,18 +213,35 @@ class Driver:
                 break
             except Exception as e:
                 if num_tries == 0:
-                    print(e)
+                    print(1, e)
                     return 0
                 else:
                     print("couldn't create browser session... trying again")
                     num_tries = num_tries - 1
 
-        # file_path = f"json/{self.html_obj}_{self.adBlocker_name}.json"
-        # if os.path.isfile(file_path):
-        #     with open(file_path, 'r') as json_file:
-        #         self.dictionary = json.load(json_file)
+        # during replay phase
+        if self.replay:
+            file_path = f"data_1000/json/{self.html_obj}_control.json"
+            # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
+            # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
 
-        self.all_sites = list(self.dictionary[self.adBlocker_name][self.html_obj].keys())
+            try:
+                if os.path.isfile(file_path):
+                    with open(file_path, 'r') as json_file:
+                        self.dictionary = {}
+                        self.dictionary[self.adBlocker_name] = {}
+                        self.dictionary[self.adBlocker_name][self.html_obj] = {}
+                        self.dictionary[self.adBlocker_name][self.html_obj][self.url_key] = json.load(json_file)[self.url_key] 
+                        # self.dictionary[self.url_key] = json.load(json_file)[self.url_key]
+                    json_file.close()
+                elems = self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]
+                self.all_sites = [self.url_key]
+            except KeyError as k:
+                print(f"site not found in json --- site:{self.url_key}, extn:{self.adBlocker_name}, html: {self.html_obj}")
+                return 0
+            except Exception as e:
+                print(4, e)
+                return 0
         
         time.sleep(2)
 
@@ -227,14 +254,13 @@ class Driver:
                     self.driver.switch_to.window(window)
                     url_start = self.driver.current_url[:16]
                     if url_start == 'chrome-extension':
-                        element = self. driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                        element = self.driver.find_element(By.XPATH, "//ui-button[@type='success']")
                         element.click()
                         time.sleep(2)
                         break
                 except Exception as e:
                     print('ghostery', 1, e)
                     return 0
-                
         return 1
 
     def is_loaded(self):
@@ -262,13 +288,15 @@ class Driver:
             time.sleep(2)
 
             self.url = self.driver.current_url
-            self.url_key = url
+            # self.url_key = url
             if self.url not in self.seen_sites:
-                write_results(self.url)
+                # write_results(self.url)
                 self.seen_sites.append(self.url)
             return True
 
         except Exception as e:
+            self.dictionary['errors'][self.adBlocker_name][self.url_key] = str(e)
+            print(3, e)
             self.seen_sites.append(url)
             return False
         
@@ -278,7 +306,7 @@ class Driver:
 
     def reinitialize(self):
         self.driver.close()
-        self.initialize(self.options)
+        self.initialize(self.options, 3, self.url_key)
         self.tries += 1
 
     def scroll(self):
@@ -307,6 +335,7 @@ class Driver:
         print("closing driver...", self.adBlocker_name, self.html_obj, self.url)
         if self.driver != None:
             self.driver.quit()
+        # self.vdisplay.stop()
 
     def click_button(self, button):
         try:
@@ -460,8 +489,19 @@ class Driver:
     @timeout(300)
     def test_button(self, tries):
         site = self.all_sites[self.curr_site]
-        outerHTML = self.dictionary[self.adBlocker_name][self.html_obj][site][self.curr_elem]
-        xpath = self.generate_xpath(outerHTML)
+        try:
+            outerHTML = self.dictionary[self.adBlocker_name][self.html_obj][site][self.curr_elem]
+            xpath = self.generate_xpath(outerHTML)
+        except IndexError as e:
+            self.excel_errors_list.append(['IndexError: list is empty', '', '', self.initial_outer_html, '', '', '',
+                           self.url_key, self.driver.current_url, tries])
+            return
+
+        except Exception as e:
+            print(e)
+            self.excel_errors_list.append(["Unknown Exception", '', '', self.initial_outer_html, '', '', '',
+                           self.url_key, self.driver.current_url, tries])
+            return
 
         self.load_site(site)
         self.initial_outer_html = outerHTML
@@ -477,31 +517,34 @@ class Driver:
         if check == "True - Redirect":
             # outer_HTML_change = url
             # Dom_change = new_url
-            write_results([check, '', '', self.initial_outer_html, '', '', '',
+            self.excel_list.append([check, '', '', self.initial_outer_html, '', '', '',
                            self.url, self.driver.current_url, tries])
         elif check == "True - outerHTML change" or check == "True - Stale Element":
-            write_results([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html,
+            self.excel_list.append([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html,
                            self.after_outer_html, '', '', '', '', tries])
 
         elif check == "True? - Local DOM Change":
             # need to figure out algo after find the difference
-            write_results([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html, '',
+            self.excel_list.append([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html, '',
                            self.initial_local_DOM, self.after_local_DOM, '', '', tries])
 
         elif check == "False":
-            write_results([check, "False", "False", self.initial_outer_html, '',
+            self.excel_list.append([check, "False", "False", self.initial_outer_html, '',
                            "", "", '', '', tries])
 
     def click_on_elms(self, tries):
-
         while self.curr_site < len(self.all_sites):
-            self.test_button(tries)
-            self.curr_elem += 1
+            # print(f'curr_site: {self.curr_site}, all_sites: {self.all_sites}, curr_elem: {self.curr_elem}, xpaths: {self.dictionary[self.adBlocker_name][self.html_obj][self.all_sites[self.curr_site]]}')
             if self.curr_elem >= len(self.dictionary[self.adBlocker_name][self.html_obj][self.all_sites[self.curr_site]]):
                 self.curr_site += 1
                 self.curr_elem = 0
-
+            else:
+                self.test_button(tries)
+                self.curr_elem += 1
+            
         self.curr_site = -1
+        self.excel[self.adBlocker_name][self.html_obj][self.url_key] = self.excel_list
+        self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = self.excel_errors_list
 
     ############################################################
 
@@ -524,9 +567,10 @@ class Driver:
                 elm.click()
                 sleep(1)
                 self.load_site(self.url)
-            except Exception:
-                print("error in clicking element or generating xpath")
-            
+            except Exception as e:
+                # print(e)
+                # print("error in clicking element or generating xpath")
+                pass
             all_windows = self.driver.window_handles
 
             # tests for more windows and will close them
@@ -581,10 +625,10 @@ class Driver:
         self.make_unique(final_lst)         # unique by looking at the outerHTML
 
         # the chosen_elms will be the unique outerHTML
-        if len(self.chosen_elms) <= self.no_elms:
-            write_results(f"testing {len(self.chosen_elms)} / {len(self.chosen_elms)}")
-        else:
-            write_results(f"testing {len(self.chosen_elms)} / {self.no_elms}")
+        # if len(self.chosen_elms) <= self.no_elms:
+        #     write_results(f"testing {len(self.chosen_elms)} / {len(self.chosen_elms)}")
+        # else:
+        #     write_results(f"testing {len(self.chosen_elms)} / {self.no_elms}")
 
     def filter(self, element):
 
@@ -615,7 +659,8 @@ class Driver:
                             else:
                                 found_elements.append(element)
                 except Exception as e:
-                    print(e)
+                    self.dictionary['errors'][self.adBlocker_name][self.url_key] = str(e)
+                    print(2, e)
         return found_elements
 
     def find_buttons(self):
@@ -637,7 +682,7 @@ class Driver:
                 return collect()
             except Exception as e:
                 error_message = [str(e).split('\n')[0], "Failed to scrape Site", "", "", ""]
-                write_results(error_message)
+                self.excel_errors_list.append(error_message)
 
     def find_dropdown(self):
         try:
@@ -649,7 +694,7 @@ class Driver:
                 return self.specific_element_finder()
             except Exception as e:
                 error_message = [str(e).split('\n')[0], "Failed to scrape Site", "", "", ""]
-                write_results(error_message)
+                self.excel_errors_list.append(error_message)
 
     def find_links(self):
         def collect():
@@ -669,7 +714,7 @@ class Driver:
                 return collect()
             except Exception as e:
                 error_message = [str(e).split('\n')[0], "Failed to scrape Site", "", "", ""]
-                write_results(error_message)
+                self.excel_errors_list.append(error_message)
 
     def find_login(self):
         def collect():
@@ -689,7 +734,7 @@ class Driver:
                 return collect()
             except Exception as e:
                 error_message = [str(e).split('\n')[0], "Failed to scrape Site", "", "", ""]
-                write_results(error_message)
+                self.excel_errors_list.append(error_message)
 
 
-# shared_driver = Driver()
+# self.driver = Driver()

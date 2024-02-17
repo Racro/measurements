@@ -162,18 +162,18 @@ def start_servers(replay, index, extn):
 
         except subprocess.TimeoutExpired as t:
             print(f'Timeout for num_server: {index}')
-            sys.exit(1)
+            # sys.exit(1)
         except subprocess.CalledProcessError as e:
             print(f'Error for num_server: {index}')
-            sys.exit(1)
+            # sys.exit(1)
 
         except Exception as e:
             print(e)
-            sys.exit(1)
+            # sys.exit(1)
 
     os.chdir(original_directory)
     
-    return processes
+    return processes, get_pid_by_port(port + 2*(index)), get_pid_by_port(port + 2*(index + 1))
 
 def stop_servers(i, ports_list):
     port = 9090
@@ -196,6 +196,8 @@ def stop_servers(i, ports_list):
         print(f"No process with PID {pid1} found.")
     except PermissionError:
         print(f"Permission denied to send signal to process {pid1}.")
+    except Exception as e:
+        print(e)
 
     return ports_list
     
@@ -203,7 +205,7 @@ def get_pid_by_port(port):
     try:
         output = subprocess.check_output(['lsof', '-i', f'tcp:{port}']).decode()
     except subprocess.CalledProcessError as e:
-        print("Error:", subprocess.check_output(['lsof', '-i', 'tcp']).decode())
+        # print("Error:", subprocess.check_output(['lsof', '-i', 'tcp']).decode())
         return None
 
     for line in output.splitlines():
