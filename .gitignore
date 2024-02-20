@@ -21,3 +21,5 @@ out
 **/*.tar.gz
 **/xlsx
 **/data_1000
+**/blacklists
+**/strippeddownblacklist.txt

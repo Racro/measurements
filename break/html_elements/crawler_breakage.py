@@ -37,6 +37,8 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index, 
     print(site)
     # Prepare Chrome
     options = Options()
+    options.add_argument("start-maximized")
+    options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
