@@ -26,9 +26,9 @@ extn_lst = [
     # 'manual'
     'control'
     ,
-    #  'adblock', 
+     'adblock', 
     'ublock'
-    # , 'privacy-badger'
+    , 'privacy-badger'
     #     "ghostery",
     #     "adguard"
     ]
@@ -192,6 +192,7 @@ if __name__ == "__main__":
     websites = []
     for key in updated_dict:
         websites.append(updated_dict[key][0])
+    websites = websites[:2500]
 
     if args.replay:
         websites = json.load(open('data_1000/sites.json', 'r'))
