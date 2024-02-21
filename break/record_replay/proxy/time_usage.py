@@ -104,7 +104,7 @@ def main(num_tries, args_lst, display_num, extn, store_data):
         key = key.split('www.')[1]
 
     a = [] #1
-    for i in range(5):
+    for i in range(6):
         try:
             # Launch Chrome and install our extension for getting HARs
             driver = webdriver.Chrome(options=options)
@@ -262,7 +262,7 @@ if __name__ == '__main__':
 
         url_data = json.load(open(f'json/ublock_diff.json', 'r'))
         websites = list(url_data.keys())
-        # websites = random.sample(websites, 1500)
+        websites = random.sample(websites, 1000)
         website_chunks = list(divide_chunks(websites, SIZE))
 
         print(website_chunks)
