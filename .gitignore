@@ -15,7 +15,7 @@ out
 **/wpr_data
 **/*.xlsx
 **/*.pyc
-**/json/*json
+**/json/*.json
 **/__pycache__
 **/proxy/data
 **/*.tar.gz
@@ -23,3 +23,5 @@ out
 **/data_1000
 **/blacklists
 **/strippeddownblacklist.txt
+**/path_ss
+**/json_time

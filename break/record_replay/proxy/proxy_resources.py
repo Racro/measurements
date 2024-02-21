@@ -34,7 +34,7 @@ start_time = time.time()
 
 from functions import *
 
-def main(num_tries, args_lst, display_num, server, port, all_resources, blacklist, inverse_lookup, regular_lookup):
+def main(num_tries, args_lst, display_num, server, port, all_resources, blacklist, inverse_lookup, regular_lookup, extn):
     print("port with url", port, args_lst[0])
     
     # Start X
@@ -92,9 +92,9 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
 
             # print('11111111111111111111111')
 
-            if args_lst[-1] == 'adblock':
+            if extn == 'adblock':
                 time.sleep(15)
-            elif args_lst[-1] == 'ghostery':
+            elif extn == 'ghostery':
                 windows = self.driver.window_handles
                 for window in windows:
                     try:
@@ -182,7 +182,7 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
         print(2, args_lst[0], e, data_usage.keys())
     # return data_usage
 
-SIZE = 80
+SIZE = 1
 if __name__ == '__main__':
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
@@ -296,7 +296,6 @@ if __name__ == '__main__':
                 name = extensions_path + extension + ".crx"
             else:
                 name = ""
-
             for chunk in website_chunks:
                 # website = "http://" + website
                 jobs = []
@@ -314,7 +313,7 @@ if __name__ == '__main__':
                         
                         port = 8181 + i
                         # ret value is the packets
-                        p = multiprocessing.Process(target=main, args=(1, new_args, display, server, port, all_resources, blacklist, inverse_lookup, regular_lookup))
+                        p = multiprocessing.Process(target=main, args=(1, new_args, display, server, port, all_resources, blacklist, inverse_lookup, regular_lookup, extension))
                         jobs.append(p)
                         # ret = main(1, new_args, proxy)
 
