@@ -146,13 +146,13 @@ def main(num_tries, args_lst, display_num, extn, store_data):
             if extn == 'adblock':
                 time.sleep(15)
             elif extn == 'ghostery':
-                windows = self.driver.window_handles
+                windows = driver.window_handles
                 for window in windows:
                     try:
-                        self.driver.switch_to.window(window)
-                        url_start = self.driver.current_url[:16]
+                        driver.switch_to.window(window)
+                        url_start = driver.current_url[:16]
                         if url_start == 'chrome-extension':
-                            element = self.driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                            element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
                             element.click()
                             time.sleep(2)
                             break

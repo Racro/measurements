@@ -61,14 +61,39 @@ dump_dict['error'] = error
 
 json.dump(dump_dict, open("data_time.json", "w"))
 
+#####
 
+import matplotlib.pyplot as plt
 
-        
+# Example data for 3 extensions, each with 3 lists of data
+ext1_data = dump_dict['avg']['ublock']
+ext2_data = dump_dict['avg']['adblock']
+ext3_data = dump_dict['avg']['privacy-badger']
 
+# Combine all data into a list for easier iteration
+all_data = ext1_data + ext2_data + ext3_data
 
+# Positions for each group of boxplots
+positions = [1, 2, 3, 5, 6, 7, 9, 10, 11]
 
-        
+# Creating the boxplot
+plt.figure(figsize=(10, 6))
+plt.boxplot(all_data, positions=positions)
 
-        
+# Customizing the plot
+plt.title('Boxplot Clusters for Each Extension')
+plt.xlabel('Extension Group')
+plt.ylabel('Value')
+
+# Adding custom x-ticks to denote different clusters
+tick_positions = [2, 6, 10]  # Midpoint of each cluster for labeling
+plt.xticks(tick_positions, ['ublock', 'adblock', 'privacy-badger'])
+
+# Adding grid for better readability
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+# Show the plot
+plt.show()
+
 
         
