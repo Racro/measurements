@@ -1,10 +1,4 @@
-from urllib.parse import urlparse
-
-import requests
-from browsermobproxy import Server
-import tldextract
 import time
-from adblockparser import *
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -32,9 +26,85 @@ from selenium.webdriver.chrome.service import Service
 
 start_time = time.time()
 
-from functions import *
+# from functions import *
 
-def main(num_tries, args_lst, display_num, extn, url_data):
+def write_JSON(name, my_dict):
+    json_file_path = name + ".json"
+    with open(json_file_path, "w") as json_file:
+        json.dump(my_dict, json_file)
+    json_file.close()
+
+def divide_chunks(l, n):
+    # looping till length l
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+def is_loaded(webdriver):
+    return webdriver.execute_script("return document.readyState") == "complete"
+
+def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
+    start_time = time.time()
+    mustend = time.time() + timeout
+    while time.time() < mustend:
+        if is_loaded(webdriver):
+            if time.time() - start_time < min_time:
+                time.sleep(min_time + start_time - time.time())
+            return True
+        time.sleep(period)
+    return False
+    
+def webStats(webdriver):
+    try:
+        navigationStart = webdriver.execute_script("return window.performance.timing.navigationStart")
+        # responseStart = webdriver.execute_script("return window.performance.timing.responseStart")
+        domComplete = webdriver.execute_script("return window.performance.timing.domComplete")
+        loadEnd = webdriver.execute_script("return window.performance.timing.loadEventEnd")
+    except Exception as e:
+        print(e)
+        return -1, -1
+    
+    return domComplete - navigationStart, loadEnd - navigationStart
+
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+def setup_driver(options, timeout):
+    # capabilities = DesiredCapabilities.CHROME
+    # capabilities['goog:loggingPrefs'] = {'browser': 'ALL', 'driver': 'ALL'}
+    options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
+    # options.add_experimental_option('w3c', False)
+    # options.add_experimental_option('goog:loggingPrefs', {'browser': 'ALL'})
+    # driver = webdriver.Chrome(desired_capabilities=capabilities, options=options)
+    driver = webdriver.Chrome(options=options)
+    driver.set_page_load_timeout(timeout)
+    time.sleep(2)
+
+    if extn == 'adblock':
+        time.sleep(15)
+    elif extn == 'ghostery':
+        windows = driver.window_handles
+        for window in windows:
+            try:
+                driver.switch_to.window(window)
+                url_start = driver.current_url[:16]
+                if url_start == 'chrome-extension':
+                    element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                    element.click()
+                    time.sleep(2)
+                    break
+            except Exception as e:
+                print('ghostery', 1, e)
+                return 0
+    return driver
+
+def check_for_errors(driver):
+    logs = driver.get_log('browser')
+    for entry in logs:
+        if entry['level'] == 'SEVERE':
+            print(f"Critical error detected: {entry['message']}")
+            # return True
+    return False
+
+def main(num_tries, args_lst, display_num, extn, store_data):
    
     # display number
     os.environ['DISPLAY'] = f":{display_num}"
@@ -54,85 +124,45 @@ def main(num_tries, args_lst, display_num, extn, url_data):
         "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
 
     options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
-    # if args_lst[-1] != "":
-    #     options.add_extension(args_lst[-1])
-
-    # path_ss = '/home/ritik/work/pes/measurements/break/record_replay/proxy/ss'
-    index = 0
+    if args_lst[-1] != "":
+        options.add_extension(args_lst[-1])
 
     driver = ''
-    for i in range(num_tries):
-        # Launch Chrome and install our extension for getting HARs
-        driver = webdriver.Chrome(options=options)
-        driver.set_page_load_timeout(args_lst[1])
+    data = []
+    website = args_lst[0]
+    key = ''
+    if 'http' in website:
+        key = website.split('http://')[1]
+    if 'www' in key:
+        key = key.split('www.')[1]
+
+    for i in range(3):
+        driver = setup_driver(options, args_lst[1])
+
+        try:
+            print("website: ", website)
+            driver.get(website)
+            wait_until_loaded(driver, args_lst[1])
+            time.sleep(2)
+
+            # Optionally, perform some actions here
+            if check_for_errors(driver):
+                print("Page might have issues.")
+            else:
+                print("No critical issues detected.")
+            
+            break
+        except Exception as e:
+            print(e)
+
+    # Stop Selenium and BrowserMob Proxy
+    if driver != '':
+        driver.quit()
         time.sleep(2)
 
-        if extn == 'adblock':
-            time.sleep(15)
-        elif extn == 'ghostery':
-            windows = driver.window_handles
-            for window in windows:
-                try:
-                    driver.switch_to.window(window)
-                    url_start = driver.current_url[:16]
-                    if url_start == 'chrome-extension':
-                        element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
-                        element.click()
-                        time.sleep(2)
-                        break
-                except Exception as e:
-                    print('ghostery', 1, e)
-                    return 0
+    store_data[extn].append(data)
 
-        for missing in url_data:
-            try:
-                resource_url = missing[-1]
-                website = args_lst[0]
-
-                print("website: ", website)
-                driver.get(website)
-                wait_until_loaded(driver, args_lst[1])
-                time.sleep(2)
-
-                # Find any element that contains the resource URL in any of its attributes
-                elements = driver.find_elements(By.XPATH, f"//*[@*='{resource_url}']")
-
-                if elements:
-                    print(f"Found {len(elements)} element(s) containing the resource URL.")
-                    for element in elements:
-                        # Take a screenshot of each element
-                        # Create the directory if it does not exist
-                        if 'http' in website:
-                            website = website.split('http://')[1]
-                        if 'www' in website:
-                            website = website.split('www.')[1]
-
-                        path_site = f'path_ss/{extn}/{website}'
-                        if not os.path.exists(path_site):
-                            os.makedirs(path_site)
-                        screenshot_filename = os.path.join(path_site, f"element_screenshot_{index}.png")
-                        try:
-                            element.screenshot(screenshot_filename)
-                            print(screenshot_filename)
-                            index = index + 1
-                            print(f"Screenshot of element {index} saved as '{screenshot_filename}'.")
-                        except Exception as e:
-                            print(e)
-                            
-                else:
-                    print("No elements containing the specified resource URL were found.")
-
-            except Exception as e:
-                print(1, e, args_lst[0])
-
-            time.sleep(2)
-
-        # Stop Selenium and BrowserMob Proxy
-        if driver != '':
-            driver.quit()
-            time.sleep(2)
-
-SIZE = 10
+SIZE = 1
 if __name__ == '__main__':
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
@@ -172,18 +202,19 @@ if __name__ == '__main__':
             #     data_dict[extn] = [ret, contacted_urls]
 
     else:
-        # extensions = ["ublock", "privacy-badger", "adblock"]
-        extensions = ["privacy-badger", "adblock"]
-        extensions_dictionary = {}
+        extensions = ["ublock", "privacy-badger", "adblock"]
+        extensions_dictionary = manager.dict()
 
+        websites = json.load(open(f'sites.json', 'r'))
+        websites = random.sample(websites, 1500)
+        websites = ['http://www.nytimes.com']
+        website_chunks = list(divide_chunks(websites, SIZE))
+
+        print(website_chunks)
         # generates extensions dictionary with just the ad blocker extension names
         for extension in extensions:
-            extensions_dictionary[extension] = None
-            url_data = json.load(open(f'json/{extension}_diff.json', 'r'))
-
-            websites = list(url_data.keys())
-            website_chunks = list(divide_chunks(websites, SIZE))
-
+            extensions_dictionary[extension] = manager.list()
+            
             if extension != "control":
                 name = extensions_path + extension + ".crx"
             else:
@@ -203,16 +234,8 @@ if __name__ == '__main__':
                         args_lst = [website, args.timeout]
                         new_args = args_lst
                         new_args.append(name)
-                        
-                        image_resources = []
-                        for missing in url_data[website]['missing']:
-                            if 'image' in missing[1]:
-                                image_resources.append(missing)
 
-                        if image_resources == []:
-                            continue
-
-                        p = multiprocessing.Process(target=main, args=(1, new_args, display, extension, image_resources))
+                        p = multiprocessing.Process(target=main, args=(3, new_args, display, extension, extensions_dictionary))
                         jobs.append(p)
                         # ret = main(1, new_args, proxy)
 
@@ -240,7 +263,7 @@ if __name__ == '__main__':
 
                 for job in jobs:
                     print(f"joining {job}")
-                    job.join(timeout = 120)
+                    job.join(timeout = 60)
 
                     if job.is_alive():
                         job.terminate()
@@ -254,6 +277,15 @@ if __name__ == '__main__':
                 print("-"*50)
 
                 time.sleep(5)
+
+            save_dict = {}
+            for extn in extensions:
+                save_dict[extn] = []
+            for lst in extensions_dictionary[extension]:
+                save_dict[extension].append(lst)
+            write_JSON(extension, save_dict)
+            # extensions_dictionary[extension] = save_dict
+            # all_resources = {}
 
 
 
