@@ -221,7 +221,7 @@ class Driver:
 
         # during replay phase
         if self.replay:
-            file_path = f"data_1000/json/{self.html_obj}_control.json"
+            file_path = f"data_2500/json/{self.html_obj}_control.json"
             # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
             # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
 

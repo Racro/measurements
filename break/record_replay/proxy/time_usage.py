@@ -78,7 +78,7 @@ def main(num_tries, args_lst, display_num, extn, store_data):
     
     # Initialize Selenium
     options = Options()
-    options.add_argument("start-maximized")
+    # options.add_argument("start-maximized")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
@@ -104,13 +104,12 @@ def main(num_tries, args_lst, display_num, extn, store_data):
         key = key.split('www.')[1]
 
     a = [] #1
-    for i in range(5):
-        try:
+    driver = webdriver.Chrome(options=options)
+    driver.set_page_load_timeout(args_lst[1])
+    time.sleep(2)
+    try:
+        for i in range(6):
             # Launch Chrome and install our extension for getting HARs
-            driver = webdriver.Chrome(options=options)
-            driver.set_page_load_timeout(args_lst[1])
-            time.sleep(2)
-
             try:
                 print("website: ", website)
                 driver.get(website)
@@ -121,44 +120,45 @@ def main(num_tries, args_lst, display_num, extn, store_data):
             except Exception as e:
                 print(1, e)
                 continue
-        except Exception as e:
-            continue
-        time.sleep(2)
-    data.append(a)
-    store_data[extn][key] = data
+            time.sleep(5)
+        data.append(a)
+        store_data[extn][key] = data
 
-    # Stop Selenium and BrowserMob Proxy
-    if driver != '':
-        driver.quit()
-        time.sleep(2)
+        # Stop Selenium and BrowserMob Proxy
+        if driver != '':
+            driver.quit()
+            time.sleep(2)
+    
+    except Exception as e:
+        print(11, e)
 
     a = [] #2
     if args_lst[-1] != "":
         options2 = options
         options2.add_extension(args_lst[-1])
-    for i in range(5):
-        try: 
-            # Launch Chrome and install our extension for getting HARs
-            driver = webdriver.Chrome(options=options2)
-            driver.set_page_load_timeout(args_lst[1])
-            time.sleep(2)
+    driver = webdriver.Chrome(options=options2)
+    driver.set_page_load_timeout(args_lst[1])
+    time.sleep(2)
 
-            if extn == 'adblock':
-                time.sleep(15)
-            elif extn == 'ghostery':
-                windows = self.driver.window_handles
-                for window in windows:
-                    try:
-                        self.driver.switch_to.window(window)
-                        url_start = self.driver.current_url[:16]
-                        if url_start == 'chrome-extension':
-                            element = self.driver.find_element(By.XPATH, "//ui-button[@type='success']")
-                            element.click()
-                            time.sleep(2)
-                            break
-                    except Exception as e:
-                        print('ghostery', 1, e)
-                        return 0
+    if extn == 'adblock':
+        time.sleep(15)
+    elif extn == 'ghostery':
+        windows = self.driver.window_handles
+        for window in windows:
+            try:
+                self.driver.switch_to.window(window)
+                url_start = self.driver.current_url[:16]
+                if url_start == 'chrome-extension':
+                    element = self.driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                    element.click()
+                    time.sleep(2)
+                    break
+            except Exception as e:
+                print('ghostery', 1, e)
+                return 0
+    try:
+        for i in range(5):
+            # Launch Chrome and install our extension for getting HARs
             try:
                 print("website: ", website)
                 driver.get(website)
@@ -170,27 +170,27 @@ def main(num_tries, args_lst, display_num, extn, store_data):
             except Exception as e:
                 print(2, e)
                 continue
-        except Exception as e:
-            print(4, e)
-            continue
     
-        time.sleep(2)
-    data.append(a)
-    store_data[extn][key] = data
+            time.sleep(5)
+        data.append(a)
+        store_data[extn][key] = data
 
-    # Stop Selenium and BrowserMob Proxy
-    if driver != '':
-        driver.quit()
-        time.sleep(2)
+        # Stop Selenium and BrowserMob Proxy
+        if driver != '':
+            driver.quit()
+            time.sleep(2)
+    
+    except Exception as e:
+        print(4, e)
 
     a = [] #3
-    for i in range(5):
-        # Launch Chrome and install our extension for getting HARs
-        try:
-            driver = webdriver.Chrome(options=options)
-            driver.set_page_load_timeout(args_lst[1])
-            time.sleep(2)
-
+    driver = webdriver.Chrome(options=options)
+    driver.set_page_load_timeout(args_lst[1])
+    time.sleep(2)
+    
+    try:
+        for i in range(5):
+            # Launch Chrome and install our extension for getting HARs
             try:
                 print("website: ", website)
                 driver.get(website)
@@ -202,22 +202,23 @@ def main(num_tries, args_lst, display_num, extn, store_data):
             except Exception as e:
                 print(3, e)
                 continue
-        except Exception as e:
-            print(5, e)
-            continue
+            
+            time.sleep(5)
+        data.append(a)
+        store_data[extn][key] = data
+
+        # Stop Selenium and BrowserMob Proxy
+        if driver != '':
+            driver.quit()
+            time.sleep(2)
         
-        time.sleep(2)
-    data.append(a)
-    store_data[extn][key] = data
+    except Exception as e:
+        print(5, e)
 
-    # Stop Selenium and BrowserMob Proxy
-    if driver != '':
-        driver.quit()
-        time.sleep(2)
 
     store_data[extn][key] = data
 
-SIZE = 80
+SIZE = 40
 if __name__ == '__main__':
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
@@ -257,12 +258,13 @@ if __name__ == '__main__':
             #     data_dict[extn] = [ret, contacted_urls]
 
     else:
-        extensions = ["ublock", "privacy-badger", "adblock"]
+        # extensions = ["ublock", "privacy-badger", "adblock"]
+        extensions = ["adblock"]
         extensions_dictionary = manager.dict()
 
         url_data = json.load(open(f'json/ublock_diff.json', 'r'))
         websites = list(url_data.keys())
-        # websites = random.sample(websites, 1500)
+        websites = random.sample(websites, 1000)
         website_chunks = list(divide_chunks(websites, SIZE))
 
         print(website_chunks)
