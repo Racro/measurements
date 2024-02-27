@@ -156,7 +156,7 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index, 
 
         driver_dict[html].close()
 
-SIZE = 40
+SIZE = 80
 port = 9090
 
 #### MITCH
@@ -195,7 +195,8 @@ if __name__ == "__main__":
     websites = websites[:2500]
 
     if args.replay:
-        websites = json.load(open('data_1000/sites.json', 'r'))
+        websites = json.load(open('data_2500/sites.json', 'r'))
+        websites = random.sample(websites, 300)
         # websites = websites[3:13]
         # websites = ['http://www.2chan.net']
 
