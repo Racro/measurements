@@ -40,12 +40,14 @@ for extn in extn_lst:
         during.remove([-1, -1])
         post.remove([-1, -1])
 
-        if len(pre) < 2 or len(post) < 2:
+        if len(pre) < 2 or len(post) < 2 or len(during) < 2:
             if len(during) == 0:
                 error[extn] += 1 
             continue
         
         pre = pre[1:] # to account for cache change
+        during = during[1:] # to account for cache change
+        prost = post[1:] # to account for cache change
 
         ret = avg([pre, during, post])
         ret2 = last_index([pre, during, post])

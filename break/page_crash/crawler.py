@@ -96,12 +96,22 @@ def setup_driver(options, timeout):
                 return 0
     return driver
 
-def check_for_errors(driver):
+def check_for_errors(driver, key_website):
     logs = driver.get_log('browser')
     for entry in logs:
         if entry['level'] == 'SEVERE':
-            print(f"Critical error detected: {entry['message']}")
-            # return True
+            if 'status of 404' in entry['message'] or 'crash' in entry['message']:
+                website = entry['message'].split(' ')[0]
+                if 'https' in website:
+                    key = website.split('https://')[1]
+                elif 'http' in website:
+                    key = website.split('https://')[1]
+                if 'www' in key:
+                    key = key.split('www.')[1]
+                
+                if key_website == key:
+                    print(entry['message'])
+                    return True
     return False
 
 def main(num_tries, args_lst, display_num, extn, store_data):
@@ -136,7 +146,7 @@ def main(num_tries, args_lst, display_num, extn, store_data):
     if 'www' in key:
         key = key.split('www.')[1]
 
-    for i in range(3):
+    for i in range(1):
         driver = setup_driver(options, args_lst[1])
 
         try:
@@ -146,7 +156,8 @@ def main(num_tries, args_lst, display_num, extn, store_data):
             time.sleep(2)
 
             # Optionally, perform some actions here
-            if check_for_errors(driver):
+            if check_for_errors(driver, key):
+                store_data[extn].append(website)
                 print("Page might have issues.")
             else:
                 print("No critical issues detected.")
@@ -160,9 +171,7 @@ def main(num_tries, args_lst, display_num, extn, store_data):
         driver.quit()
         time.sleep(2)
 
-    store_data[extn].append(data)
-
-SIZE = 1
+SIZE = 10
 if __name__ == '__main__':
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
@@ -202,12 +211,12 @@ if __name__ == '__main__':
             #     data_dict[extn] = [ret, contacted_urls]
 
     else:
-        extensions = ["ublock", "privacy-badger", "adblock"]
+        extensions = ["control", "ublock", "privacy-badger", "adblock"]
         extensions_dictionary = manager.dict()
 
         websites = json.load(open(f'sites.json', 'r'))
-        websites = random.sample(websites, 1500)
-        websites = ['http://www.nytimes.com']
+        websites = random.sample(websites, 1000)
+        # websites = ['http://open.spotify.com/genre/2016-page']
         website_chunks = list(divide_chunks(websites, SIZE))
 
         print(website_chunks)
