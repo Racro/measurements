@@ -24,10 +24,11 @@ from Excel import *
         
 extn_lst = [
     # 'manual'
-    'control'
-    ,
-     'adblock', 
-    'ublock'
+    # 'control'
+    # ,
+     'adblock'
+    #  , 
+    # 'ublock'
     , 'privacy-badger'
     #     "ghostery",
     #     "adguard"
@@ -156,7 +157,7 @@ def run(site, extn, return_dict, l, replay, temp_port1, driver_dict, wpr_index, 
 
         driver_dict[html].close()
 
-SIZE = 80
+SIZE = 40
 port = 9090
 
 #### MITCH
@@ -192,7 +193,7 @@ if __name__ == "__main__":
     websites = []
     for key in updated_dict:
         websites.append(updated_dict[key][0])
-    websites = websites[:2500]
+    websites = websites[1500:2500]
 
     if args.replay:
         websites = json.load(open('data_2500/sites.json', 'r'))

@@ -218,7 +218,7 @@ def main(num_tries, args_lst, display_num, extn, store_data):
 
     store_data[extn][key] = data
 
-SIZE = 40
+SIZE = 60
 if __name__ == '__main__':
     # Parse the command line arguments
     parser = argparse.ArgumentParser()
