@@ -16,6 +16,11 @@ import sys
 import random
 import math
 import signal
+import inspect
+
+def error(fname, err):
+    print(f'Function Name: {fname}')
+    print(f'Error: {err}')
 
 def check_port(port):
     try:
@@ -26,7 +31,10 @@ def check_port(port):
         else:
             return False
     except subprocess.CalledProcessError as e:
-        print(f"An error occurred: {e}")
+        error(inspect.currentframe().f_code.co_name, e)
+        return False
+    except Exception as e:
+        error(inspect.currentframe().f_code.co_name, e)
         return False
 
 def divide_chunks(l, n):
@@ -58,7 +66,8 @@ def remove_popup(driver):
         close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
     except Exception as e:
         # print(close_button, close_anchor)
-        print('close_button find element error', 1, e)
+        error(inspect.currentframe().f_code.co_name, e)
+        # print('close_button find element error', 1, e)
 
     close_button.extend(close_anchor)
     if len(close_button) > 0:
@@ -68,7 +77,8 @@ def remove_popup(driver):
                 i.click()
 
             except Exception as e:
-                print('popup', 2, e)
+                error(inspect.currentframe().f_code.co_name, e)
+                # print('popup', 2, e)
 
 # could possibly make the driver stale. plz check!
 def remove_alert(driver):
@@ -80,7 +90,8 @@ def remove_alert(driver):
         WebDriverWait(driver, 5).until(EC.alert_is_present())
     except Exception as e:
         alert_find = 0
-        print("No alert present.", 1, e)
+        # error(inspect.currentframe().f_code.co_name, e)
+        # print("No alert present.", 1, e)
 
     # Wait for the modal to be visible
     try: 
@@ -89,7 +100,8 @@ def remove_alert(driver):
         )
     except Exception as e:
         alert_find = 0
-        print('modal element not found', 2, e)
+        # print('modal element not found', 2, e)
+        # error(inspect.currentframe().f_code.co_name, e)
 
     if alert_find:
         try:
@@ -103,28 +115,68 @@ def remove_alert(driver):
 
             # If you need to dismiss the alert (clicks "Cancel"), use: alert.dismiss()
         except Exception as e:
-            print("couldn't switch to alert", 3, e)
+            error(inspect.currentframe().f_code.co_name, e)
+            # print("couldn't switch to alert", 3, e)
 
 def remove_cmp_banner(options):
     options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/Consent-O-Matic.crx')
     return options
         
 # this removes captcha and brings determinism
-def use_catapult(options, fname, port, wpr_index):
-    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}_{wpr_index}"
+def use_catapult(options, fname, port1, port2):
+    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}_{port1}"
     if not os.path.exists(folder_path):
     # Create the folder
         os.makedirs(folder_path)
 
-    # options.add_argument('--ignore-certificate-errors')
-    options.add_argument(f'--user-data-dir={folder_path}')
+    # options.add_argument(f'--user-data-dir={folder_path}')
     # options.add_argument(folder_path)
-    options.add_argument(f'--host-resolver-rules="MAP *:80 127.0.0.1:{port},MAP *:443 127.0.0.1:{port+1},EXCLUDE localhost"')
+    options.add_argument(f'--host-resolver-rules="MAP *:80 127.0.0.1:{port1},MAP *:443 127.0.0.1:{port2},EXCLUDE localhost"')
     options.add_argument('--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=')
     return options
 
-def start_servers(replay, index, extn):
-    port = 9090
+def check_if_ports_open(ports_list):
+    for port in ports_list:
+        pid1 = get_pid_by_port(port)
+        if pid1 == None:
+            return False
+    return True
+
+def get_used_ports():
+    # Execute the ss command to get a list of used ports
+    result = subprocess.run(['ss', '-tuln'], stdout=subprocess.PIPE, text=True)
+    lines = result.stdout.split('\n')
+
+    used_ports = set()
+    for line in lines:
+        if 'LISTEN' in line:
+            parts = line.split()
+            # Extract the port number from the last column, which is in the form *:port or [::]:port
+            port = parts[-1].split(':')[-1]
+            if port.isdigit():
+                used_ports.add(int(port))
+    return used_ports
+
+def get_ports(max_ports=200):
+    start_port = 10001
+    used_ports = get_used_ports()
+    available_ports = []
+
+    for port in range(start_port, 65536):
+        if len(available_ports) >= max_ports:
+            break
+        if port not in used_ports:
+            available_ports.append(port)
+
+    return available_ports
+
+def start_servers(replay, num_servers, extn, reset, ports_list):
+    if reset == 1:
+        # if reset , the ports list remain the same for the filename to be the same
+        stop_servers(ports_list)
+    else:
+        ports_list = get_ports(num_servers)
+    
     processes = []
 
     folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
@@ -138,15 +190,15 @@ def start_servers(replay, index, extn):
     # Change to the target directory
     os.chdir(target_directory)
 
-    for i in range(2):
-        temp_port1 = port + 2*(index + i)
-        temp_port2 = port + 2*(index + i) + 1
+    for port in range(len(ports_list)):
+        temp_port1 = ports_list[port]
+        temp_port2 = ports_list[port + 1]
         print(f'starting servers with ports: {temp_port1} {temp_port2}')
         try:
             if replay:
-                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{index+i}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{port}.wprgo']
             else:
-                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{index+i}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{port}.wprgo']
 
             process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = sys.stdout, stderr = sys.stdout)
             print('functions.py', process, process.pid)
@@ -157,47 +209,43 @@ def start_servers(replay, index, extn):
                 time.sleep(2)
                 if check_port(temp_port1):
                     break
-            # out, err = process.communicate()
-            # print(out.decode('utf-8'), err.decode('utf-8'))
+            port += 1
 
         except subprocess.TimeoutExpired as t:
             print(f'Timeout for num_server: {index}')
             # sys.exit(1)
         except subprocess.CalledProcessError as e:
-            print(f'Error for num_server: {index}')
+            # print(f'Error for num_server: {index}')
+            error(inspect.currentframe().f_code.co_name, e)
             # sys.exit(1)
 
         except Exception as e:
-            print(e)
+            error(inspect.currentframe().f_code.co_name, e)
+            # print(e)
             # sys.exit(1)
 
     os.chdir(original_directory)
     
-    return processes, get_pid_by_port(port + 2*(index)), get_pid_by_port(port + 2*(index + 1))
+    return processes, ports_list
 
-def stop_servers(i, ports_list):
-    port = 9090
-    try:
-        pid1 = get_pid_by_port(port+2*(i))
-        pid2 = get_pid_by_port(port+2*(i+1))
-        print(pid1, pid2)
-        
-        if pid1 != None:
-            os.kill(int(pid1), signal.SIGINT)
-            time.sleep(2)
-        ports_list.remove(port+2*(i))
-
-        if pid2 != None:
-            os.kill(int(pid2), signal.SIGINT)
-            time.sleep(2)
-        ports_list.remove(port+2*(i+1))
-
-    except ProcessLookupError:
-        print(f"No process with PID {pid1} found.")
-    except PermissionError:
-        print(f"Permission denied to send signal to process {pid1}.")
-    except Exception as e:
-        print(e)
+def stop_servers(ports_list):
+    for port in ports_list:
+        try:
+            pid = get_pid_by_port(ports_list[port])
+            print(pid)
+            
+            if pid != None:
+                print(f'{port} is not open')
+                os.kill(int(pid), signal.SIGINT)
+                time.sleep(2)
+            ports_list.remove(port)
+        except ProcessLookupError:
+            print(f"No process with PID {pid} found.")
+        except PermissionError:
+            print(f"Permission denied to send signal to process {pid}.")
+        except Exception as e:
+            # print(e)
+            error(inspect.currentframe().f_code.co_name, e)
 
     return ports_list
     
@@ -207,10 +255,99 @@ def get_pid_by_port(port):
     except subprocess.CalledProcessError as e:
         # print("Error:", subprocess.check_output(['lsof', '-i', 'tcp']).decode())
         return None
+    except Exception as e:
+        print(e)
+        return None
 
     for line in output.splitlines():
         if "LISTEN" in line:
             parts = line.split()
             return parts[1]  # PID is typically in the second column
-
     return None
+
+def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num):
+    # Prepare Chrome
+    options = Options()
+    options.add_argument("start-maximized")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-animations")
+    options.add_argument("--disable-web-animations")
+    options.add_argument("--disable-gpu")
+
+    options.add_argument("--disable-features=IsolateOrigins,site-per-process")
+    options.add_argument("--disable-features=AudioServiceOutOfProcess")
+    options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
+    options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
+
+    # # only use when vdisplay off
+    # options.add_argument("--window-size=1920,1280")
+
+    options = remove_cmp_banner(options)
+    options = use_catapult(options, extn, temp_port1, temp_port2)
+
+    if extn != 'control' and extn != 'manual':
+        options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
+    
+    # display number
+    os.environ['DISPLAY'] = f":{display_num}"
+
+    for html in driver_dict.keys():
+        retval = driver_dict[html].initialize(options, 3, site)
+        
+        if retval == 0:
+            e = f'error open browser instance for extn:{extn} and html:{html}'
+            error(inspect.currentframe().f_code.co_name, e)
+            driver_dict[html] = None
+            continue
+        
+        if replay == 0: # can add clicking on the buttons
+            #### Manual Analysis
+            if extn == 'manual':
+                try:
+                    url = site
+                    if driver_dict[html].load_site(url):
+                        # scroll
+                        driver_dict[html].scroll()
+                except TimeoutException as e:
+                    print(f"Timeout url:{url}")
+                    e = str(e).split("\n")[0]
+                    error(inspect.currentframe().f_code.co_name, e)
+                  
+                except Exception as e:
+                    e = str(e).split("\n")[0]
+                    error(inspect.currentframe().f_code.co_name, e)
+
+            else:
+            # scan + click
+                try:
+                    url = site
+                    if driver_dict[html].load_site(url):
+                        driver_dict[html].scan_page()
+                except TimeoutException as e:
+                    print(f"Timeout url:{url}")
+                    e = str(e).split("\n")[0]
+                    error(inspect.currentframe().f_code.co_name, e)
+                  
+                except Exception as e:
+                    e = str(e).split("\n")[0]
+                    error(inspect.currentframe().f_code.co_name, e)
+
+
+        if replay:
+            # click and compare
+            tries = 1
+            while driver_dict[html].curr_site > -1:
+                try:
+                    driver_dict[html].click_on_elms(tries)
+                except Exception as e:
+                    result = error_catcher(e, driver_dict[html], tries, driver_dict[html].url)
+                    if type(result) is int:
+                        tries = result
+                    else:
+                        print(driver_dict[html].url, "\t", result, driver_dict[html].initial_outer_html)
+                        tries = 1
+                        driver_dict[html].tries = 1
+                        driver_dict[html].curr_elem += 1
+
+        driver_dict[html].close()

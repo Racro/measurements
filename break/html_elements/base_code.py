@@ -6,6 +6,7 @@ import functools
 import json
 from time import sleep
 from pyvirtualdisplay import Display
+import inspect
 
 # import pyautogui
 import requests
@@ -41,22 +42,6 @@ options.add_argument(
 
 options.binary_location = '/usr/local/bin/chrome_113/chrome'
 
-# folder_path = f"/home/chatacter/wpr_data/"
-# if not os.path.exists(folder_path):
-# # Create the folder
-#     os.makedirs(folder_path)
-#
-# # options.add_argument('--ignore-certificate-errors')
-# options.add_argument(folder_path)
-# options.add_argument(f'--host-resolver-rules="MAP *:80 127.0.0.1:9090,MAP *:443 127.0.0.1:9091,EXCLUDE localhost')
-# options.add_argument('--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=')
-
-"""
-cd /go/src/catapult/web_page_replay_go
-
-go run src/wpr.go record --http_port=9090 --https_port=9091 ~/control.wprgo
-go run src/wpr.go replay --http_port=9090 --https_port=9091 ~/control.wprgo
-"""
 
 attributes_dict = {
     "buttons": {
@@ -213,7 +198,8 @@ class Driver:
                 break
             except Exception as e:
                 if num_tries == 0:
-                    print(1, e)
+                    error(inspect.currentframe().f_code.co_name, e)
+                    # print(1, e)
                     return 0
                 else:
                     print("couldn't create browser session... trying again")
@@ -240,7 +226,8 @@ class Driver:
                 print(f"site not found in json --- site:{self.url_key}, extn:{self.adBlocker_name}, html: {self.html_obj}")
                 return 0
             except Exception as e:
-                print(4, e)
+                error(inspect.currentframe().f_code.co_name, e)
+                # print(4, e)
                 return 0
         
         time.sleep(2)
@@ -259,7 +246,8 @@ class Driver:
                         time.sleep(2)
                         break
                 except Exception as e:
-                    print('ghostery', 1, e)
+                    error(inspect.currentframe().f_code.co_name, e)
+                    # print('ghostery', 1, e)
                     return 0
         return 1
 
@@ -296,7 +284,8 @@ class Driver:
 
         except Exception as e:
             self.dictionary['errors'][self.adBlocker_name][self.url_key] = str(e)
-            print(3, e)
+            # print(3, e)
+            error(inspect.currentframe().f_code.co_name, e)
             self.seen_sites.append(url)
             return False
         
@@ -358,6 +347,7 @@ class Driver:
             else:
                 return False
         except Exception as e:
+            error(inspect.currentframe().f_code.co_name, e)
             return False
 
     def check_redirect(self, url):
@@ -498,7 +488,8 @@ class Driver:
             return
 
         except Exception as e:
-            print(e)
+            # print(e)
+            error(inspect.currentframe().f_code.co_name, e)
             self.excel_errors_list.append(["Unknown Exception", '', '', self.initial_outer_html, '', '', '',
                            self.url_key, self.driver.current_url, tries])
             return
@@ -660,7 +651,8 @@ class Driver:
                                 found_elements.append(element)
                 except Exception as e:
                     self.dictionary['errors'][self.adBlocker_name][self.url_key] = str(e)
-                    print(2, e)
+                    # print(2, e)
+                    error(inspect.currentframe().f_code.co_name, e)
         return found_elements
 
     def find_buttons(self):
