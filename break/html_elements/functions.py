@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException
+from selenium.common.exceptions import TimeoutException
 
 import time 
 import multiprocessing
@@ -17,6 +18,8 @@ import random
 import math
 import signal
 import inspect
+
+import logging
 
 def error(fname, err):
     print(f'Function Name: {fname}')
@@ -139,6 +142,8 @@ def check_if_ports_open(ports_list):
     for port in ports_list:
         pid1 = get_pid_by_port(port)
         if pid1 == None:
+            print(port)
+            time.sleep(100)
             return False
     return True
 
@@ -157,8 +162,7 @@ def get_used_ports():
                 used_ports.add(int(port))
     return used_ports
 
-def get_ports(max_ports=200):
-    start_port = 10001
+def get_ports(max_ports=200, start_port = 10001):
     used_ports = get_used_ports()
     available_ports = []
 
@@ -170,18 +174,17 @@ def get_ports(max_ports=200):
 
     return available_ports
 
-def start_servers(replay, num_servers, extn, reset, ports_list):
+def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
     if reset == 1:
-        # if reset , the ports list remain the same for the filename to be the same
+        # if reset, the ports list remain the same for the filename to be the same
         stop_servers(ports_list)
-    else:
-        ports_list = get_ports(num_servers)
+    ports_list = get_ports(num_servers*2, start_port)
     
     processes = []
 
     folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
     if not os.path.exists(folder_path):
-    # Create the folder
+        # Create the folder
         os.makedirs(folder_path)
 
     original_directory = os.getcwd()
@@ -190,18 +193,19 @@ def start_servers(replay, num_servers, extn, reset, ports_list):
     # Change to the target directory
     os.chdir(target_directory)
 
-    for port in range(len(ports_list)):
+    port = 0
+    for counter in range(num_servers):
         temp_port1 = ports_list[port]
         temp_port2 = ports_list[port + 1]
         print(f'starting servers with ports: {temp_port1} {temp_port2}')
         try:
             if replay:
-                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{port}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
             else:
-                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{port}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
 
             process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = sys.stdout, stderr = sys.stdout)
-            print('functions.py', process, process.pid)
+            print('start servers', process, process.pid)
             processes.append(process)
             # os.system(" ".join(cmd))
             while True:
@@ -209,7 +213,6 @@ def start_servers(replay, num_servers, extn, reset, ports_list):
                 time.sleep(2)
                 if check_port(temp_port1):
                     break
-            port += 1
 
         except subprocess.TimeoutExpired as t:
             print(f'Timeout for num_server: {index}')
@@ -223,6 +226,8 @@ def start_servers(replay, num_servers, extn, reset, ports_list):
             error(inspect.currentframe().f_code.co_name, e)
             # print(e)
             # sys.exit(1)
+        
+        port += 2
 
     os.chdir(original_directory)
     
@@ -231,13 +236,14 @@ def start_servers(replay, num_servers, extn, reset, ports_list):
 def stop_servers(ports_list):
     for port in ports_list:
         try:
-            pid = get_pid_by_port(ports_list[port])
-            print(pid)
+            pid = get_pid_by_port(port)
+            print('pid:', pid)
             
             if pid != None:
-                print(f'{port} is not open')
                 os.kill(int(pid), signal.SIGINT)
                 time.sleep(2)
+            else:
+                print(f'{port} is already closed')
             ports_list.remove(port)
         except ProcessLookupError:
             print(f"No process with PID {pid} found.")
@@ -266,8 +272,10 @@ def get_pid_by_port(port):
     return None
 
 def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num):
+    logging.basicConfig(level=logging.ERROR)
     # Prepare Chrome
     options = Options()
+    options.set_capability('goog:logginPrefs', {'browser': 'ALL'})
     options.add_argument("start-maximized")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
@@ -323,6 +331,11 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num):
                 try:
                     url = site
                     if driver_dict[html].load_site(url):
+                        driver_dict[html].take_ss(f'page_ss/{site}.png')
+                        # scroll
+                        driver_dict[html].scroll()
+
+                        # scan page 
                         driver_dict[html].scan_page()
                 except TimeoutException as e:
                     print(f"Timeout url:{url}")
@@ -349,5 +362,15 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num):
                         tries = 1
                         driver_dict[html].tries = 1
                         driver_dict[html].curr_elem += 1
+
+        logs = driver_dict[html].get_logs()
+        with open(f'logs/{extn}_{html}.txt', 'a') as f:
+            f.write(f'{site}\n')
+            for log in logs:
+                f.write(log['level'])
+                f.write('\n')
+                f.write(log['message'])
+                f.write('\n')
+        f.close()
 
         driver_dict[html].close()

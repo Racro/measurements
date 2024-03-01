@@ -32,9 +32,9 @@ extn_lst = [
     # , 'privacy-badger'
     ]
 
-
-SIZE = 10
+SIZE = 50
 port = 9090
+start_port = 11001
 
 HTML_TEST = {'buttons', "drop downs", "links", "login"}
 # HTML_TEST = {"drop downs"}#, "links", "login"}
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # initial data structures
-    ports_list = []
+    master_port_list = []
     websites = []
     manager = multiprocessing.Manager()
     data_dict = manager.dict()
@@ -99,13 +99,14 @@ if __name__ == "__main__":
         os.system('rm -rf wpr_data/*')
 
     # testing for 10000 sites
-    websites = random.sample(websites, 10000)
+    websites = random.sample(websites, 100)
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
     f.close()
 
     # chunks_list = list(divide_chunks(websites, SIZE))
     chunks_list = list(divide_chunks(websites, SIZE))
+    print(chunks_list)
 
     for extn in extn_lst:
         try: 
@@ -119,17 +120,25 @@ if __name__ == "__main__":
             display = vdisplay.display
 
             num_sites = len(chunks_list[0])
-            processes, ports_list = start_servers(args.replay, num_sites, extn, 0, [])
+            print(num_sites)
+            processes, ports_list = start_servers(args.replay, num_sites, extn, 0, [], start_port)
             master_port_list.append(ports_list)
+            print(ports_list)
 
             for chunk in chunks_list:
                 while not check_if_ports_open(ports_list):
                     # restart all servers
-                    processes, ports_list = start_servers(args.replay, num_sites, extn, 1, master_port_list[-1])
+                    start_port += start_port + num_servers
+                    error(inspect.currentframe().f_code.co_name, 'all ports not open; resetting the servers')
+                    master_port_list.pop(-1)
+                    processes, ports_list = start_servers(args.replay, num_sites, extn, 1, master_port_list[-1], start_port)
+                    master_port_list.append(ports_list)
+
                 jobs = []
-                for site_index in range(len(chunk)):        
+                for site_index in range(len(chunk)):
+                    print('website:', chunk[site_index])
                     try:
-                        p1 = multiprocessing.Process(target=run, args=(chunk[site_index], extn, args.replay, ports_list[2*site_index], ports_list[2*site_index + 1],driver_class_dict[extn], site_index, display1, ))
+                        p1 = multiprocessing.Process(target=run, args=(chunk[site_index], extn, args.replay, ports_list[2*site_index], ports_list[(2*site_index) + 1], driver_class_dict[extn], display, ))
                         jobs.append(p1)
                     except IndexError as e:
                         error(inspect.currentframe().f_code.co_name, e)
@@ -186,18 +195,23 @@ if __name__ == "__main__":
 
             time.sleep(2) # time for port to be available again
 
+            try:
+                ports_list = master_port_list[-1]
+                print(ports_list)
+                stop_servers(ports_list)
+
+            except ProcessLookupError:
+                print(f"No process with PID {pid1} found.")
+            except PermissionError:
+                print(f"Permission denied to send signal to process {pid1}.")
+
         except KeyboardInterrupt:
             print('KeyboardInterrupt:', 'Interrupted')
             print(f"Closing any open servers")
             try:
+                ports_list = master_port_list[-1]
                 print(ports_list)
-                for port in ports_list:
-                    pid = get_pid_by_port(port)
-                    print('pid:', pid)
-                    
-                    if pid != None:
-                        os.kill(int(pid), signal.SIGINT)
-                        time.sleep(2)
+                stop_servers(ports_list)
             except ProcessLookupError:
                 print(f"No process with PID {pid1} found.")
             except PermissionError:
@@ -210,13 +224,6 @@ if __name__ == "__main__":
             if args.replay:
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
-
-
-            # try:
-            #     # process.terminate()
-            #     sys.exit(130)
-            # except SystemExit:
-            #     os._exit(130)
             pass
 
         except Exception as e:
@@ -224,14 +231,9 @@ if __name__ == "__main__":
 
             print(f"Closing any open servers")
             try:
+                ports_list = master_port_list[-1]
                 print(ports_list)
-                for port in ports_list:
-                    pid = get_pid_by_port(port)
-                    print(pid)
-                    
-                    if pid != None:
-                        os.kill(int(pid), signal.SIGINT)
-                        time.sleep(2)
+                stop_servers(ports_list)
 
             except ProcessLookupError:
                 print(f"No process with PID {pid1} found.")

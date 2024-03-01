@@ -21,7 +21,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
 from Excel import *
-# from functions import *
+from functions import *
 
 options = Options()
 # options.headless = False
@@ -271,6 +271,9 @@ class Driver:
             accessible or not.
         """
         try:
+            if self.driver == None:
+                error(inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url}")
+                return
             self.driver.get(url)
             self.wait_until_loaded()
             time.sleep(2)
@@ -320,6 +323,16 @@ class Driver:
             if time.time() - curr_time >= 45:
                 break
 
+    def take_ss(self, fname):
+        if self.driver != None:
+            self.driver.save_screenshot(fname)
+
+    def get_logs(self):
+        if self.driver == None:
+            error(inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url}")
+            return
+        return self.driver.get_log('browser')
+
     def close(self):
         print("closing driver...", self.adBlocker_name, self.html_obj, self.url)
         if self.driver != None:
@@ -347,7 +360,7 @@ class Driver:
             else:
                 return False
         except Exception as e:
-            error(inspect.currentframe().f_code.co_name, e)
+            # error(inspect.currentframe().f_code.co_name, e)
             return False
 
     def check_redirect(self, url):
