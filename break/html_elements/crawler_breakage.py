@@ -32,7 +32,7 @@ extn_lst = [
     # , 'privacy-badger'
     ]
 
-SIZE = 50
+SIZE = 100
 port = 9090
 start_port = 11001
 
@@ -73,8 +73,9 @@ if __name__ == "__main__":
         save_dict[extn] = {}
         save_excel_dict[extn] = {}
 
-        driver_class_dict[extn] = {}
-        
+        # driver_class_dict[extn] = {}
+        # driver_class_dict[extn] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, args.replay, data_dict, excel_dict)
+
         for html in HTML_TEST:
             data_dict[extn][html] = manager.dict()
             excel_dict[extn][html] = manager.dict()
@@ -83,7 +84,10 @@ if __name__ == "__main__":
             save_dict[extn][html] = {}
             save_excel_dict[extn][html] = {}
 
-            driver_class_dict[extn][html] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, html, args.replay, data_dict, excel_dict)
+            # driver_class_dict[extn][html] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, html, args.replay, data_dict, excel_dict)
+
+    for extn in extn_lst:
+        driver_class_dict[extn] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, args.replay, data_dict, excel_dict)
              
     with open("../../break/adblock_detect/inner_pages_custom_break.json", "r") as f:
         allsite_dict = json.load(f)
@@ -94,15 +98,18 @@ if __name__ == "__main__":
         websites.append(allsite_dict[key][0])
 
     if args.replay == 0:
-        os.system('rm -f record_json/*.json')
+        os.system('rm -f json/*.json')
         os.system('rm -f archive/*.wprgo')
         os.system('rm -rf wpr_data/*')
+        os.system('rm -rf logs/*')
 
     # testing for 10000 sites
-    websites = random.sample(websites, 100)
+    # websites = random.sample(websites, 500)
+    websites = websites[3000:4000]
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
     f.close()
+    # websites = ['http://www.asahi.com', 'http://www.vecteezy.com', 'http://www.sfu.ca', 'http://www.themegrill.com']
 
     # chunks_list = list(divide_chunks(websites, SIZE))
     chunks_list = list(divide_chunks(websites, SIZE))
@@ -115,10 +122,6 @@ if __name__ == "__main__":
             # Create the folder
                 os.makedirs(folder_path)
 
-            vdisplay = Display(visible=False, size=(1920, 1280))
-            vdisplay.start()
-            display = vdisplay.display
-
             num_sites = len(chunks_list[0])
             print(num_sites)
             processes, ports_list = start_servers(args.replay, num_sites, extn, 0, [], start_port)
@@ -128,22 +131,27 @@ if __name__ == "__main__":
             for chunk in chunks_list:
                 while not check_if_ports_open(ports_list):
                     # restart all servers
-                    start_port += start_port + num_servers
-                    error(inspect.currentframe().f_code.co_name, 'all ports not open; resetting the servers')
+                    start_port += 2*num_sites
+                    error('', '', inspect.currentframe().f_code.co_name, 'all ports not open; resetting the servers')
+                    ports_list = master_port_list[-1]
                     master_port_list.pop(-1)
-                    processes, ports_list = start_servers(args.replay, num_sites, extn, 1, master_port_list[-1], start_port)
+                    processes, ports_list = start_servers(args.replay, num_sites, extn, 1, ports_list, start_port)
                     master_port_list.append(ports_list)
+
+                vdisplay = Display(visible=False, size=(1920, 1280))
+                vdisplay.start()
+                display = vdisplay.display
 
                 jobs = []
                 for site_index in range(len(chunk)):
                     print('website:', chunk[site_index])
                     try:
-                        p1 = multiprocessing.Process(target=run, args=(chunk[site_index], extn, args.replay, ports_list[2*site_index], ports_list[(2*site_index) + 1], driver_class_dict[extn], display, ))
+                        p1 = multiprocessing.Process(target=run, args=(chunk[site_index], extn, args.replay, ports_list[2*site_index], ports_list[(2*site_index) + 1], driver_class_dict[extn], display, HTML_TEST, ))
                         jobs.append(p1)
                     except IndexError as e:
-                        error(inspect.currentframe().f_code.co_name, e)
+                        error('', '', inspect.currentframe().f_code.co_name, e)
                     except Exception as e:
-                        error(inspect.currentframe().f_code.co_name, e)
+                        error(chunk[site_index], inspect.currentframe().f_code.co_name, e)
                 
                 for job in jobs:
                     print(f"starting {job}")
@@ -151,11 +159,20 @@ if __name__ == "__main__":
 
                 time.sleep(5)
 
+                TIMEOUT = 750
+                start = time.time()
                 for job in jobs:
                     print(f"joining {job}")
                     job.join(timeout = 60)
 
+                    while time.time() - start <= TIMEOUT:
+                        if job.is_alive():
+                            sleep(5)
+                        else:
+                            break
+                        
                     if job.is_alive():
+                        print('timeout exceeded... terminating job')
                         job.terminate()
 
                 time.sleep(2)
@@ -173,14 +190,17 @@ if __name__ == "__main__":
                             save_excel_dict[extn][html][site] = []
                             for elem in excel_dict[extn][html][site]:
                                 save_excel_dict[extn][html][site].append(elem)
+                
+                # closing open Xfvb server
+                print("-"*50)
+                print("closing open xvfb processes")
+                vdisplay.stop()
+                # os.system('pkill Xvfb')
+                print(os.system("ps aux | grep Xvfb | wc -l"))
+                print("-"*50)
 
-            # closing open Xfvb server
-            print("-"*50)
-            print("closing open xvfb processes")
-            vdisplay.stop()
-            # os.system('pkill Xvfb')
-            print(os.system("ps aux | grep Xvfb | wc -l"))
-            print("-"*50)
+                # sleep to close the xvfb normally
+                time.sleep(5)
             
             # sleep to close the xvfb normally
             time.sleep(5)
@@ -224,6 +244,7 @@ if __name__ == "__main__":
             if args.replay:
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
+
             pass
 
         except Exception as e:

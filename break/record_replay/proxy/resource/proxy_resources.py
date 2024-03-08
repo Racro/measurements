@@ -49,6 +49,7 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
 
     # Initialize Selenium
     options = Options()
+    options.set_capability('goog:logginPrefs', {'browser': 'ALL'})
     options.add_argument("start-maximized")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument('--ignore-certificate-errors')
@@ -56,41 +57,30 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
+    options.add_argument("--disable-web-security")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
-  
-    # options.add_argument("auto-open-devtools-for-tabs")
+
+
     options.add_argument(
         "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
 
     # options.add_extension("/home/ritik/work/pes/measurements/extensions/extn_crx/adblock.crx")
     options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
-    # options.binary_location = "/usr/bin/google-chrome"
-    # options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
     if args_lst[-1] != "":
         # always adding the path of the extension at the end
         options.add_extension(args_lst[-1])
-
-    # Initialize service
-    # service = Service(executable_path='/usr/local/bin/chromedriver')
 
     driver = ''
     for i in range(num_tries):
         try:
             # Launch Chrome and install our extension for getting HARs
             driver = webdriver.Chrome(options=options)
-            # time.sleep(5)
-
-            # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
-            # element.click()
-
-            # time.sleep(2)
 
             driver.set_page_load_timeout(args_lst[1])
             time.sleep(4)
 
-            # print('11111111111111111111111')
 
             if extn == 'adblock':
                 time.sleep(15)
@@ -109,29 +99,16 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
                         print('ghostery', 1, e)
                         return 0
 
-            # driver.get('chrome-extension://mlomiejdfkolichcflejclcbmpeaniij/app/templates/onboarding.html')
-            # time.sleep(12)
-
-            # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
-            # element.click()
-
-            # time.sleep(5)
-            # print(2222222222222222222222)
-
             # Create a new HAR with the following options
             proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
 
             # Use Selenium to navigate to a webpage
-            # valid = 0
-            # i += 1
             website = args_lst[0]
 
             print("website: ", website)
             driver.get(website)
             wait_until_loaded(driver, args_lst[1])
             time.sleep(2)
-
-            # print(33333333333333333333333)
 
             curr_scroll_position = -1
             curr_time = time.time()
@@ -155,14 +132,10 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
                     break
             # valid += 1
 
-            # print(44444444444444444444444)
             time.sleep(5)
             # Collect HAR data
             result = proxy.har
 
-            # Analyze HAR data (this is a simplified example)
-            # total_size = 0
-            # print(result)
             data_usage[i] = result['log']['entries']
             print(f"{args_lst[0]} --- {len(data_usage[i])}")
         except Exception as e:
@@ -175,12 +148,9 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
     
     try:
         all_resources[args_lst[0]] = filter_packets(args_lst[0], data_usage[0], blacklist, inverse_lookup, regular_lookup).copy()
-        
-        # pid = int(get_pid_by_port(port))
-        # os.kill(pid, signal.SIGTERM)
+ 
     except Exception as e:
         print(2, args_lst[0], e, data_usage.keys())
-    # return data_usage
 
 SIZE = 1
 if __name__ == '__main__':
@@ -194,54 +164,18 @@ if __name__ == '__main__':
 
     manager = multiprocessing.Manager()
 
-    # websites = ast.literal_eval(args.website)
-    # websites = [args.website]
-
     website_dict = json.load(open('../../adblock_detect/inner_pages_custom_break.json', 'r'))
     websites = []
     for key in website_dict:
         websites.append(website_dict[key][0])
-    websites = random.sample(websites, 1500)
+    websites = random.sample(websites, 10)
     website_chunks = list(divide_chunks(websites, SIZE))
-    # websites = ['https://www.geeksforgeeks.org/graph-and-its-representations/']
-
-    # websites = [
-    #     "uxmatters.com",
-    #     "mrdonn.org",
-    #     "velocityhub.com",
-    #     'amazon.com/',
-    #     'en.wikipedia.org/wiki/Main_Page',
-    #     'microsoft.com/en-us',
-    #     'office.com',
-    #     'weather.com',
-    #     'openai.com',
-    #     'bing.com',
-    #     # 'duckgo.com',
-    #     # 'nytimes.com',
-    #     # 'twitch.tv',
-    #     # 'imdb.com',
-    #     # 'qq.com',
-    #     # 'globo.com',
-    #     # 'ebay.com',
-    #     # 'foxnews.com',
-    #     # 'instructure.com',
-    #     # 'walmart.com',
-    #     # 'indeed.com',
-    #     # 'paypal.com/us/home',
-    #     # 'accuweather.com',
-    #     # 'pinterest.com',
-    #     # 'bbc.com',
-    #     # 'homedepot.com',
-    #     # 'breitbart.com',
-    #     # 'github.com'
-    # ]
 
     print(f'data --- {websites}')
 
     # Initialize BrowserMob Proxy
     server = Server("/home/ritik/work/pes/browsermob-proxy/bin/browsermob-proxy")
     server.start()
-    # proxy = server.create_proxy()
 
     data_dict = {}
     # extensions_path = pathlib.Path("/home/seluser/measure/extensions/extn_crx")
@@ -283,15 +217,6 @@ if __name__ == '__main__':
 
         for extension in extensions:
             all_resources = manager.dict()
-            # if the json data already exits, just load it.
-            # USED FOR TESTING!!!!!!
-            # if file_exists(f"{extension}.json"):
-            #     with open(f"{extension}.json", 'r') as file:
-            #         json_data = file.read()
-            #     extensions_dictionary[extension] = json.loads(json_data)
-            #     file.close()
-            #     continue
-
             if extension != "control":
                 name = extensions_path + extension + ".crx"
             else:
@@ -315,21 +240,6 @@ if __name__ == '__main__':
                         # ret value is the packets
                         p = multiprocessing.Process(target=main, args=(1, new_args, display, server, port, all_resources, blacklist, inverse_lookup, regular_lookup, extension))
                         jobs.append(p)
-                        # ret = main(1, new_args, proxy)
-
-                        # filtered_val is LIST with all the filtered packets
-
-                        # large dictionary with all the results of each website.
-                        # this should be seperate for each extension.
-                        # all_resources[website] = filter_packets(website, ret, blacklist, inverse_lookup, regular_lookup).copy()
-
-                        # write_JSON(extension, all_resources)
-
-                        # data_dict = unfiltered and contains all the packets
-                        # data_dict[fname] = ret
-                        # with open(fname, 'w') as f:
-                        #     json.dump(ret, f)
-                        # f.close()
                     except Exception as e:
                         print(e)
                         print(website)
@@ -361,17 +271,11 @@ if __name__ == '__main__':
                 save_dict[key] = all_resources[key]
             write_JSON(extension, save_dict)
             extensions_dictionary[extension] = save_dict
-            # all_resources = {}
 
         # once all the JSON data have been collected, compare them.
         for extension in extensions:
             extensions_dictionary[extension] = json.load(open(f'json/{extension}.json', 'r'))
-            # print(extensions_dictionary["control"])
             compare_resources(extension, extensions_dictionary["control"], extensions_dictionary[extension])
-
-    # with open(fname, 'w') as f:
-    #     json.dump(data_dict, f)
-    # f.close()
 
     print("Finished Collecting on All Sites!")
     server.stop()

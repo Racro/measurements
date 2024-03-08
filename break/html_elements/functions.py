@@ -21,9 +21,13 @@ import inspect
 
 import logging
 
-def error(fname, err):
-    print(f'Function Name: {fname}')
-    print(f'Error: {err}')
+def error(site, html='', fname, err):
+    f = open('error.txt', 'a')
+    f.write(f'Site Name: {site}\n')
+    f.write(f'HTML Object: {html}\n')
+    f.write(f'Function Name: {fname}\n')
+    f.write(f'Error: {err}\n')
+    f.close()
 
 def check_port(port):
     try:
@@ -34,10 +38,10 @@ def check_port(port):
         else:
             return False
     except subprocess.CalledProcessError as e:
-        error(inspect.currentframe().f_code.co_name, e)
+        error('', '', inspect.currentframe().f_code.co_name, e)
         return False
     except Exception as e:
-        error(inspect.currentframe().f_code.co_name, e)
+        error('', '', inspect.currentframe().f_code.co_name, e)
         return False
 
 def divide_chunks(l, n):
@@ -69,7 +73,7 @@ def remove_popup(driver):
         close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
     except Exception as e:
         # print(close_button, close_anchor)
-        error(inspect.currentframe().f_code.co_name, e)
+        error(driver.current_url, inspect.currentframe().f_code.co_name, e)
         # print('close_button find element error', 1, e)
 
     close_button.extend(close_anchor)
@@ -80,7 +84,7 @@ def remove_popup(driver):
                 i.click()
 
             except Exception as e:
-                error(inspect.currentframe().f_code.co_name, e)
+                error(driver.current_url, inspect.currentframe().f_code.co_name, e)
                 # print('popup', 2, e)
 
 # could possibly make the driver stale. plz check!
@@ -118,7 +122,7 @@ def remove_alert(driver):
 
             # If you need to dismiss the alert (clicks "Cancel"), use: alert.dismiss()
         except Exception as e:
-            error(inspect.currentframe().f_code.co_name, e)
+            error(driver.current_url, inspect.currentframe().f_code.co_name, e)
             # print("couldn't switch to alert", 3, e)
 
 def remove_cmp_banner(options):
@@ -134,7 +138,7 @@ def use_catapult(options, fname, port1, port2):
 
     # options.add_argument(f'--user-data-dir={folder_path}')
     # options.add_argument(folder_path)
-    options.add_argument(f'--host-resolver-rules="MAP *:80 127.0.0.1:{port1},MAP *:443 127.0.0.1:{port2},EXCLUDE localhost"')
+    options.add_argument(f'--host-resolver-rules=MAP *:80 127.0.0.1:{port1},MAP *:443 127.0.0.1:{port2},EXCLUDE localhost')
     options.add_argument('--ignore-certificate-errors-spki-list=PhrPvGIaAMmd29hj8BCZOq096yj7uMpRNHpn5PDxI6I=,2HcXCSKKJS0lEXLQEWhpHUfGuojiU0tiT5gOF9LP6IQ=')
     return options
 
@@ -219,11 +223,11 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
             # sys.exit(1)
         except subprocess.CalledProcessError as e:
             # print(f'Error for num_server: {index}')
-            error(inspect.currentframe().f_code.co_name, e)
+            error('', '', inspect.currentframe().f_code.co_name, e)
             # sys.exit(1)
 
         except Exception as e:
-            error(inspect.currentframe().f_code.co_name, e)
+            error('', '', inspect.currentframe().f_code.co_name, e)
             # print(e)
             # sys.exit(1)
         
@@ -251,7 +255,7 @@ def stop_servers(ports_list):
             print(f"Permission denied to send signal to process {pid}.")
         except Exception as e:
             # print(e)
-            error(inspect.currentframe().f_code.co_name, e)
+            error('', '', inspect.currentframe().f_code.co_name, e)
 
     return ports_list
     
@@ -262,7 +266,7 @@ def get_pid_by_port(port):
         # print("Error:", subprocess.check_output(['lsof', '-i', 'tcp']).decode())
         return None
     except Exception as e:
-        print(e)
+        error('', '', inspect.currentframe().f_code.co_name, e)
         return None
 
     for line in output.splitlines():
@@ -271,13 +275,13 @@ def get_pid_by_port(port):
             return parts[1]  # PID is typically in the second column
     return None
 
-def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num):
-    logging.basicConfig(level=logging.ERROR)
+def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, html_lst):
+    logging.basicConfig(filename="logs/debug.log", filemode="w", format="%(name)s → %(levelname)s: %(message)s", level=logging.INFO)
     # Prepare Chrome
     options = Options()
     options.set_capability('goog:logginPrefs', {'browser': 'ALL'})
     options.add_argument("start-maximized")
-    options.add_argument("--disable-dev-shm-usage")
+    # options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
@@ -300,77 +304,94 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num):
     # display number
     os.environ['DISPLAY'] = f":{display_num}"
 
-    for html in driver_dict.keys():
-        retval = driver_dict[html].initialize(options, 3, site)
-        
-        if retval == 0:
-            e = f'error open browser instance for extn:{extn} and html:{html}'
-            error(inspect.currentframe().f_code.co_name, e)
-            driver_dict[html] = None
-            continue
-        
+    retval = driver_dict.initialize(options, 3, site)
+    if retval == 0:
+        e = f'error open browser instance for extn:{extn}'
+        error(site, inspect.currentframe().f_code.co_name, e)
+        driver_dict = None
+        return
+
+    for html in html_lst:
+        driver_dict.set_html_obj(html)
         if replay == 0: # can add clicking on the buttons
             #### Manual Analysis
             if extn == 'manual':
                 try:
                     url = site
-                    if driver_dict[html].load_site(url):
+                    if driver_dict.load_site(url):
                         # scroll
-                        driver_dict[html].scroll()
+                        driver_dict.scroll()
                 except TimeoutException as e:
                     print(f"Timeout url:{url}")
                     e = str(e).split("\n")[0]
-                    error(inspect.currentframe().f_code.co_name, e)
+                    error(site, inspect.currentframe().f_code.co_name, e)
                   
                 except Exception as e:
                     e = str(e).split("\n")[0]
-                    error(inspect.currentframe().f_code.co_name, e)
+                    error(site, inspect.currentframe().f_code.co_name, e)
 
             else:
             # scan + click
                 try:
+                    # print('aaya')
                     url = site
-                    if driver_dict[html].load_site(url):
-                        driver_dict[html].take_ss(f'page_ss/{site}.png')
+                    if driver_dict.load_site(url):
+                        
+                        key = ''
+                        if 'www' in site:
+                            key = site.split('www.')[1]
+                        else:
+                            key = site.split('://')[1]
+                        # print(f'ss for {html} and site {url}')
+                        driver_dict.take_ss(f'{key}.png')
                         # scroll
-                        driver_dict[html].scroll()
+                        driver_dict.scroll()
 
                         # scan page 
-                        driver_dict[html].scan_page()
+                        driver_dict.scan_page()
                 except TimeoutException as e:
                     print(f"Timeout url:{url}")
                     e = str(e).split("\n")[0]
-                    error(inspect.currentframe().f_code.co_name, e)
+                    error(site, inspect.currentframe().f_code.co_name, e)
                   
                 except Exception as e:
                     e = str(e).split("\n")[0]
-                    error(inspect.currentframe().f_code.co_name, e)
+                    error(site, inspect.currentframe().f_code.co_name, e)
 
 
         if replay:
+            driver_dict.replay_initialize()
             # click and compare
             tries = 1
-            while driver_dict[html].curr_site > -1:
+            while driver_dict.curr_site > -1:
                 try:
-                    driver_dict[html].click_on_elms(tries)
+                    driver_dict.click_on_elms(tries)
                 except Exception as e:
-                    result = error_catcher(e, driver_dict[html], tries, driver_dict[html].url)
+                    result = error_catcher(e, driver_dict, tries, driver_dict.url)
                     if type(result) is int:
                         tries = result
                     else:
-                        print(driver_dict[html].url, "\t", result, driver_dict[html].initial_outer_html)
+                        print(driver_dict.url, "\t", result, driver_dict.initial_outer_html)
                         tries = 1
-                        driver_dict[html].tries = 1
-                        driver_dict[html].curr_elem += 1
+                        driver_dict.tries = 1
+                        driver_dict.curr_elem += 1
 
-        logs = driver_dict[html].get_logs()
+        
         with open(f'logs/{extn}_{html}.txt', 'a') as f:
-            f.write(f'{site}\n')
-            for log in logs:
-                f.write(log['level'])
+            try:
+                logs = driver_dict.get_logs()
+                if logs != None:            
+                    f.write(f'{site}\n')
+                    for log in logs:
+                        f.write(log['level'])
+                        f.write('\n')
+                        f.write(log['message'])
+                        f.write('\n')
+            except Exception as e:
+                f.write(str(e))
                 f.write('\n')
-                f.write(log['message'])
+                f.write('Driver is already closed')
                 f.write('\n')
         f.close()
 
-        driver_dict[html].close()
+    driver_dict.close()

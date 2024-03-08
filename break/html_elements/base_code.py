@@ -128,7 +128,7 @@ def timeout(seconds):
 
 
 class Driver:
-    def __init__(self, attributes, xPATH, adB, html_obj, replay, data_dict, excel_dict):
+    def __init__(self, attributes, xPATH, adB, replay, data_dict, excel_dict):
         # specific test for these attributes
         self.attributes = attributes
         self.xPaths = xPATH
@@ -149,7 +149,7 @@ class Driver:
         self.seen_sites = []
         self.xpath_remover = 3
         self.website_sleep_time = 3  # longer this value, more consistent the results
-        self.html_obj = html_obj
+        self.html_obj = ''
         self.DOM_traversal_amt = 4
         self.scan_timeout = 180
         self.test_elem_timeout = 300
@@ -192,45 +192,22 @@ class Driver:
         while num_tries > 0:
             try:
                 self.options = options
-                self.driver = webdriver.Chrome(options=options)
+                log_file_path = "/home/ritik/work/pes/measurements/break/html_elements/logs/chromedriver.log"
+                service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver', service_args=["--verbose", f"--log-path={log_file_path}"])
+                self.driver = webdriver.Chrome(options=options, service=service)
                 self.driver.set_page_load_timeout(45)
                 time.sleep(2)
                 break
             except Exception as e:
-                if num_tries == 0:
-                    error(inspect.currentframe().f_code.co_name, e)
+                if num_tries == 1:
+                    print(f"couldn't create browser session... not trying again -- {self.url_key}")
+                    error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
                     # print(1, e)
                     return 0
                 else:
                     print("couldn't create browser session... trying again")
                     num_tries = num_tries - 1
-
-        # during replay phase
-        if self.replay:
-            file_path = f"data_2500/json/{self.html_obj}_control.json"
-            # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
-            # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
-
-            try:
-                if os.path.isfile(file_path):
-                    with open(file_path, 'r') as json_file:
-                        self.dictionary = {}
-                        self.dictionary[self.adBlocker_name] = {}
-                        self.dictionary[self.adBlocker_name][self.html_obj] = {}
-                        self.dictionary[self.adBlocker_name][self.html_obj][self.url_key] = json.load(json_file)[self.url_key] 
-                        # self.dictionary[self.url_key] = json.load(json_file)[self.url_key]
-                    json_file.close()
-                elems = self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]
-                self.all_sites = [self.url_key]
-            except KeyError as k:
-                print(f"site not found in json --- site:{self.url_key}, extn:{self.adBlocker_name}, html: {self.html_obj}")
-                return 0
-            except Exception as e:
-                error(inspect.currentframe().f_code.co_name, e)
-                # print(4, e)
-                return 0
-        
-        time.sleep(2)
+                    time.sleep(5)
 
         if self.adBlocker_name == 'adblock':
             time.sleep(15)
@@ -246,10 +223,42 @@ class Driver:
                         time.sleep(2)
                         break
                 except Exception as e:
-                    error(inspect.currentframe().f_code.co_name, e)
+                    error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
                     # print('ghostery', 1, e)
                     return 0
         return 1
+
+    def replay_initialize(self):
+        # during replay phase
+        # if self.replay:
+        file_path = f"json/{self.html_obj}_{self.adBlocker_name}.json"
+        # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
+        # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
+
+        try:
+            if os.path.isfile(file_path):
+                with open(file_path, 'r') as json_file:
+                    self.dictionary = {}
+                    self.dictionary[self.adBlocker_name] = {}
+                    self.dictionary[self.adBlocker_name][self.html_obj] = {}
+                    self.dictionary[self.adBlocker_name][self.html_obj][self.url_key] = json.load(json_file)[self.url_key] 
+                    # self.dictionary[self.url_key] = json.load(json_file)[self.url_key]
+                json_file.close()
+            elems = self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]
+            self.all_sites = [self.url_key]
+        except KeyError as k:
+            print(f"site not found in json --- site:{self.url_key}, extn:{self.adBlocker_name}, html: {self.html_obj}")
+            return 0
+        except Exception as e:
+            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
+            # print(4, e)
+            return 0
+    
+    time.sleep(2)
+
+    def set_html_obj(self, html_obj):
+        self.html_obj = html_obj
+        return
 
     def is_loaded(self):
         return self.driver.execute_script("return document.readyState") == "complete"
@@ -265,6 +274,9 @@ class Driver:
             time.sleep(period)
         return False
 
+    def get_url_key(self):
+        return self.url_key
+
     def load_site(self, url):
         """
             makes selenium load the site. will add http://www. if needed and filters out to see if the website is
@@ -272,8 +284,9 @@ class Driver:
         """
         try:
             if self.driver == None:
-                error(inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url}")
-                return
+                error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url_key}")
+                # print(1, self.html_obj)
+                return False
             self.driver.get(url)
             self.wait_until_loaded()
             time.sleep(2)
@@ -283,13 +296,14 @@ class Driver:
             if self.url not in self.seen_sites:
                 # write_results(self.url)
                 self.seen_sites.append(self.url)
+            # print(2, self.html_obj)
             return True
 
         except Exception as e:
             self.dictionary['errors'][self.adBlocker_name][self.url_key] = str(e)
             # print(3, e)
-            error(inspect.currentframe().f_code.co_name, e)
-            self.seen_sites.append(url)
+            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
+            # self.seen_sites.append(url)
             return False
         
     # def remove_stuff(self):
@@ -324,13 +338,19 @@ class Driver:
                 break
 
     def take_ss(self, fname):
-        if self.driver != None:
-            self.driver.save_screenshot(fname)
+        try:
+            filepath = f'/home/ritik/work/pes/measurements/break/html_elements/page_ss/{self.html_obj}'
+            if not os.path.isdir(filepath):
+                os.makedirs(filepath, exist_ok=True)
+            if self.driver != None:
+                self.driver.save_screenshot(f'{filepath}/{fname}')
+        except Exception as e:
+            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
 
     def get_logs(self):
         if self.driver == None:
-            error(inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url}")
-            return
+            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url_key}")
+            return None
         return self.driver.get_log('browser')
 
     def close(self):
@@ -360,7 +380,7 @@ class Driver:
             else:
                 return False
         except Exception as e:
-            # error(inspect.currentframe().f_code.co_name, e)
+            # error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
             return False
 
     def check_redirect(self, url):
@@ -502,7 +522,7 @@ class Driver:
 
         except Exception as e:
             # print(e)
-            error(inspect.currentframe().f_code.co_name, e)
+            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
             self.excel_errors_list.append(["Unknown Exception", '', '', self.initial_outer_html, '', '', '',
                            self.url_key, self.driver.current_url, tries])
             return
@@ -665,7 +685,7 @@ class Driver:
                 except Exception as e:
                     self.dictionary['errors'][self.adBlocker_name][self.url_key] = str(e)
                     # print(2, e)
-                    error(inspect.currentframe().f_code.co_name, e)
+                    error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
         return found_elements
 
     def find_buttons(self):
