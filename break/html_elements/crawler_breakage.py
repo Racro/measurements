@@ -32,7 +32,7 @@ extn_lst = [
     # , 'privacy-badger'
     ]
 
-SIZE = 100
+SIZE = 60
 port = 9090
 start_port = 11001
 
@@ -156,6 +156,7 @@ if __name__ == "__main__":
                 for job in jobs:
                     print(f"starting {job}")
                     job.start()
+                    time.sleep(5)
 
                 time.sleep(5)
 
@@ -201,6 +202,11 @@ if __name__ == "__main__":
 
                 # sleep to close the xvfb normally
                 time.sleep(5)
+
+                # cleanup process
+                cleanup_chrome()
+                cleanup_tmp()
+                cleanup_X()
             
             # sleep to close the xvfb normally
             time.sleep(5)

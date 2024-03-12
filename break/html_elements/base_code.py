@@ -23,24 +23,24 @@ from webdriver_manager.chrome import ChromeDriverManager
 from Excel import *
 from functions import *
 
-options = Options()
-# options.headless = False
-# options.add_argument("--headless=new")
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-animations")
-options.add_argument("--disable-web-animations")
-# options.add_argument("--incognito")
-# options.add_argument("--single-process")
-options.add_argument("--disable-gpu")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--disable-web-security")
-options.add_argument("--disable-features=IsolateOrigins,site-per-process")
-options.add_argument("--disable-features=AudioServiceOutOfProcess")
-# options.add_argument("auto-open-devtools-for-tabs")
-options.add_argument(
-    "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
+# options = Options()
+# # options.headless = False
+# # options.add_argument("--headless=new")
+# options.add_argument("--no-sandbox")
+# options.add_argument("--disable-animations")
+# options.add_argument("--disable-web-animations")
+# # options.add_argument("--incognito")
+# # options.add_argument("--single-process")
+# options.add_argument("--disable-gpu")
+# # options.add_argument("--disable-dev-shm-usage")
+# options.add_argument("--disable-web-security")
+# options.add_argument("--disable-features=IsolateOrigins,site-per-process")
+# options.add_argument("--disable-features=AudioServiceOutOfProcess")
+# # options.add_argument("auto-open-devtools-for-tabs")
+# options.add_argument(
+#     "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
 
-options.binary_location = '/usr/local/bin/chrome_113/chrome'
+# options.binary_location = '/home/ritik/work/pes/chrome_113/chrome'
 
 
 attributes_dict = {
@@ -188,12 +188,15 @@ class Driver:
             Adjust the seconds parameter so that it will wait for the ad blocker to finish downloading.
         """
         self.url_key = url
+        # Specify the version of Chrome browser you are using
+        self.chrome_version = "113.0.5672.0"  # Chrome browser version
 
         while num_tries > 0:
             try:
                 self.options = options
                 log_file_path = "/home/ritik/work/pes/measurements/break/html_elements/logs/chromedriver.log"
                 service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver', service_args=["--verbose", f"--log-path={log_file_path}"])
+                # service = Service(ChromeDriverManager(version=self.chrome_version).install(), service_args=["--verbose", f"--log-path={log_file_path}"])
                 self.driver = webdriver.Chrome(options=options, service=service)
                 self.driver.set_page_load_timeout(45)
                 time.sleep(2)

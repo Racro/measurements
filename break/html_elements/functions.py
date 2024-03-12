@@ -18,11 +18,42 @@ import random
 import math
 import signal
 import inspect
-
+import shutil
 import logging
+from datetime import datetime
 
-def error(site, html='', fname, err):
+def cleanup_tmp():
+    files_to_delete = []
+    
+    # List all files in the temporary directory
+    all_files = os.listdir('/tmp')
+
+    # Filter out files that start with the specified characters
+    for file_name in all_files:
+        if 'org.chromium' in file_name or 'org.chrome' in file_name:
+            #  or 'go-build' in file_name:
+            files_to_delete.append(os.path.join('/tmp', file_name))
+
+    # Delete the files
+    for file_path in files_to_delete:
+        try:
+            subprocess.run(["sudo", "rm", "-rf", file_path], check=True)
+            # shutil.rmtree(file_path)
+            print(f"Deleted: {file_path}")
+        except Exception as e:
+            print(f"Error deleting {file_path}: {e}")
+
+def cleanup_chrome():
+    os.system('pkill chrome')
+    time.sleep(5)
+
+def cleanup_X():
+    os.system('pkill Xvfb')
+    time.sleep(5)
+
+def error(site, html, fname, err):
     f = open('error.txt', 'a')
+    f.write(f"Time: {datetime.now().strftime('%Y-%m-%d - %H:%M:%S')}\n")
     f.write(f'Site Name: {site}\n')
     f.write(f'HTML Object: {html}\n')
     f.write(f'Function Name: {fname}\n')
@@ -73,7 +104,7 @@ def remove_popup(driver):
         close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
     except Exception as e:
         # print(close_button, close_anchor)
-        error(driver.current_url, inspect.currentframe().f_code.co_name, e)
+        error(driver.current_url, '', inspect.currentframe().f_code.co_name, e)
         # print('close_button find element error', 1, e)
 
     close_button.extend(close_anchor)
@@ -84,7 +115,7 @@ def remove_popup(driver):
                 i.click()
 
             except Exception as e:
-                error(driver.current_url, inspect.currentframe().f_code.co_name, e)
+                error(driver.current_url, '', inspect.currentframe().f_code.co_name, e)
                 # print('popup', 2, e)
 
 # could possibly make the driver stale. plz check!
@@ -122,7 +153,7 @@ def remove_alert(driver):
 
             # If you need to dismiss the alert (clicks "Cancel"), use: alert.dismiss()
         except Exception as e:
-            error(driver.current_url, inspect.currentframe().f_code.co_name, e)
+            error(driver.current_url, '', inspect.currentframe().f_code.co_name, e)
             # print("couldn't switch to alert", 3, e)
 
 def remove_cmp_banner(options):
@@ -282,13 +313,13 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
     options.set_capability('goog:logginPrefs', {'browser': 'ALL'})
     options.add_argument("start-maximized")
     # options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-animations")
-    options.add_argument("--disable-web-animations")
-    options.add_argument("--disable-gpu")
+    # options.add_argument("--no-sandbox")
+    # options.add_argument("--disable-animations")
+    # options.add_argument("--disable-web-animations")
+    # options.add_argument("--disable-gpu")
 
-    options.add_argument("--disable-features=IsolateOrigins,site-per-process")
-    options.add_argument("--disable-features=AudioServiceOutOfProcess")
+    # options.add_argument("--disable-features=IsolateOrigins,site-per-process")
+    # options.add_argument("--disable-features=AudioServiceOutOfProcess")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
     options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
 
@@ -307,7 +338,7 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
     retval = driver_dict.initialize(options, 3, site)
     if retval == 0:
         e = f'error open browser instance for extn:{extn}'
-        error(site, inspect.currentframe().f_code.co_name, e)
+        error(site, '', inspect.currentframe().f_code.co_name, e)
         driver_dict = None
         return
 
@@ -324,11 +355,11 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
                 except TimeoutException as e:
                     print(f"Timeout url:{url}")
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
                   
                 except Exception as e:
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
 
             else:
             # scan + click
@@ -352,11 +383,11 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
                 except TimeoutException as e:
                     print(f"Timeout url:{url}")
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
                   
                 except Exception as e:
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
 
 
         if replay:
