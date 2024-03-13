@@ -32,7 +32,7 @@ extn_lst = [
     # , 'privacy-badger'
     ]
 
-SIZE = 100
+SIZE = 1
 port = 9090
 start_port = 11001
 
@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     for extn in extn_lst:
         try: 
-            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            folder_path = f'/home/mitch/work/pes/measurements/break/html_elements/wpr_data/{extn}'
             if not os.path.exists(folder_path):
             # Create the folder
                 os.makedirs(folder_path)
