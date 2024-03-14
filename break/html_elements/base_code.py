@@ -23,24 +23,24 @@ from webdriver_manager.chrome import ChromeDriverManager
 from Excel import *
 from functions import *
 
-# options = Options()
-# # options.headless = False
-# # options.add_argument("--headless=new")
-# options.add_argument("--no-sandbox")
-# options.add_argument("--disable-animations")
-# options.add_argument("--disable-web-animations")
-# # options.add_argument("--incognito")
-# # options.add_argument("--single-process")
-# options.add_argument("--disable-gpu")
-# options.add_argument("--disable-dev-shm-usage")
-# options.add_argument("--disable-web-security")
-# options.add_argument("--disable-features=IsolateOrigins,site-per-process")
-# options.add_argument("--disable-features=AudioServiceOutOfProcess")
-# # options.add_argument("auto-open-devtools-for-tabs")
-# options.add_argument(
-#     "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
-#
-# options.binary_location = '/usr/local/bin/chrome_113/chrome'
+options = Options()
+# options.headless = False
+# options.add_argument("--headless=new")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-animations")
+options.add_argument("--disable-web-animations")
+# options.add_argument("--incognito")
+# options.add_argument("--single-process")
+options.add_argument("--disable-gpu")
+options.add_argument("--disable-dev-shm-usage")
+options.add_argument("--disable-web-security")
+options.add_argument("--disable-features=IsolateOrigins,site-per-process")
+options.add_argument("--disable-features=AudioServiceOutOfProcess")
+# options.add_argument("auto-open-devtools-for-tabs")
+options.add_argument(
+    "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
+
+options.binary_location = '/usr/local/bin/chrome_113/chrome'
 
 
 attributes_dict = {
@@ -178,7 +178,7 @@ class Driver:
         self.chosen_elms = []
         self.all_html_elms = []
 
-        #### RITIK
+        #### mitch
         self.options = ''
         self.replay = replay
 
@@ -192,8 +192,8 @@ class Driver:
         while num_tries > 0:
             try:
                 self.options = options
-                log_file_path = "/home/ritik/work/pes/measurements/break/html_elements/logs/chromedriver.log"
-                service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver', service_args=["--verbose", f"--log-path={log_file_path}"])
+                log_file_path = "/home/mitch/measurements/break/html_elements/logs/chromedriver.log"
+                service = Service(executable_path='/home/mitch/work/pes/chromedriver_113/chromedriver', service_args=["--verbose", f"--log-path={log_file_path}"])
                 self.driver = webdriver.Chrome(options=options, service=service)
                 self.driver.set_page_load_timeout(45)
                 time.sleep(2)
@@ -339,7 +339,7 @@ class Driver:
 
     def take_ss(self, fname):
         try:
-            filepath = f'/home/ritik/work/pes/measurements/break/html_elements/page_ss/{self.html_obj}'
+            filepath = f'/home/mitch/measurements/break/html_elements/page_ss/{self.html_obj}'
             if not os.path.isdir(filepath):
                 os.makedirs(filepath, exist_ok=True)
             if self.driver != None:
@@ -553,8 +553,20 @@ class Driver:
                            self.initial_local_DOM, self.after_local_DOM, '', '', tries])
 
         elif check == "False":
-            self.excel_list.append([check, "False", "False", self.initial_outer_html, '',
-                           "", "", '', '', tries])
+            unit_data = [check, "False", "False", self.initial_outer_html, '',
+                               "", "", '', '', tries]
+            if self.is_slideshow(unit_data[3]):
+                unit_data[0] = 'True? - slideshow'
+            elif self.is_required(unit_data[3]):
+                unit_data[0] = 'True? - input is required'
+            elif self.is_scrollpage(unit_data[3]):
+                unit_data[0] = 'True? - page was scrolled'
+            elif self.is_download_link(unit_data[3]):
+                unit_data[0] = 'True? - download link'
+            elif self.is_open_application(unit_data[3]):
+                unit_data[0] = 'True? - opened application'
+            else:
+                self.excel_list.append(unit_data)
 
     def click_on_elms(self, tries):
         while self.curr_site < len(self.all_sites):
@@ -745,6 +757,7 @@ class Driver:
         def collect():
             found_elements = self.driver.find_elements(By.TAG_NAME, 'button')
             found_elements += self.driver.find_elements(By.TAG_NAME, 'a')
+            found_elements += self.driver.find_elements(By.TAG_NAME, 'span')
             final = self.specific_element_finder(found_elements)
             return final
 
@@ -760,6 +773,62 @@ class Driver:
             except Exception as e:
                 error_message = [str(e).split('\n')[0], "Failed to scrape Site", "", "", ""]
                 self.excel_errors_list.append(error_message)
+
+
+
+
+    def is_slideshow(self, html):
+        html = html.lower()
+        possible = ['active', 'aria-pressed="true"', 'aria-selected="true"']
+        for attribute in possible:
+            if attribute in html:
+                return True
+        return False
+
+
+    def is_required(self, html):
+        if 'aria-disabled="true"' in html.lower():
+            return True
+        return False
+
+    def is_scrollpage(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        # Find all <a> tags with href starting with "#"
+        scroll_links = soup.find_all('a', href=lambda href: href and href.startswith('#') and len(href) > 1)
+        if scroll_links:
+            return True
+
+        if 'scrollIntoView'.lower() in html.lower():
+            return True
+        return False
+
+    def is_download_link(self, html):
+        file_extensions = [
+            '.aac', '.aif', '.aifc', '.aiff', '.au', '.avi', '.bat', '.bin', '.bmp', '.bz2',
+            '.c', '.class', '.com', '.cpp', '.css', '.csv', '.dat', '.dmg', '.doc', '.docx',
+            '.dot', '.dotx', '.eps', '.exe', '.flac', '.flv', '.gif', '.gzip', '.h', '.htm',
+            '.html', '.ico', '.iso', '.java', '.jpeg', '.jpg', '.js', '.json', '.log', '.m4a',
+            '.m4v', '.mid', '.midi', '.mov', '.mp3', '.mp4', '.mpa', '.mpeg', '.mpg', '.odp',
+            '.ods', '.odt', '.ogg', '.otf', '.pdf', '.php', '.pl', '.png', '.ppt', '.pptx',
+            '.ps', '.psd', '.py', '.qt', '.rar', '.rb', '.rtf', '.s', '.sh', '.svg', '.swf',
+            '.tar', '.tar.gz', '.tex', '.tif', '.tiff', '.ttf', '.txt', '.wav', '.webm', '.wma',
+            '.wmv', '.woff', '.woff2', '.xls', '.xlsx', '.xml', '.yml', '.zip', '.apk'
+        ]
+        if any(html.endswith(ext) for ext in file_extensions):
+            return True
+
+        # Check if URL contains certain keywords
+        if 'download' in html.lower() or 'file' in html.lower():
+            return True
+        return False
+
+    def is_open_application(self, html):
+        potential = ['mailto', 'tel', 'sms']
+        for attribute in potential:
+            if attribute in html.lower():
+                return True
+        return False
+
 
 
 # self.driver = Driver()

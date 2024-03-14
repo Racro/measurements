@@ -38,7 +38,7 @@ start_port = 11001
 
 HTML_TEST = {'buttons', "drop downs", "links", "login"}
 # HTML_TEST = {"drop downs"}#, "links", "login"}
-# HTML_TEST = {'manual'}
+# HTML_TEST = {'buttons', "links"}
 
 if __name__ == "__main__":
     # Parse the command line arguments
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
     f.close()
-    # websites = ['http://www.asahi.com', 'http://www.vecteezy.com', 'http://www.sfu.ca', 'http://www.themegrill.com']
+    websites = ['http://www.ultimatepower.id']
 
     # chunks_list = list(divide_chunks(websites, SIZE))
     chunks_list = list(divide_chunks(websites, SIZE))
@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     for extn in extn_lst:
         try: 
-            folder_path = f'/home/mitch/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            folder_path = f'/home/mitch/measurements/break/html_elements/wpr_data/{extn}'
             if not os.path.exists(folder_path):
             # Create the folder
                 os.makedirs(folder_path)
@@ -129,18 +129,19 @@ if __name__ == "__main__":
             print(ports_list)
 
             for chunk in chunks_list:
-                while not check_if_ports_open(ports_list):
-                    # restart all servers
-                    start_port += 2*num_sites
-                    error('', '', inspect.currentframe().f_code.co_name, 'all ports not open; resetting the servers')
-                    ports_list = master_port_list[-1]
-                    master_port_list.pop(-1)
-                    processes, ports_list = start_servers(args.replay, num_sites, extn, 1, ports_list, start_port)
-                    master_port_list.append(ports_list)
+                # while not check_if_ports_open(ports_list):
+                #     # restart all servers
+                #     start_port += 2*num_sites
+                #     error('', '', inspect.currentframe().f_code.co_name, 'all ports not open; resetting the servers')
+                #     ports_list = master_port_list[-1]
+                #     master_port_list.pop(-1)
+                #     processes, ports_list = start_servers(args.replay, num_sites, extn, 1, ports_list, start_port)
+                #     master_port_list.append(ports_list)
 
-                vdisplay = Display(visible=False, size=(1920, 1280))
-                vdisplay.start()
-                display = vdisplay.display
+                # vdisplay = Display(visible=False, size=(1920, 1280))
+                # vdisplay.start()
+                # display = vdisplayy.display
+                display = 0
 
                 jobs = []
                 for site_index in range(len(chunk)):
@@ -151,7 +152,7 @@ if __name__ == "__main__":
                     except IndexError as e:
                         error('', '', inspect.currentframe().f_code.co_name, e)
                     except Exception as e:
-                        error(chunk[site_index], inspect.currentframe().f_code.co_name, e)
+                        error(chunk[site_index], '', inspect.currentframe().f_code.co_name, e)
                 
                 for job in jobs:
                     print(f"starting {job}")
@@ -194,7 +195,7 @@ if __name__ == "__main__":
                 # closing open Xfvb server
                 print("-"*50)
                 print("closing open xvfb processes")
-                vdisplay.stop()
+                # vdisplay.stop()
                 # os.system('pkill Xvfb')
                 print(os.system("ps aux | grep Xvfb | wc -l"))
                 print("-"*50)

@@ -21,7 +21,7 @@ import inspect
 
 import logging
 
-def error(site, html='', fname, err):
+def error(site, html, fname, err):
     f = open('error.txt', 'a')
     f.write(f'Site Name: {site}\n')
     f.write(f'HTML Object: {html}\n')
@@ -73,7 +73,7 @@ def remove_popup(driver):
         close_anchor = driver.find_elements(By.XPATH, "//a[contains(translate(., 'CLOSE', 'close'), 'close') or contains(translate(@aria-label, 'CLOSE', 'close'), 'close')]")
     except Exception as e:
         # print(close_button, close_anchor)
-        error(driver.current_url, inspect.currentframe().f_code.co_name, e)
+        error(driver.current_url, '', inspect.currentframe().f_code.co_name, e)
         # print('close_button find element error', 1, e)
 
     close_button.extend(close_anchor)
@@ -84,7 +84,7 @@ def remove_popup(driver):
                 i.click()
 
             except Exception as e:
-                error(driver.current_url, inspect.currentframe().f_code.co_name, e)
+                error(driver.current_url, '', inspect.currentframe().f_code.co_name, e)
                 # print('popup', 2, e)
 
 # could possibly make the driver stale. plz check!
@@ -122,7 +122,7 @@ def remove_alert(driver):
 
             # If you need to dismiss the alert (clicks "Cancel"), use: alert.dismiss()
         except Exception as e:
-            error(driver.current_url, inspect.currentframe().f_code.co_name, e)
+            error(driver.current_url, '', inspect.currentframe().f_code.co_name, e)
             # print("couldn't switch to alert", 3, e)
 
 def remove_cmp_banner(options):
@@ -259,6 +259,12 @@ def stop_servers(ports_list):
     #         error('', '', inspect.currentframe().f_code.co_name, e)
     #
     # return ports_list
+
+def error_catcher(e, x, tries, hhh):
+    if tries != 3:
+        return tries + 1
+    else:
+        return "Error"
     
 def get_pid_by_port(port):
     try:
@@ -303,12 +309,12 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
         options.add_extension(f'/home/mitch/work/pes/measurements/extensions/extn_crx/{extn}.crx')
     
     # display number
-    os.environ['DISPLAY'] = f":{display_num}"
+    # os.environ['DISPLAY'] = f":{display_num}"
 
     retval = driver_dict.initialize(options, 3, site)
     if retval == 0:
         e = f'error open browser instance for extn:{extn}'
-        error(site, inspect.currentframe().f_code.co_name, e)
+        error(site, '', inspect.currentframe().f_code.co_name, e)
         driver_dict = None
         return
 
@@ -325,11 +331,11 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
                 except TimeoutException as e:
                     print(f"Timeout url:{url}")
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
                   
                 except Exception as e:
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
 
             else:
             # scan + click
@@ -353,17 +359,18 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
                 except TimeoutException as e:
                     print(f"Timeout url:{url}")
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
                   
                 except Exception as e:
                     e = str(e).split("\n")[0]
-                    error(site, inspect.currentframe().f_code.co_name, e)
+                    error(site, '', inspect.currentframe().f_code.co_name, e)
 
 
         if replay:
             driver_dict.replay_initialize()
             # click and compare
             tries = 1
+            driver_dict.curr_site = 0
             while driver_dict.curr_site > -1:
                 try:
                     driver_dict.click_on_elms(tries)

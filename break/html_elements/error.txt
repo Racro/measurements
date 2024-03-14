@@ -1,0 +1,459 @@
+Site Name: http://www.mofidonline.com
+HTML Object: 
+Function Name: initialize
+Error: Message: session not created: This version of ChromeDriver only supports Chrome version 109
+Current browser version is 113.0.5672.0 with binary path /home/mitch/work/pes/chrome_113/chrome
+Stacktrace:
+#0 0x55f5f12ab303 <unknown>
+#1 0x55f5f107fd37 <unknown>
+#2 0x55f5f10aca54 <unknown>
+#3 0x55f5f10a780e <unknown>
+#4 0x55f5f10a4330 <unknown>
+#5 0x55f5f10e54a6 <unknown>
+#6 0x55f5f10dc753 <unknown>
+#7 0x55f5f10afa14 <unknown>
+#8 0x55f5f10b0b7e <unknown>
+#9 0x55f5f12fa32e <unknown>
+#10 0x55f5f12fdc0e <unknown>
+#11 0x55f5f12e0610 <unknown>
+#12 0x55f5f12fec23 <unknown>
+#13 0x55f5f12d2545 <unknown>
+#14 0x55f5f131f6a8 <unknown>
+#15 0x55f5f131f836 <unknown>
+#16 0x55f5f133ad13 <unknown>
+#17 0x7f5b2d094ac3 <unknown>
+
+Site Name: http://www.mofidonline.com
+HTML Object: 
+Function Name: run
+Error: error open browser instance for extn:control
+Site Name: http://www.mofidonline.com
+HTML Object: login
+Function Name: load_site
+Error: Message: timeout: Timed out receiving message from renderer: 42.702
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x565029e32133 <unknown>
+#1 0x565029b66966 <unknown>
+#2 0x565029b50404 <unknown>
+#3 0x565029b50120 <unknown>
+#4 0x565029b4eb18 <unknown>
+#5 0x565029b4f2c2 <unknown>
+#6 0x565029b5ce8f <unknown>
+#7 0x565029b5df32 <unknown>
+#8 0x565029b707fb <unknown>
+#9 0x565029b7503b <unknown>
+#10 0x565029b4f863 <unknown>
+#11 0x565029b705bb <unknown>
+#12 0x565029bdb3fd <unknown>
+#13 0x565029bc29a3 <unknown>
+#14 0x565029b9746a <unknown>
+#15 0x565029b9855e <unknown>
+#16 0x565029df1cae <unknown>
+#17 0x565029df58fe <unknown>
+#18 0x565029dfef20 <unknown>
+#19 0x565029df6923 <unknown>
+#20 0x565029dc9c0e <unknown>
+#21 0x565029e19b08 <unknown>
+#22 0x565029e19c97 <unknown>
+#23 0x565029e2a113 <unknown>
+#24 0x7f6739a94ac3 <unknown>
+
+Site Name: http://www.mofidonline.com
+HTML Object: buttons
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55f87bada133 <unknown>
+#1 0x55f87b80e966 <unknown>
+#2 0x55f87b7e8cec <unknown>
+#3 0x55f87b86fc0f <unknown>
+#4 0x55f87b882c2b <unknown>
+#5 0x55f87b86a9a3 <unknown>
+#6 0x55f87b83f46a <unknown>
+#7 0x55f87b84055e <unknown>
+#8 0x55f87ba99cae <unknown>
+#9 0x55f87ba9d8fe <unknown>
+#10 0x55f87baa6f20 <unknown>
+#11 0x55f87ba9e923 <unknown>
+#12 0x55f87ba71c0e <unknown>
+#13 0x55f87bac1b08 <unknown>
+#14 0x55f87bac1c97 <unknown>
+#15 0x55f87bad2113 <unknown>
+#16 0x7ff780494ac3 <unknown>
+
+Site Name: http://www.mofidonline.com
+HTML Object: login
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55f87bada133 <unknown>
+#1 0x55f87b80e966 <unknown>
+#2 0x55f87b7e8cec <unknown>
+#3 0x55f87b86fc0f <unknown>
+#4 0x55f87b882c2b <unknown>
+#5 0x55f87b86a9a3 <unknown>
+#6 0x55f87b83f46a <unknown>
+#7 0x55f87b84055e <unknown>
+#8 0x55f87ba99cae <unknown>
+#9 0x55f87ba9d8fe <unknown>
+#10 0x55f87baa6f20 <unknown>
+#11 0x55f87ba9e923 <unknown>
+#12 0x55f87ba71c0e <unknown>
+#13 0x55f87bac1b08 <unknown>
+#14 0x55f87bac1c97 <unknown>
+#15 0x55f87bad2113 <unknown>
+#16 0x7ff780494ac3 <unknown>
+
+Site Name: http://www.mofidonline.com
+HTML Object: links
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55f87bada133 <unknown>
+#1 0x55f87b80e966 <unknown>
+#2 0x55f87b7e8cec <unknown>
+#3 0x55f87b86fc0f <unknown>
+#4 0x55f87b882c2b <unknown>
+#5 0x55f87b86a9a3 <unknown>
+#6 0x55f87b83f46a <unknown>
+#7 0x55f87b84055e <unknown>
+#8 0x55f87ba99cae <unknown>
+#9 0x55f87ba9d8fe <unknown>
+#10 0x55f87baa6f20 <unknown>
+#11 0x55f87ba9e923 <unknown>
+#12 0x55f87ba71c0e <unknown>
+#13 0x55f87bac1b08 <unknown>
+#14 0x55f87bac1c97 <unknown>
+#15 0x55f87bad2113 <unknown>
+#16 0x7ff780494ac3 <unknown>
+
+Site Name: http://www.mofidonline.com
+HTML Object: drop downs
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55f87bada133 <unknown>
+#1 0x55f87b80e966 <unknown>
+#2 0x55f87b7e8cec <unknown>
+#3 0x55f87b86fc0f <unknown>
+#4 0x55f87b882c2b <unknown>
+#5 0x55f87b86a9a3 <unknown>
+#6 0x55f87b83f46a <unknown>
+#7 0x55f87b84055e <unknown>
+#8 0x55f87ba99cae <unknown>
+#9 0x55f87ba9d8fe <unknown>
+#10 0x55f87baa6f20 <unknown>
+#11 0x55f87ba9e923 <unknown>
+#12 0x55f87ba71c0e <unknown>
+#13 0x55f87bac1b08 <unknown>
+#14 0x55f87bac1c97 <unknown>
+#15 0x55f87bad2113 <unknown>
+#16 0x7ff780494ac3 <unknown>
+
+Site Name: http://www.feimaoyun.com
+HTML Object: buttons
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x5580cbd83133 <unknown>
+#1 0x5580cbab7966 <unknown>
+#2 0x5580cba91cec <unknown>
+#3 0x5580cbb18c0f <unknown>
+#4 0x5580cbb2bc2b <unknown>
+#5 0x5580cbb139a3 <unknown>
+#6 0x5580cbae846a <unknown>
+#7 0x5580cbae955e <unknown>
+#8 0x5580cbd42cae <unknown>
+#9 0x5580cbd468fe <unknown>
+#10 0x5580cbd4ff20 <unknown>
+#11 0x5580cbd47923 <unknown>
+#12 0x5580cbd1ac0e <unknown>
+#13 0x5580cbd6ab08 <unknown>
+#14 0x5580cbd6ac97 <unknown>
+#15 0x5580cbd7b113 <unknown>
+#16 0x7f5face94ac3 <unknown>
+
+Site Name: http://www.feimaoyun.com
+HTML Object: links
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x5580cbd83133 <unknown>
+#1 0x5580cbab7966 <unknown>
+#2 0x5580cba91cec <unknown>
+#3 0x5580cbb18c0f <unknown>
+#4 0x5580cbb2bc2b <unknown>
+#5 0x5580cbb139a3 <unknown>
+#6 0x5580cbae846a <unknown>
+#7 0x5580cbae955e <unknown>
+#8 0x5580cbd42cae <unknown>
+#9 0x5580cbd468fe <unknown>
+#10 0x5580cbd4ff20 <unknown>
+#11 0x5580cbd47923 <unknown>
+#12 0x5580cbd1ac0e <unknown>
+#13 0x5580cbd6ab08 <unknown>
+#14 0x5580cbd6ac97 <unknown>
+#15 0x5580cbd7b113 <unknown>
+#16 0x7f5face94ac3 <unknown>
+
+Site Name: http://www.feimaoyun.com
+HTML Object: login
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x5580cbd83133 <unknown>
+#1 0x5580cbab7966 <unknown>
+#2 0x5580cba91cec <unknown>
+#3 0x5580cbb18c0f <unknown>
+#4 0x5580cbb2bc2b <unknown>
+#5 0x5580cbb139a3 <unknown>
+#6 0x5580cbae846a <unknown>
+#7 0x5580cbae955e <unknown>
+#8 0x5580cbd42cae <unknown>
+#9 0x5580cbd468fe <unknown>
+#10 0x5580cbd4ff20 <unknown>
+#11 0x5580cbd47923 <unknown>
+#12 0x5580cbd1ac0e <unknown>
+#13 0x5580cbd6ab08 <unknown>
+#14 0x5580cbd6ac97 <unknown>
+#15 0x5580cbd7b113 <unknown>
+#16 0x7f5face94ac3 <unknown>
+
+Site Name: http://www.feimaoyun.com
+HTML Object: drop downs
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x56470872a133 <unknown>
+#1 0x56470845e966 <unknown>
+#2 0x564708438cec <unknown>
+#3 0x5647084bfc0f <unknown>
+#4 0x5647084d2c2b <unknown>
+#5 0x5647084ba9a3 <unknown>
+#6 0x56470848f46a <unknown>
+#7 0x56470849055e <unknown>
+#8 0x5647086e9cae <unknown>
+#9 0x5647086ed8fe <unknown>
+#10 0x5647086f6f20 <unknown>
+#11 0x5647086ee923 <unknown>
+#12 0x5647086c1c0e <unknown>
+#13 0x564708711b08 <unknown>
+#14 0x564708711c97 <unknown>
+#15 0x564708722113 <unknown>
+#16 0x7f77c6c94ac3 <unknown>
+
+Site Name: http://www.feimaoyun.com
+HTML Object: login
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x56470872a133 <unknown>
+#1 0x56470845e966 <unknown>
+#2 0x564708438cec <unknown>
+#3 0x5647084bfc0f <unknown>
+#4 0x5647084d2c2b <unknown>
+#5 0x5647084ba9a3 <unknown>
+#6 0x56470848f46a <unknown>
+#7 0x56470849055e <unknown>
+#8 0x5647086e9cae <unknown>
+#9 0x5647086ed8fe <unknown>
+#10 0x5647086f6f20 <unknown>
+#11 0x5647086ee923 <unknown>
+#12 0x5647086c1c0e <unknown>
+#13 0x564708711b08 <unknown>
+#14 0x564708711c97 <unknown>
+#15 0x564708722113 <unknown>
+#16 0x7f77c6c94ac3 <unknown>
+
+Site Name: http://www.feimaoyun.com
+HTML Object: links
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x56470872a133 <unknown>
+#1 0x56470845e966 <unknown>
+#2 0x564708438cec <unknown>
+#3 0x5647084bfc0f <unknown>
+#4 0x5647084d2c2b <unknown>
+#5 0x5647084ba9a3 <unknown>
+#6 0x56470848f46a <unknown>
+#7 0x56470849055e <unknown>
+#8 0x5647086e9cae <unknown>
+#9 0x5647086ed8fe <unknown>
+#10 0x5647086f6f20 <unknown>
+#11 0x5647086ee923 <unknown>
+#12 0x5647086c1c0e <unknown>
+#13 0x564708711b08 <unknown>
+#14 0x564708711c97 <unknown>
+#15 0x564708722113 <unknown>
+#16 0x7f77c6c94ac3 <unknown>
+
+Site Name: http://www.aspintl.org
+HTML Object: drop downs
+Function Name: load_site
+Error: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x5609d3a72133 <unknown>
+#1 0x5609d37a6966 <unknown>
+#2 0x5609d379e9bf <unknown>
+#3 0x5609d3790e42 <unknown>
+#4 0x5609d3792612 <unknown>
+#5 0x5609d379126a <unknown>
+#6 0x5609d37902e8 <unknown>
+#7 0x5609d3790120 <unknown>
+#8 0x5609d378eb18 <unknown>
+#9 0x5609d378f14d <unknown>
+#10 0x5609d37a8746 <unknown>
+#11 0x5609d381b8b5 <unknown>
+#12 0x5609d3802bd2 <unknown>
+#13 0x5609d381b1c7 <unknown>
+#14 0x5609d38029a3 <unknown>
+#15 0x5609d37d746a <unknown>
+#16 0x5609d37d855e <unknown>
+#17 0x5609d3a31cae <unknown>
+#18 0x5609d3a358fe <unknown>
+#19 0x5609d3a3ef20 <unknown>
+#20 0x5609d3a36923 <unknown>
+#21 0x5609d3a09c0e <unknown>
+#22 0x5609d3a59b08 <unknown>
+#23 0x5609d3a59c97 <unknown>
+#24 0x5609d3a6a113 <unknown>
+#25 0x7f3eba894ac3 <unknown>
+
+Site Name: http://www.aspintl.org
+HTML Object: buttons
+Function Name: load_site
+Error: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x5609d3a72133 <unknown>
+#1 0x5609d37a6966 <unknown>
+#2 0x5609d379e9bf <unknown>
+#3 0x5609d3790e42 <unknown>
+#4 0x5609d3792612 <unknown>
+#5 0x5609d379126a <unknown>
+#6 0x5609d37902e8 <unknown>
+#7 0x5609d3790120 <unknown>
+#8 0x5609d378eb18 <unknown>
+#9 0x5609d378f14d <unknown>
+#10 0x5609d37a8746 <unknown>
+#11 0x5609d381b8b5 <unknown>
+#12 0x5609d3802bd2 <unknown>
+#13 0x5609d381b1c7 <unknown>
+#14 0x5609d38029a3 <unknown>
+#15 0x5609d37d746a <unknown>
+#16 0x5609d37d855e <unknown>
+#17 0x5609d3a31cae <unknown>
+#18 0x5609d3a358fe <unknown>
+#19 0x5609d3a3ef20 <unknown>
+#20 0x5609d3a36923 <unknown>
+#21 0x5609d3a09c0e <unknown>
+#22 0x5609d3a59b08 <unknown>
+#23 0x5609d3a59c97 <unknown>
+#24 0x5609d3a6a113 <unknown>
+#25 0x7f3eba894ac3 <unknown>
+
+Site Name: http://www.aspintl.org
+HTML Object: links
+Function Name: load_site
+Error: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x5609d3a72133 <unknown>
+#1 0x5609d37a6966 <unknown>
+#2 0x5609d379e9bf <unknown>
+#3 0x5609d3790e42 <unknown>
+#4 0x5609d3792612 <unknown>
+#5 0x5609d379126a <unknown>
+#6 0x5609d37902e8 <unknown>
+#7 0x5609d3790120 <unknown>
+#8 0x5609d378eb18 <unknown>
+#9 0x5609d378f14d <unknown>
+#10 0x5609d37a8746 <unknown>
+#11 0x5609d381b8b5 <unknown>
+#12 0x5609d3802bd2 <unknown>
+#13 0x5609d381b1c7 <unknown>
+#14 0x5609d38029a3 <unknown>
+#15 0x5609d37d746a <unknown>
+#16 0x5609d37d855e <unknown>
+#17 0x5609d3a31cae <unknown>
+#18 0x5609d3a358fe <unknown>
+#19 0x5609d3a3ef20 <unknown>
+#20 0x5609d3a36923 <unknown>
+#21 0x5609d3a09c0e <unknown>
+#22 0x5609d3a59b08 <unknown>
+#23 0x5609d3a59c97 <unknown>
+#24 0x5609d3a6a113 <unknown>
+#25 0x7f3eba894ac3 <unknown>
+
+Site Name: http://www.aspintl.org
+HTML Object: login
+Function Name: load_site
+Error: Message: unknown error: net::ERR_NAME_NOT_RESOLVED
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x5609d3a72133 <unknown>
+#1 0x5609d37a6966 <unknown>
+#2 0x5609d379e9bf <unknown>
+#3 0x5609d3790e42 <unknown>
+#4 0x5609d3792612 <unknown>
+#5 0x5609d379126a <unknown>
+#6 0x5609d37902e8 <unknown>
+#7 0x5609d3790120 <unknown>
+#8 0x5609d378eb18 <unknown>
+#9 0x5609d378f14d <unknown>
+#10 0x5609d37a8746 <unknown>
+#11 0x5609d381b8b5 <unknown>
+#12 0x5609d3802bd2 <unknown>
+#13 0x5609d381b1c7 <unknown>
+#14 0x5609d38029a3 <unknown>
+#15 0x5609d37d746a <unknown>
+#16 0x5609d37d855e <unknown>
+#17 0x5609d3a31cae <unknown>
+#18 0x5609d3a358fe <unknown>
+#19 0x5609d3a3ef20 <unknown>
+#20 0x5609d3a36923 <unknown>
+#21 0x5609d3a09c0e <unknown>
+#22 0x5609d3a59b08 <unknown>
+#23 0x5609d3a59c97 <unknown>
+#24 0x5609d3a6a113 <unknown>
+#25 0x7f3eba894ac3 <unknown>
+
+Site Name: http://www.apsintl.org
+HTML Object: 
+Function Name: run
+Error: object of type 'NoneType' has no len()
+Site Name: http://www.apsintl.org
+HTML Object: 
+Function Name: run
+Error: Message: unknown error: unhandled inspector error: {"code":-32000,"message":"No node with given id found"}
+Site Name: http://www.apsintl.org
+HTML Object: 
+Function Name: run
+Error: object of type 'NoneType' has no len()
+Site Name: http://www.ultimatepower.id
+HTML Object: 
+Function Name: run
+Error: Message: no such window: target window already closed
