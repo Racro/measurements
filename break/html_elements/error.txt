@@ -457,3 +457,103 @@ Site Name: http://www.ultimatepower.id
 HTML Object: 
 Function Name: run
 Error: Message: no such window: target window already closed
+Site Name: http://www.ultimatepower.id
+HTML Object: drop downs
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55eb8fb58133 <unknown>
+#1 0x55eb8f88c966 <unknown>
+#2 0x55eb8f866cec <unknown>
+#3 0x55eb8f8edc0f <unknown>
+#4 0x55eb8f900c2b <unknown>
+#5 0x55eb8f8e89a3 <unknown>
+#6 0x55eb8f8bd46a <unknown>
+#7 0x55eb8f8be55e <unknown>
+#8 0x55eb8fb17cae <unknown>
+#9 0x55eb8fb1b8fe <unknown>
+#10 0x55eb8fb24f20 <unknown>
+#11 0x55eb8fb1c923 <unknown>
+#12 0x55eb8faefc0e <unknown>
+#13 0x55eb8fb3fb08 <unknown>
+#14 0x55eb8fb3fc97 <unknown>
+#15 0x55eb8fb50113 <unknown>
+#16 0x7f3b31094ac3 <unknown>
+
+Site Name: http://www.ultimatepower.id
+HTML Object: buttons
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55eb8fb58133 <unknown>
+#1 0x55eb8f88c966 <unknown>
+#2 0x55eb8f866cec <unknown>
+#3 0x55eb8f8edc0f <unknown>
+#4 0x55eb8f900c2b <unknown>
+#5 0x55eb8f8e89a3 <unknown>
+#6 0x55eb8f8bd46a <unknown>
+#7 0x55eb8f8be55e <unknown>
+#8 0x55eb8fb17cae <unknown>
+#9 0x55eb8fb1b8fe <unknown>
+#10 0x55eb8fb24f20 <unknown>
+#11 0x55eb8fb1c923 <unknown>
+#12 0x55eb8faefc0e <unknown>
+#13 0x55eb8fb3fb08 <unknown>
+#14 0x55eb8fb3fc97 <unknown>
+#15 0x55eb8fb50113 <unknown>
+#16 0x7f3b31094ac3 <unknown>
+
+Site Name: http://www.ultimatepower.id
+HTML Object: login
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55eb8fb58133 <unknown>
+#1 0x55eb8f88c966 <unknown>
+#2 0x55eb8f866cec <unknown>
+#3 0x55eb8f8edc0f <unknown>
+#4 0x55eb8f900c2b <unknown>
+#5 0x55eb8f8e89a3 <unknown>
+#6 0x55eb8f8bd46a <unknown>
+#7 0x55eb8f8be55e <unknown>
+#8 0x55eb8fb17cae <unknown>
+#9 0x55eb8fb1b8fe <unknown>
+#10 0x55eb8fb24f20 <unknown>
+#11 0x55eb8fb1c923 <unknown>
+#12 0x55eb8faefc0e <unknown>
+#13 0x55eb8fb3fb08 <unknown>
+#14 0x55eb8fb3fc97 <unknown>
+#15 0x55eb8fb50113 <unknown>
+#16 0x7f3b31094ac3 <unknown>
+
+Site Name: http://www.ultimatepower.id
+HTML Object: links
+Function Name: load_site
+Error: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55eb8fb58133 <unknown>
+#1 0x55eb8f88c966 <unknown>
+#2 0x55eb8f866cec <unknown>
+#3 0x55eb8f8edc0f <unknown>
+#4 0x55eb8f900c2b <unknown>
+#5 0x55eb8f8e89a3 <unknown>
+#6 0x55eb8f8bd46a <unknown>
+#7 0x55eb8f8be55e <unknown>
+#8 0x55eb8fb17cae <unknown>
+#9 0x55eb8fb1b8fe <unknown>
+#10 0x55eb8fb24f20 <unknown>
+#11 0x55eb8fb1c923 <unknown>
+#12 0x55eb8faefc0e <unknown>
+#13 0x55eb8fb3fb08 <unknown>
+#14 0x55eb8fb3fc97 <unknown>
+#15 0x55eb8fb50113 <unknown>
+#16 0x7f3b31094ac3 <unknown>
+

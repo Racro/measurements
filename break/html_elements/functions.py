@@ -318,6 +318,8 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
         driver_dict = None
         return
 
+    hierarchy_dict = {'buttons': [], "drop downs": [], "links": [], "login": []}
+
     for html in html_lst:
         driver_dict.set_html_obj(html)
         if replay == 0: # can add clicking on the buttons
@@ -365,8 +367,7 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
                     e = str(e).split("\n")[0]
                     error(site, '', inspect.currentframe().f_code.co_name, e)
 
-
-        if replay:
+        elif replay == 1:
             driver_dict.replay_initialize()
             # click and compare
             tries = 1
@@ -384,6 +385,22 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
                         driver_dict.tries = 1
                         driver_dict.curr_elem += 1
 
+        # OPTION 2 Used for checking the DOM hierarchy change
+        elif replay == 2:
+            driver_dict.replay_initialize()
+            # click and compare
+            tries = 1
+            driver_dict.curr_site = 0
+            while driver_dict.curr_site > -1:
+                try:
+                    driver_dict.hierarchy_change(tries, hierarchy_dict)
+                    print(hierarchy_dict)
+                    with open("hierarchy/final_hierarchy_results.json", 'w') as jsonfile:
+                        json.dump(hierarchy_dict, jsonfile)
+                except Exception as e:
+                    tries = 1
+                    driver_dict.tries = 1
+                    driver_dict.curr_elem += 1
         
         with open(f'logs/{extn}_{html}.txt', 'a') as f:
             try:

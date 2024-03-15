@@ -511,8 +511,10 @@ class Driver:
 
     @timeout(300)
     def test_button(self, tries):
+        # grab current site
         site = self.all_sites[self.curr_site]
         try:
+            # get outer HTML and generate the Xpath for it
             outerHTML = self.dictionary[self.adBlocker_name][self.html_obj][site][self.curr_elem]
             xpath = self.generate_xpath(outerHTML)
         except IndexError as e:
@@ -577,10 +579,91 @@ class Driver:
             else:
                 self.test_button(tries)
                 self.curr_elem += 1
-            
+
         self.curr_site = -1
         self.excel[self.adBlocker_name][self.html_obj][self.url_key] = self.excel_list
         self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = self.excel_errors_list
+
+    def hierarchy_change(self, tries, hierarchy_dict):
+        while self.curr_site < len(self.all_sites):
+            if self.curr_elem >= len(self.dictionary[self.adBlocker_name][self.html_obj][self.all_sites[self.curr_site]]):
+                self.curr_site += 1
+                self.curr_elem = 0
+            else:
+                self.hierarchy_helper(tries, hierarchy_dict)
+                self.curr_elem += 1
+
+        self.curr_site = -1
+        self.excel[self.adBlocker_name][self.html_obj][self.url_key] = self.excel_list
+        self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = self.excel_errors_list
+
+    @timeout(300)
+    def hierarchy_helper(self, tries, hierarchy_dict):
+        # grab current site
+        site = self.all_sites[self.curr_site]
+        try:
+            # get outer HTML and generate the Xpath for it
+            outerHTML = self.dictionary[self.adBlocker_name][self.html_obj][site][self.curr_elem]
+            xpath = self.generate_xpath(outerHTML)
+        except IndexError as e:
+            self.excel_errors_list.append(['IndexError: list is empty', '', '', self.initial_outer_html, '', '', '',
+                                           self.url_key, self.driver.current_url, tries])
+            return
+
+        except Exception as e:
+            # print(e)
+            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
+            self.excel_errors_list.append(["Unknown Exception", '', '', self.initial_outer_html, '', '', '',
+                                           self.url_key, self.driver.current_url, tries])
+            return
+
+        self.load_site(site)
+        element = self.get_correct_elem(xpath)
+        a = element.get_attribute('outerHTML')
+
+        sleep(2)
+        entire_DOM_initial = self.driver.page_source
+        initial_url = self.driver.current_url
+        self.click_button(element)
+        sleep(2)
+        b = element.get_attribute('outerHTML')
+
+        if a == b:
+            print("they the same")
+        else:
+            print("should be good")
+
+        entire_DOM_after = self.driver.page_source
+        after_url = self.driver.current_url
+        tag_initial, attribute_initial = self.generate_path(a)
+        tag_after, attribute_after = self.generate_path(b)
+
+        # control is the source code without clicking
+        control_code = BeautifulSoup(entire_DOM_initial, 'html.parser')
+        # clicked is the source code after clicking
+        clicked_code = BeautifulSoup(entire_DOM_after, 'html.parser')
+        control = control_code.find(tag_initial, attribute_initial)
+        clicked = clicked_code.find(tag_after, attribute_after)
+
+        counter = None
+        if initial_url != after_url:
+            return
+        if control and clicked:
+            counter = 0
+            while control.parent and clicked.parent and control == clicked:
+                control = control.parent
+                clicked = clicked.parent
+                counter += 1
+            # hierarchy_dict[self.html_obj].append([site, outerHTML, control, clicked, counter])
+            hierarchy_dict[self.html_obj].append([site, outerHTML, counter])
+        return counter
+
+    def generate_path(self, html_code):
+        soup = BeautifulSoup(html_code, 'html.parser')
+        tag = soup.find()
+        tag_name = tag.name
+        attributes = tag.attrs
+        return tag_name, attributes
 
     ############################################################
 

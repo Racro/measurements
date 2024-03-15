@@ -36,7 +36,7 @@ SIZE = 1
 port = 9090
 start_port = 11001
 
-HTML_TEST = {'buttons', "drop downs", "links", "login"}
+HTML_TEST = {'buttons'}
 # HTML_TEST = {"drop downs"}#, "links", "login"}
 # HTML_TEST = {'buttons', "links"}
 
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
     f.close()
-    websites = ['http://www.ultimatepower.id']
+    websites = ['https://en.wikipedia.org/wiki/Main_Page', "https://duckduckgo.com/"]
 
     # chunks_list = list(divide_chunks(websites, SIZE))
     chunks_list = list(divide_chunks(websites, SIZE))
