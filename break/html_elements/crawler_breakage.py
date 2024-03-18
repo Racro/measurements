@@ -33,7 +33,7 @@ extn_lst = [
     # , 'privacy-badger'
     ]
 
-SIZE = 80
+SIZE = 1
 port = 9090
 start_port = 11001
 
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     for extn in extn_lst:
         try: 
-            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            folder_path = f'./wpr_data/{extn}'
             if not os.path.exists(folder_path):
             # Create the folder
                 os.makedirs(folder_path)
@@ -218,14 +218,14 @@ if __name__ == "__main__":
             time.sleep(5)
 
             if args.replay == 0:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
+                if not os.path.exists('./json'):
+                    os.makedirs('./json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
             if args.replay:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
+                if not os.path.exists('./xlsx'):
+                    os.makedirs('./xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
 
@@ -254,14 +254,14 @@ if __name__ == "__main__":
                 print(f"Permission denied to send signal to process {pid1}.")
 
             if args.replay == 0:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
+                if not os.path.exists('./json'):
+                    os.makedirs('./json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
             if args.replay:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
+                if not os.path.exists('./xlsx'):
+                    os.makedirs('./xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
 
@@ -282,14 +282,14 @@ if __name__ == "__main__":
                 print(f"Permission denied to send signal to process {pid1}.")
 
             if args.replay == 0:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
+                if not os.path.exists('./json'):
+                    os.makedirs('./json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
             if args.replay:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
+                if not os.path.exists('./xlsx'):
+                    os.makedirs('./xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
 

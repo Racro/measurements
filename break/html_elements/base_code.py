@@ -200,7 +200,7 @@ class Driver:
         while num_tries > 0:
             try:
                 self.options = options
-                log_file_path = f"/home/ritik/work/pes/measurements/break/html_elements/logs/chromedriver_{key}.log"
+                log_file_path = f"./logs/chromedriver_{key}.log"
                 service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver', service_args=["--verbose", f"--log-path={log_file_path}"])
                 # service = Service(ChromeDriverManager(version=self.chrome_version).install(), service_args=["--verbose", f"--log-path={log_file_path}"])
                 self.driver = webdriver.Chrome(options=options, service=service)
@@ -348,7 +348,7 @@ class Driver:
 
     def take_ss(self, fname):
         try:
-            filepath = f'/home/ritik/work/pes/measurements/break/html_elements/page_ss/{self.html_obj}'
+            filepath = f'./page_ss/{self.html_obj}'
             if not os.path.isdir(filepath):
                 os.makedirs(filepath, exist_ok=True)
             if self.driver != None:

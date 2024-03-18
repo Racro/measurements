@@ -163,7 +163,7 @@ def remove_cmp_banner(options):
         
 # this removes captcha and brings determinism
 def use_catapult(options, fname, port1, port2):
-    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}_{port1}"
+    folder_path = f"./wpr_data/{fname}_{port1}"
     if not os.path.exists(folder_path):
     # Create the folder
         os.makedirs(folder_path)
@@ -216,12 +216,13 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
         stop_servers(ports_list)
     ports_list = get_ports(num_servers*2, start_port)
 
-    if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/archive'):
-        os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/archive')
+    archive_path = os.path.expanduser('~/archive')
+    if not os.path.exists(archive_path):
+        os.makedirs(archive_path)
     
     processes = []
 
-    folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+    folder_path = f'./wpr_data/{extn}'
     if not os.path.exists(folder_path):
         # Create the folder
         os.makedirs(folder_path)
@@ -239,9 +240,9 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
         print(f'starting servers with ports: {temp_port1} {temp_port2}')
         try:
             if replay:
-                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'{archive_path}/{extn}_{counter}.wprgo']
             else:
-                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'{archive_path}/{extn}_{counter}.wprgo']
 
             process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = sys.stdout, stderr = sys.stdout)
             print('start servers', process, process.pid)
@@ -311,8 +312,8 @@ def get_pid_by_port(port):
     return None
 
 def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, html_lst):
-    if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/logs'):
-        os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/logs')
+    if not os.path.exists('./logs'):
+        os.makedirs('./logs')
     logging.basicConfig(filename="logs/debug.log", filemode="w", format="%(name)s → %(levelname)s: %(message)s", level=logging.INFO)
     # Prepare Chrome
     options = Options()
