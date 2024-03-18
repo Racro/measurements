@@ -12,6 +12,7 @@ import argparse
 import os
 import subprocess
 from pyvirtualdisplay import Display
+from xvfbwrapper import Xvfb
 import sys
 import random
 import math
@@ -32,7 +33,7 @@ extn_lst = [
     # , 'privacy-badger'
     ]
 
-SIZE = 60
+SIZE = 80
 port = 9090
 start_port = 11001
 
@@ -104,8 +105,8 @@ if __name__ == "__main__":
         os.system('rm -rf logs/*')
 
     # testing for 10000 sites
-    # websites = random.sample(websites, 500)
-    websites = websites[3000:4000]
+    websites = random.sample(websites, 10000)
+    # websites = websites[3500:4000]
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
     f.close()
@@ -138,10 +139,15 @@ if __name__ == "__main__":
                     processes, ports_list = start_servers(args.replay, num_sites, extn, 1, ports_list, start_port)
                     master_port_list.append(ports_list)
 
-                vdisplay = Display(visible=False, size=(1920, 1280))
+                xvfb_args = [
+                    '-maxclients', '1024'
+                ]
+                vdisplay = Display(backend='xvfb', size=(1920, 1280), extra_args=xvfb_args)
+                # vdisplay = Xvfb(width=1920, height=1280)
                 vdisplay.start()
                 display = vdisplay.display
-
+                
+                print(display)
                 jobs = []
                 for site_index in range(len(chunk)):
                     print('website:', chunk[site_index])
@@ -160,7 +166,7 @@ if __name__ == "__main__":
 
                 time.sleep(5)
 
-                TIMEOUT = 750
+                TIMEOUT = 1000
                 start = time.time()
                 for job in jobs:
                     print(f"joining {job}")

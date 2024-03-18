@@ -13,6 +13,7 @@ import argparse
 import os
 import subprocess
 from pyvirtualdisplay import Display
+from xvfbwrapper import Xvfb
 import sys
 import random
 import math
@@ -30,7 +31,7 @@ def cleanup_tmp():
 
     # Filter out files that start with the specified characters
     for file_name in all_files:
-        if 'org.chromium' in file_name or 'org.chrome' in file_name:
+        if '.org.chromium' in file_name or '.com.google.Chrome' in file_name or '.X11' in file_name:
             #  or 'go-build' in file_name:
             files_to_delete.append(os.path.join('/tmp', file_name))
 

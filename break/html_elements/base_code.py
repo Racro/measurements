@@ -188,13 +188,19 @@ class Driver:
             Adjust the seconds parameter so that it will wait for the ad blocker to finish downloading.
         """
         self.url_key = url
+
+        key = ''
+        if 'www' in url:
+            key = url.split('www.')[1]
+        if '://' in key:
+            key = key.split('://')[1]
         # Specify the version of Chrome browser you are using
         self.chrome_version = "113.0.5672.0"  # Chrome browser version
 
         while num_tries > 0:
             try:
                 self.options = options
-                log_file_path = "/home/ritik/work/pes/measurements/break/html_elements/logs/chromedriver.log"
+                log_file_path = f"/home/ritik/work/pes/measurements/break/html_elements/logs/chromedriver_{key}.log"
                 service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver', service_args=["--verbose", f"--log-path={log_file_path}"])
                 # service = Service(ChromeDriverManager(version=self.chrome_version).install(), service_args=["--verbose", f"--log-path={log_file_path}"])
                 self.driver = webdriver.Chrome(options=options, service=service)
