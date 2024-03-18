@@ -749,7 +749,7 @@ class Driver:
                 i += 1
 
         self.make_unique(ret, 1)
-        self.make_unique(final_lst)         # unique by looking at the outerHTML
+        self.make_unique(final_lst, 0)         # unique by looking at the outerHTML
 
         # the chosen_elms will be the unique outerHTML
         # if len(self.chosen_elms) <= self.no_elms:

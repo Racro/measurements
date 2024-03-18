@@ -110,9 +110,7 @@ if __name__ == "__main__":
         json.dump(websites, f)
     f.close()
     websites = [
-        'http://www.typeform.com',
-        'http://www.discourse.org',
-        'http://www.beliefnet.com'
+        'https://en.wikipedia.org/wiki/Main_Page'
     ]
 
     # chunks_list = list(divide_chunks(websites, SIZE))

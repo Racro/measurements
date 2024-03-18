@@ -646,3 +646,31 @@ Site Name: http://www.beliefnet.com
 HTML Object: 
 Function Name: run
 Error: Message: no such window: target window already closed
+Site Name: http://www.typeform.com
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.discourse.org
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.beliefnet.com
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.typeform.com
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.discourse.org
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.beliefnet.com
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: https://en.wikipedia.org/wiki/Main_Page
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'

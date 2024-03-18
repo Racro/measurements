@@ -185,7 +185,7 @@ lst = ['buttons', 'login', 'drop downs', 'links']
 for html_obj in lst:
     with open(f"json/{html_obj}_control.json", 'r') as file:
         json_data = json.load(file)
-        sites = list(json_data.keys())[2:3]
+        sites = list(json_data.keys())
         for site in sites:
             for outerHTML in json_data[site]:
                 hierarchy_change("buttons", outerHTML, site)
