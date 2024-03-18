@@ -1,6 +1,6 @@
 import json
 
-a = json.load(open('json/buttons_control.json', 'r'))
+a = json.load(open('json/sample_sites.json', 'r'))
 b = json.load(open('json/links_control.json', 'r'))
 c = json.load(open('json/drop downs_control.json', 'r'))
 d = json.load(open('json/login_control.json', 'r'))

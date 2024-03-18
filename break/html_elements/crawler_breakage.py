@@ -37,7 +37,7 @@ port = 9090
 start_port = 11001
 
 HTML_TEST = {'buttons'}
-# HTML_TEST = {"drop downs"}#, "links", "login"}
+# HTML_TEST = {"drop downs", "links", "login"}
 # HTML_TEST = {'buttons', "links"}
 
 if __name__ == "__main__":
@@ -109,7 +109,11 @@ if __name__ == "__main__":
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
     f.close()
-    websites = ['https://en.wikipedia.org/wiki/Main_Page', "https://duckduckgo.com/"]
+    websites = [
+        'http://www.typeform.com',
+        'http://www.discourse.org',
+        'http://www.beliefnet.com'
+    ]
 
     # chunks_list = list(divide_chunks(websites, SIZE))
     chunks_list = list(divide_chunks(websites, SIZE))

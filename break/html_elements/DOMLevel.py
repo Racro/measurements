@@ -96,48 +96,75 @@ def get_local_DOM(self, elem):
     return elem.get_attribute('outerHTML')
 
 
+def write_results():
+    with open(f"hierarchy/final_results.json", 'w') as json_file:
+        json.dump(hierarchy_dict, json_file)
+
 def get_comparison_elms(element):
     outerHTML = element.get_attribute('outerHTML')
     DOM = driver.page_source
     URL = driver.current_url
     return outerHTML, DOM, URL
 
+
 def hierarchy_change(html_obj, outerHTML, url):
     driver.get(url)
     time.sleep(5)
     xpath = generate_xpath(outerHTML)
-    if "Tools" in xpath:
-        1
     try:
         element = driver.find_element(By.XPATH, xpath)
     except Exception as e:
-        print("can't find element. skip")
+        print("can't find element. skip", url)
+        write_results()
         return
     initial_outer, initial_DOM, initial_url = get_comparison_elms(element)
 
     try:
+        driver.execute_script(
+            "arguments[0].scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });", element)
+        time.sleep(1)
         element.click()
-        element.click()
-        element.click()
+        time.sleep(1)
+        try:
+            element.click()
+            time.sleep(1)
+            element.click()
+        except Exception as e:
+            print("click button once!", url)
+
         if initial_url != driver.current_url:
             return
-
-        time.sleep(5)
+        time.sleep(3)
     except Exception as e:
-        print("something wrong with clicking on elem, just Skipped it")
+        print("can't click on element", url)
+        write_results()
         return
 
 
-    after_outer, after_DOM, after_url = get_comparison_elms(element)
+    all_windows = driver.window_handles
 
-    tag_initial, attribute_initial = generate_path(initial_outer)
-    tag_after, attribute_after = generate_path(after_outer)
+    # tests for more windows and will close them
+    if len(all_windows) > 1:
+        for window in all_windows[1:]:
+            driver.switch_to.window(window)
+            driver.close()
+            driver.switch_to.window(all_windows[0])
 
-    control_code = BeautifulSoup(initial_DOM, 'html.parser')
-    clicked_code = BeautifulSoup(after_DOM, 'html.parser')
+    try:
+        after_outer, after_DOM, after_url = get_comparison_elms(element)
 
-    control = control_code.find(tag_initial, attribute_initial)
-    clicked = clicked_code.find(tag_after, attribute_after)
+        tag_initial, attribute_initial = generate_path(initial_outer)
+        tag_after, attribute_after = generate_path(after_outer)
+
+        control_code = BeautifulSoup(initial_DOM, 'html.parser')
+        clicked_code = BeautifulSoup(after_DOM, 'html.parser')
+
+        control = control_code.find(tag_initial, attribute_initial)
+        clicked = clicked_code.find(tag_after, attribute_after)
+    except Exception as e:
+        print("element disappeared after click", url)
+        write_results()
+        return 0
 
     counter = None
     if control and clicked:
@@ -146,18 +173,23 @@ def hierarchy_change(html_obj, outerHTML, url):
             control = control.parent
             clicked = clicked.parent
             counter += 1
+        # if for some reason I cannot detect a change with the entire DOM something wierd probably happened
+        if control == clicked:
+            counter = None
         # hierarchy_dict[self.html_obj].append([site, outerHTML, control, clicked, counter])
         hierarchy_dict[html_obj].append([initial_url, outerHTML, counter])
     return counter
+
 
 lst = ['buttons', 'login', 'drop downs', 'links']
 for html_obj in lst:
     with open(f"json/{html_obj}_control.json", 'r') as file:
         json_data = json.load(file)
-        sites = json_data.keys()
+        sites = list(json_data.keys())[2:3]
         for site in sites:
             for outerHTML in json_data[site]:
                 hierarchy_change("buttons", outerHTML, site)
+
         with open(f"hierarchy/final_results.json", 'w') as json_file:
             json.dump(hierarchy_dict, json_file)
             exit(1)

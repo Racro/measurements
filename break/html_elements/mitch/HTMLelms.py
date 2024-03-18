@@ -29,8 +29,8 @@ attributes_dict = {
 }
 
 sites = [
-    # 'https://www.amazon.com/',
-    # 'https://en.wikipedia.org/wiki/Main_Page',
+    'https://www.amazon.com/',
+    'https://en.wikipedia.org/wiki/Main_Page',
     'https://www.microsoft.com/en-us/',
     'https://www.office.com/',
     'https://weather.com/',

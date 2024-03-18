@@ -557,3 +557,92 @@ Stacktrace:
 #15 0x55eb8fb50113 <unknown>
 #16 0x7f3b31094ac3 <unknown>
 
+Site Name: https://cnn.com
+HTML Object: buttons
+Function Name: load_site
+Error: Message: timeout: Timed out receiving message from renderer: 44.885
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55e04262b133 <unknown>
+#1 0x55e04235f966 <unknown>
+#2 0x55e042349404 <unknown>
+#3 0x55e042349120 <unknown>
+#4 0x55e042347b18 <unknown>
+#5 0x55e0423482c2 <unknown>
+#6 0x55e042355e8f <unknown>
+#7 0x55e042356f32 <unknown>
+#8 0x55e0423697fb <unknown>
+#9 0x55e04236e03b <unknown>
+#10 0x55e042348863 <unknown>
+#11 0x55e0423695bb <unknown>
+#12 0x55e0423d43fd <unknown>
+#13 0x55e0423bb9a3 <unknown>
+#14 0x55e04239046a <unknown>
+#15 0x55e04239155e <unknown>
+#16 0x55e0425eacae <unknown>
+#17 0x55e0425ee8fe <unknown>
+#18 0x55e0425f7f20 <unknown>
+#19 0x55e0425ef923 <unknown>
+#20 0x55e0425c2c0e <unknown>
+#21 0x55e042612b08 <unknown>
+#22 0x55e042612c97 <unknown>
+#23 0x55e042623113 <unknown>
+#24 0x7f3f0a294ac3 <unknown>
+
+Site Name: https://naver.com
+HTML Object: 
+Function Name: run
+Error: object of type 'NoneType' has no len()
+Site Name: http://www.typeform.com
+HTML Object: drop downs
+Function Name: take_ss
+Error: Message: timeout: Timed out receiving message from renderer: 10.000
+  (Session info: chrome=113.0.5672.0)
+Stacktrace:
+#0 0x55623903b133 <unknown>
+#1 0x556238d6f966 <unknown>
+#2 0x556238d59404 <unknown>
+#3 0x556238d59120 <unknown>
+#4 0x556238d57b18 <unknown>
+#5 0x556238d582c2 <unknown>
+#6 0x556238d79bcc <unknown>
+#7 0x556238df0b12 <unknown>
+#8 0x556238dcbbd2 <unknown>
+#9 0x556238de41c7 <unknown>
+#10 0x556238dcb9a3 <unknown>
+#11 0x556238da046a <unknown>
+#12 0x556238da155e <unknown>
+#13 0x556238ffacae <unknown>
+#14 0x556238ffe8fe <unknown>
+#15 0x556239007f20 <unknown>
+#16 0x556238fff923 <unknown>
+#17 0x556238fd2c0e <unknown>
+#18 0x556239022b08 <unknown>
+#19 0x556239022c97 <unknown>
+#20 0x556239033113 <unknown>
+#21 0x7fb0e1494ac3 <unknown>
+
+Site Name: http://www.typeform.com
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.discourse.org
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.beliefnet.com
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.typeform.com
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.discourse.org
+HTML Object: 
+Function Name: run
+Error: Driver.make_unique() missing 1 required positional argument: 'count_elems'
+Site Name: http://www.beliefnet.com
+HTML Object: 
+Function Name: run
+Error: Message: no such window: target window already closed
