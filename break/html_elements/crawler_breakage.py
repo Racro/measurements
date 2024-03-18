@@ -218,10 +218,14 @@ if __name__ == "__main__":
             time.sleep(5)
 
             if args.replay == 0:
+                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
+                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
             if args.replay:
+                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
+                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
 
@@ -250,10 +254,14 @@ if __name__ == "__main__":
                 print(f"Permission denied to send signal to process {pid1}.")
 
             if args.replay == 0:
+                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
+                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
             if args.replay:
+                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
+                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
 
@@ -274,10 +282,14 @@ if __name__ == "__main__":
                 print(f"Permission denied to send signal to process {pid1}.")
 
             if args.replay == 0:
+                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
+                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
             if args.replay:
+                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
+                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
 

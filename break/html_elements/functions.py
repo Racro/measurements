@@ -215,6 +215,9 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
         # if reset, the ports list remain the same for the filename to be the same
         stop_servers(ports_list)
     ports_list = get_ports(num_servers*2, start_port)
+
+    if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/archive'):
+        os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/archive')
     
     processes = []
 
@@ -308,6 +311,8 @@ def get_pid_by_port(port):
     return None
 
 def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, html_lst):
+    if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/logs'):
+        os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/logs')
     logging.basicConfig(filename="logs/debug.log", filemode="w", format="%(name)s → %(levelname)s: %(message)s", level=logging.INFO)
     # Prepare Chrome
     options = Options()
