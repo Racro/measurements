@@ -27,10 +27,10 @@ extn_lst = [
     # 'manual'
     'control'
     # ,
-    #  'adblock'
+     'adblock'
     #  , 
-    # 'ublock'
-    # , 'privacy-badger'
+    'ublock'
+    , 'privacy-badger'
     ]
 
 SIZE = 1
