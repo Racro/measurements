@@ -22,6 +22,7 @@ import inspect
 import shutil
 import logging
 from datetime import datetime
+from base_code import *
 
 def cleanup_tmp():
     files_to_delete = []
@@ -158,12 +159,12 @@ def remove_alert(driver):
             # print("couldn't switch to alert", 3, e)
 
 def remove_cmp_banner(options):
-    options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/Consent-O-Matic.crx')
+    options.add_extension(f'/home/mitch/work/pes/measurements/extensions/extn_crx/Consent-O-Matic.crx')
     return options
         
 # this removes captcha and brings determinism
 def use_catapult(options, fname, port1, port2):
-    folder_path = f"/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{fname}_{port1}"
+    folder_path = f"/home/mitch/work/pes/measurements/break/html_elements/wpr_data/{fname}_{port1}"
     if not os.path.exists(folder_path):
     # Create the folder
         os.makedirs(folder_path)
@@ -215,19 +216,18 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
         # if reset, the ports list remain the same for the filename to be the same
         stop_servers(ports_list)
     ports_list = get_ports(num_servers*2, start_port)
-
-    if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/archive'):
-        os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/archive')
+    if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/archive'):
+        os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/archive')
     
     processes = []
 
-    folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+    folder_path = f'/home/mitch/work/pes/measurements/break/html_elements/wpr_data/{extn}'
     if not os.path.exists(folder_path):
         # Create the folder
         os.makedirs(folder_path)
 
     original_directory = os.getcwd()
-    target_directory = '/home/ritik/go/src/catapult/web_page_replay_go/'
+    target_directory = '/home/mitch/go/src/catapult/web_page_replay_go/'
 
     # Change to the target directory
     os.chdir(target_directory)
@@ -238,10 +238,10 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
         temp_port2 = ports_list[port + 1]
         print(f'starting servers with ports: {temp_port1} {temp_port2}')
         try:
-            if replay:
-                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
+            if replay == 1:
+                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/mitch/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
             else:
-                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/ritik/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'/home/mitch/work/pes/measurements/break/html_elements/archive/{extn}_{counter}.wprgo']
 
             process = subprocess.Popen(cmd, env = os.environ.copy(), stdout = sys.stdout, stderr = sys.stdout)
             print('start servers', process, process.pid)
@@ -311,8 +311,8 @@ def get_pid_by_port(port):
     return None
 
 def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, html_lst):
-    if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/logs'):
-        os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/logs')
+    if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/logs'):
+        os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/logs')
     logging.basicConfig(filename="logs/debug.log", filemode="w", format="%(name)s → %(levelname)s: %(message)s", level=logging.INFO)
     # Prepare Chrome
     options = Options()
@@ -327,7 +327,7 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
     # options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     # options.add_argument("--disable-features=AudioServiceOutOfProcess")
     options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
-    options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
+    options.binary_location = "/home/mitch/work/pes/chrome_113/chrome"
 
     # # only use when vdisplay off
     # options.add_argument("--window-size=1920,1280")
@@ -336,7 +336,7 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
     options = use_catapult(options, extn, temp_port1, temp_port2)
 
     if extn != 'control' and extn != 'manual':
-        options.add_extension(f'/home/ritik/work/pes/measurements/extensions/extn_crx/{extn}.crx')
+        options.add_extension(f'/home/mitch/work/pes/measurements/extensions/extn_crx/{extn}.crx')
     
     # display number
     os.environ['DISPLAY'] = f":{display_num}"
@@ -352,51 +352,35 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
         driver_dict.set_html_obj(html)
         if replay == 0: # can add clicking on the buttons
             #### Manual Analysis
-            if extn == 'manual':
-                try:
-                    url = site
-                    if driver_dict.load_site(url):
-                        # scroll
-                        driver_dict.scroll()
-                except TimeoutException as e:
-                    print(f"Timeout url:{url}")
-                    e = str(e).split("\n")[0]
-                    error(site, '', inspect.currentframe().f_code.co_name, e)
-                  
-                except Exception as e:
-                    e = str(e).split("\n")[0]
-                    error(site, '', inspect.currentframe().f_code.co_name, e)
-
-            else:
             # scan + click
-                try:
-                    # print('aaya')
-                    url = site
-                    if driver_dict.load_site(url):
-                        
-                        key = ''
-                        if 'www' in site:
-                            key = site.split('www.')[1]
-                        else:
-                            key = site.split('://')[1]
-                        # print(f'ss for {html} and site {url}')
-                        driver_dict.take_ss(f'{key}.png')
-                        # scroll
-                        driver_dict.scroll()
+            try:
+                # print('aaya')
+                url = site
+                if driver_dict.load_site(url):
+                    
+                    key = ''
+                    if 'www' in site:
+                        key = site.split('www.')[1]
+                    else:
+                        key = site.split('://')[1]
+                    # print(f'ss for {html} and site {url}')
+                    driver_dict.take_ss(f'{key}.png')
+                    # scroll
+                    driver_dict.scroll()
 
-                        # scan page 
-                        driver_dict.scan_page()
-                except TimeoutException as e:
-                    print(f"Timeout url:{url}")
-                    e = str(e).split("\n")[0]
-                    error(site, '', inspect.currentframe().f_code.co_name, e)
-                  
-                except Exception as e:
-                    e = str(e).split("\n")[0]
-                    error(site, '', inspect.currentframe().f_code.co_name, e)
+                    # scan page 
+                    driver_dict.scan_page()
+            except TimeoutException as e:
+                print(f"Timeout url:{url}")
+                e = str(e).split("\n")[0]
+                error(site, '', inspect.currentframe().f_code.co_name, e)
+                
+            except Exception as e:
+                e = str(e).split("\n")[0]
+                error(site, '', inspect.currentframe().f_code.co_name, e)
 
 
-        if replay:
+        if replay == 1:
             driver_dict.replay_initialize()
             # click and compare
             tries = 1
@@ -412,6 +396,20 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
                         tries = 1
                         driver_dict.tries = 1
                         driver_dict.curr_elem += 1
+
+        if replay == 2:
+            driver_dict.replay_initialize()
+            tries = 1
+            driver_dict.curr_site = 0
+            while driver_dict.curr_site > -1:
+                try:
+                    driver_dict.hierarchy_change(tries)
+    
+                except Exception as e:
+                    tries = 1
+                    driver_dict.tries = 1
+                    driver_dict.curr_elem += 1
+        
 
         
         with open(f'logs/{extn}_{html}.txt', 'a') as f:

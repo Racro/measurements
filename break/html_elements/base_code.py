@@ -7,12 +7,14 @@ import json
 from time import sleep
 from pyvirtualdisplay import Display
 import inspect
+import re
 
 # import pyautogui
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.common import NoSuchElementException, StaleElementReferenceException, InvalidSelectorException, ElementNotSelectableException
+from selenium.common import NoSuchElementException, StaleElementReferenceException, InvalidSelectorException, \
+    ElementNotSelectableException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
@@ -40,7 +42,7 @@ from functions import *
 # options.add_argument(
 #     "user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
 
-# options.binary_location = '/home/ritik/work/pes/chrome_113/chrome'
+# options.binary_location = '/home/mitch/work/pes/chrome_113/chrome'
 
 
 attributes_dict = {
@@ -71,6 +73,7 @@ attributes_dict = {
     }
 
 }
+
 
 def error_catcher(e, driver, tries, url):
     error = ''
@@ -128,7 +131,7 @@ def timeout(seconds):
 
 
 class Driver:
-    def __init__(self, attributes, xPATH, adB, replay, data_dict, excel_dict):
+    def __init__(self, attributes, xPATH, adB, replay, data_dict, excel_dict, hierarchy_dict):
         # specific test for these attributes
         self.attributes = attributes
         self.xPaths = xPATH
@@ -170,6 +173,7 @@ class Driver:
         # used for random picking
         self.dictionary = data_dict
         self.excel = excel_dict
+        self.hierarchy = hierarchy_dict
         self.excel_list = []
         self.excel_errors_list = []
 
@@ -200,8 +204,9 @@ class Driver:
         while num_tries > 0:
             try:
                 self.options = options
-                log_file_path = f"/home/ritik/work/pes/measurements/break/html_elements/logs/chromedriver_{key}.log"
-                service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver', service_args=["--verbose", f"--log-path={log_file_path}"])
+                log_file_path = f"/home/mitch/work/pes/measurements/break/html_elements/logs/chromedriver_{key}.log"
+                service = Service(executable_path='/home/mitch/work/pes/chromedriver_113/chromedriver',
+                                  service_args=["--verbose", f"--log-path={log_file_path}"])
                 # service = Service(ChromeDriverManager(version=self.chrome_version).install(), service_args=["--verbose", f"--log-path={log_file_path}"])
                 self.driver = webdriver.Chrome(options=options, service=service)
                 self.driver.set_page_load_timeout(45)
@@ -240,7 +245,7 @@ class Driver:
     def replay_initialize(self):
         # during replay phase
         # if self.replay:
-        file_path = f"json/{self.html_obj}_{self.adBlocker_name}.json"
+        file_path = f"json/{self.html_obj}_control.json"
         # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
         # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
 
@@ -250,9 +255,11 @@ class Driver:
                     self.dictionary = {}
                     self.dictionary[self.adBlocker_name] = {}
                     self.dictionary[self.adBlocker_name][self.html_obj] = {}
-                    self.dictionary[self.adBlocker_name][self.html_obj][self.url_key] = json.load(json_file)[self.url_key] 
+                    self.dictionary[self.adBlocker_name][self.html_obj][self.url_key] = json.load(json_file)[
+                        self.url_key]
                     # self.dictionary[self.url_key] = json.load(json_file)[self.url_key]
                 json_file.close()
+
             elems = self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]
             self.all_sites = [self.url_key]
         except KeyError as k:
@@ -262,7 +269,7 @@ class Driver:
             error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
             # print(4, e)
             return 0
-    
+
     time.sleep(2)
 
     def set_html_obj(self, html_obj):
@@ -293,7 +300,8 @@ class Driver:
         """
         try:
             if self.driver == None:
-                error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url_key}")
+                error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name,
+                      f"driver doesn't exist for {self.url_key}")
                 # print(1, self.html_obj)
                 return False
             self.driver.get(url)
@@ -314,7 +322,7 @@ class Driver:
             error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
             # self.seen_sites.append(url)
             return False
-        
+
     # def remove_stuff(self):
     #     remove_popup(self.driver)
     #     remove_alert(self.driver) # optional
@@ -340,7 +348,7 @@ class Driver:
 
             # Scroll down by the step size
             self.driver.execute_script(f"window.scrollBy(0, {scroll_step});")
-            
+
             # Wait for a bit (this controls the scroll speed indirectly)
             time.sleep(0.1)  # Adjust this value to control the scroll speed
             if time.time() - curr_time >= 45:
@@ -348,7 +356,10 @@ class Driver:
 
     def take_ss(self, fname):
         try:
-            filepath = f'/home/ritik/work/pes/measurements/break/html_elements/page_ss/{self.html_obj}'
+            # filepath = f'/home/mitch/work/pes/measurements/break/html_elements/page_ss/{self.html_obj}'
+            if '//' in fname:
+                fname = fname.split('//')[1]
+            filepath = f'/home/mitch/work/pes/measurements/break/html_elements/test_ss'
             if not os.path.isdir(filepath):
                 os.makedirs(filepath, exist_ok=True)
             if self.driver != None:
@@ -358,7 +369,8 @@ class Driver:
 
     def get_logs(self):
         if self.driver == None:
-            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, f"driver doesn't exist for {self.url_key}")
+            error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name,
+                  f"driver doesn't exist for {self.url_key}")
             return None
         return self.driver.get_log('browser')
 
@@ -445,11 +457,10 @@ class Driver:
                 return f'[contains(@{attr}, "{value[0]}")]'
             else:
                 if "'" and '"' in value:
-                    return ''           # this case is too weird. will just skip it.
+                    return ''  # this case is too weird. will just skip it.
                 elif "'" in value:
                     return f"""[@{attr}="{value}"]"""
                 return f"""[@{attr}='{value}']"""
-
 
         parsed_info = parse_html_string(html_string)
         if parsed_info:
@@ -470,22 +481,29 @@ class Driver:
             return xpath
         return None
 
-    def get_correct_elem(self, xpath):
+    def get_correct_elem(self, xpath, outerHTML):
         counter = self.xpath_remover
         while "[" in xpath and counter:
             elements = self.driver.find_elements(By.XPATH, xpath)  # will return [] if none are found
             for i in elements:
-                if i.get_attribute("outerHTML") == self.initial_outer_html:
+                if i.get_attribute("outerHTML") == outerHTML:
                     return i
-            try:    # sometimes the structure is the same.
+            try:  # sometimes the structure is the same.
                 return self.driver.find_element(By.XPATH, xpath)
             except Exception:
-                xpath_list = xpath.split("[")
-                xpath_list.remove(max(xpath_list, key=len))
-                xpath = "[".join(xpath_list)
-            self.xpath_remover -= 1
-        self.xpath_remover = 3
-        return self.driver.find_element(By.XPATH, xpath)  # will error if none are found
+                button_part = xpath.split("[")[0]
+                xpath_list = re.findall(r'\[@.*?\]', xpath)
+                rem_candidate = max(xpath_list, key=len)
+                if "aria-label" in rem_candidate:
+                    rem_candidate = min(xpath_list, key=len)
+                xpath_list.remove(rem_candidate)
+                xpath = ''.join([button_part] + xpath_list)
+            counter -= 1
+        try:
+            return self.driver.find_element(By.XPATH, xpath)  # will error if none are found
+        except Exception as e:
+            print("Didn't find element")
+        return []  
 
     def check_opened(self, url, button, initial_tag):
         def check_HTML(initial, after):
@@ -526,19 +544,21 @@ class Driver:
             xpath = self.generate_xpath(outerHTML)
         except IndexError as e:
             self.excel_errors_list.append(['IndexError: list is empty', '', '', self.initial_outer_html, '', '', '',
-                           self.url_key, self.driver.current_url, tries])
+                                           self.url_key, self.driver.current_url, tries])
             return
 
         except Exception as e:
             # print(e)
             error(self.url_key, self.html_obj, inspect.currentframe().f_code.co_name, e)
             self.excel_errors_list.append(["Unknown Exception", '', '', self.initial_outer_html, '', '', '',
-                           self.url_key, self.driver.current_url, tries])
+                                           self.url_key, self.driver.current_url, tries])
             return
 
         self.load_site(site)
         self.initial_outer_html = outerHTML
-        element = self.get_correct_elem(xpath)
+        element = self.get_correct_elem(xpath, outerHTML)
+        if not element:
+            return outerHTML, "None"
         self.initial_local_DOM = self.get_local_DOM(element)
 
         initial_tag = self.count_tags()
@@ -551,33 +571,153 @@ class Driver:
             # outer_HTML_change = url
             # Dom_change = new_url
             self.excel_list.append([check, '', '', self.initial_outer_html, '', '', '',
-                           self.url, self.driver.current_url, tries])
+                                    self.url, self.driver.current_url, tries])
         elif check == "True - outerHTML change" or check == "True - Stale Element":
             self.excel_list.append([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html,
-                           self.after_outer_html, '', '', '', '', tries])
+                                    self.after_outer_html, '', '', '', '', tries])
 
         elif check == "True? - Local DOM Change":
             # need to figure out algo after find the difference
             self.excel_list.append([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html, '',
-                           self.initial_local_DOM, self.after_local_DOM, '', '', tries])
+                                    self.initial_local_DOM, self.after_local_DOM, '', '', tries])
 
         elif check == "False":
+            # FALSE POSITIVE CHECKSSS
+            if self.is_slideshow(self.initial_outer_html):
+                check = 'True? - slideshow'
+            elif self.is_required(self.initial_outer_html):
+                check = 'True? - input is required'
+            elif self.is_scrollpage(self.initial_outer_html):
+                check = 'True? - page was scrolled'
+            elif self.is_download_link(self.initial_outer_html):
+                check = 'True? - download link'
+            elif self.is_open_application(self.initial_outer_html):
+                check = 'True? - opened application'
             self.excel_list.append([check, "False", "False", self.initial_outer_html, '',
-                           "", "", '', '', tries])
+                                    "", "", '', '', tries])
 
     def click_on_elms(self, tries):
         while self.curr_site < len(self.all_sites):
             # print(f'curr_site: {self.curr_site}, all_sites: {self.all_sites}, curr_elem: {self.curr_elem}, xpaths: {self.dictionary[self.adBlocker_name][self.html_obj][self.all_sites[self.curr_site]]}')
-            if self.curr_elem >= len(self.dictionary[self.adBlocker_name][self.html_obj][self.all_sites[self.curr_site]]):
+            if self.curr_elem >= len(
+                    self.dictionary[self.adBlocker_name][self.html_obj][self.all_sites[self.curr_site]]):
                 self.curr_site += 1
                 self.curr_elem = 0
             else:
                 self.test_button(tries)
                 self.curr_elem += 1
-            
+
         self.curr_site = -1
         self.excel[self.adBlocker_name][self.html_obj][self.url_key] = self.excel_list
         self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = self.excel_errors_list
+
+    def hierarchy_change(self, tries):
+        while self.curr_site < len(self.all_sites):
+            if self.curr_elem >= len(
+                    self.dictionary[self.adBlocker_name][self.html_obj][self.all_sites[self.curr_site]]):
+                self.curr_site += 1
+                self.curr_elem = 0
+            else:
+                outerhtml, counter = self.hierarchy_helper(tries)
+                self.excel_list.append([outerhtml, counter])
+                self.curr_elem += 1
+
+        self.curr_site = -1
+        self.excel[self.adBlocker_name][self.html_obj][self.url_key] = self.excel_list
+        self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = self.excel_errors_list
+
+    @timeout(300)
+    def hierarchy_helper(self, tries):
+        # grab current site
+        site = self.all_sites[self.curr_site]
+        self.load_site(site)
+        try:
+            # get outer HTML and generate the Xpath for it
+            outerHTML = self.dictionary[self.adBlocker_name][self.html_obj][site][self.curr_elem]
+            xpath = self.generate_xpath(outerHTML)
+            element = self.get_correct_elem(xpath, outerHTML)
+            print(site, element.get_attribute("outerHTML"))
+            self.take_ss(f"{self.url_key}.png")
+            if element:
+                print("ELEMENT FOUND")
+            else:
+                print("ELEMENT NOT FOUND", xpath)
+                return outerHTML, "None"
+            initial_outer, initial_DOM, initial_url = self.get_comparison_elms(element)
+
+        except Exception as e:
+            print("\n\n went in here \n\n", xpath, outerHTML, "\n\n")
+            print(e)
+            return None, None
+
+        try:
+            self.driver.execute_script(
+                "arguments[0].scrollIntoView({ behavior: 'auto', block: 'center', inline: 'center' });", element)
+            time.sleep(1)
+            element.click()
+            time.sleep(1)
+            try:
+                element.click()
+                time.sleep(1)
+                element.click()
+            except Exception as e:
+                #print("click button once!", site)
+                pass
+
+            if initial_url != self.driver.current_url:
+                return outerHTML, "0"
+            time.sleep(2)
+
+        except Exception as e:
+            print("1) can't click on element", url)
+            print(e)
+            write_results_DOM(self.hierarchy)
+            return outerHTML, "Can't click on element"
+
+        all_windows = self.driver.window_handles
+
+        # tests for more windows and will close them
+        print("CLOSING THE ADDITONAL WINDOWS")
+        if len(all_windows) > 1:
+            for window in all_windows[1:]:
+                self.driver.switch_to.window(window)
+                self.driver.close()
+                self.driver.switch_to.window(all_windows[0])
+        print("GOING INTO TRY BLOCK")
+        try:
+            print(element.get_attribute('outerHTML'))
+            after_outer, after_DOM, after_url = self.get_comparison_elms(element)
+            print("\n\n\n\nTHIS FINISHED\n\n\n\n")
+
+            tag_initial, attribute_initial = self.generate_path(initial_outer)
+            tag_after, attribute_after = self.generate_path(after_outer)
+            print("THIS RAN22222")
+
+            control_code = BeautifulSoup(initial_DOM, 'html.parser')
+            clicked_code = BeautifulSoup(after_DOM, 'html.parser')
+
+            control = control_code.find(tag_initial, attribute_initial)
+            clicked = clicked_code.find(tag_after, attribute_after)
+            print("THIS RAN33333")  
+        except Exception as e:
+            print(e)
+            print("\n\n\n\nelement dissapeared\n\n\n\n")
+            return outerHTML, "0"
+
+            counter = None
+        if control and clicked:
+            print("\n\n\n WENT IN HERE \n\n\n")
+            counter = 0
+            while control.parent and clicked.parent and control == clicked:
+                control = control.parent
+                clicked = clicked.parent
+                counter += 1
+            # if for some reason I cannot detect a change with the entire DOM something wierd probably happened
+            if control == clicked:
+                counter = None
+            # hierarchy_dict[self.html_obj].append([site, outerHTML, control, clicked, counter])
+            print(initial_url, counter)
+        return outerHTML, str(counter)
 
     ############################################################
 
@@ -595,7 +735,8 @@ class Driver:
 
         while self.curr_elem < len(self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]):
             try:
-                xpath = self.generate_xpath(self.dictionary[self.adBlocker_name][self.html_obj][self.url_key][self.curr_elem])
+                xpath = self.generate_xpath(
+                    self.dictionary[self.adBlocker_name][self.html_obj][self.url_key][self.curr_elem])
                 elm = self.get_correct_elem(xpath)
                 elm.click()
                 sleep(1)
@@ -612,16 +753,21 @@ class Driver:
                     self.driver.switch_to.window(window)
                     self.driver.close()
                 self.driver.switch_to.window(all_windows[0])
-                
+
             self.curr_elem += 1
         self.curr_elem = 0
         self.curr_site += 1
 
         # storeDictionary(self.dictionary[self.adBlocker_name][self.html_obj], self.html_obj, self.adBlocker_name)
 
-    def make_unique(self, potential):
+    def make_unique(self, potential, count_elems):
+        # returns the final list of elms that go through the filter
         self.chosen_elms = [elem.get_attribute("outerHTML") for elem in potential]
         self.chosen_elms = list(set(self.chosen_elms))
+        if count_elems:
+            file_path = f"json/{self.html_obj}_{self.adBlocker_name}_ammt.txt"
+            with open(file_path, 'a+') as file:
+                file.write(self.url_key + " " + str(len(self.chosen_elms)) + "\n")
 
     def get_elements(self):
         # returns the contents (will be selenium objs)
@@ -655,7 +801,8 @@ class Driver:
                     final_lst.append(ret[i])
                 i += 1
 
-        self.make_unique(final_lst)         # unique by looking at the outerHTML
+        self.make_unique(ret, 1)
+        self.make_unique(final_lst, 0)  # unique by looking at the outerHTML
 
         # the chosen_elms will be the unique outerHTML
         # if len(self.chosen_elms) <= self.no_elms:
@@ -771,4 +918,95 @@ class Driver:
                 self.excel_errors_list.append(error_message)
 
 
-# self.driver = Driver()
+    def get_comparison_elms(self, element):
+        outerHTML = element.get_attribute('outerHTML')
+        print("OUTERHTML:", outerHTML)
+        DOM = self.driver.page_source
+        URL = self.driver.current_url
+        print("current_url:", URL)
+        return outerHTML, DOM, URL
+
+
+    def generate_path(self, html_code):
+        soup = BeautifulSoup(html_code, 'html.parser')
+        tag = soup.find()
+        tag_name = tag.name
+        attributes = tag.attrs
+        return tag_name, attributes
+
+
+    def generate_path(self, html_code):
+        soup = BeautifulSoup(html_code, 'html.parser')
+        tag = soup.find()
+        tag_name = tag.name
+        attributes = tag.attrs
+        return tag_name, attributes
+
+
+    ############################################################
+
+    """            
+            False Positive Findings
+    """
+
+    ############################################################
+
+    def is_slideshow(self, html):
+        html = html.lower()
+        possible = ['active', 'aria-pressed="true"', 'aria-selected="true"']
+        for attribute in possible:
+            if attribute in html:
+                return True
+        return False
+
+    def is_required(self, html):
+        if 'aria-disabled="true"' in html.lower():
+            return True
+        return False
+
+    def is_scrollpage(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        # Find all <a> tags with href starting with "#"
+        scroll_links = soup.find_all('a', href=lambda href: href and href.startswith('#') and len(href) > 1)
+        if scroll_links:
+            return True
+
+        if 'scrollIntoView'.lower() in html.lower():
+            return True
+        return False
+
+    def is_download_link(self, html):
+        file_extensions = [
+            '.aac', '.aif', '.aifc', '.aiff', '.au', '.avi', '.bat', '.bin', '.bmp', '.bz2',
+            '.c', '.class', '.com', '.cpp', '.css', '.csv', '.dat', '.dmg', '.doc', '.docx',
+            '.dot', '.dotx', '.eps', '.exe', '.flac', '.flv', '.gif', '.gzip', '.h', '.htm',
+            '.html', '.ico', '.iso', '.java', '.jpeg', '.jpg', '.js', '.json', '.log', '.m4a',
+            '.m4v', '.mid', '.midi', '.mov', '.mp3', '.mp4', '.mpa', '.mpeg', '.mpg', '.odp',
+            '.ods', '.odt', '.ogg', '.otf', '.pdf', '.php', '.pl', '.png', '.ppt', '.pptx',
+            '.ps', '.psd', '.py', '.qt', '.rar', '.rb', '.rtf', '.s', '.sh', '.svg', '.swf',
+            '.tar', '.tar.gz', '.tex', '.tif', '.tiff', '.ttf', '.txt', '.wav', '.webm', '.wma',
+            '.wmv', '.woff', '.woff2', '.xls', '.xlsx', '.xml', '.yml', '.zip', '.apk'
+        ]
+        if any(html.endswith(ext) for ext in file_extensions):
+            return True
+
+        # Check if URL contains certain keywords
+        if 'download' in html.lower() or 'file' in html.lower():
+            return True
+        return False
+
+    def is_open_application(self, html):
+        potential = ['mailto', 'tel', 'sms']
+        for attribute in potential:
+            if attribute in html.lower():
+                return True
+        return False
+
+
+
+
+    # def write_results_DOM(self, hierarchy_dict):
+    #     with open(f"hierarchy/final_hierarchy_results.json", 'w') as json_file:
+    #         json.dump(hierarchy_dict, json_file)
+    #     json_file.close()
+

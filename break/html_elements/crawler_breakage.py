@@ -33,13 +33,13 @@ extn_lst = [
     # , 'privacy-badger'
     ]
 
-SIZE = 80
+SIZE = 25
 port = 9090
 start_port = 11001
 
 HTML_TEST = {'buttons', "drop downs", "links", "login"}
 # HTML_TEST = {"drop downs"}#, "links", "login"}
-# HTML_TEST = {'manual'}
+HTML_TEST = {'buttons'}
 
 if __name__ == "__main__":
     # Parse the command line arguments
@@ -60,6 +60,9 @@ if __name__ == "__main__":
     data_dict['errors'] = manager.dict()
     excel_dict['errors'] = manager.dict()
 
+    hierarchy_dict = manager.dict()
+    save_hierarchy_dict = {}
+
     # multiprocess manager to local data
     save_dict = {}
     save_excel_dict = {} 
@@ -70,10 +73,13 @@ if __name__ == "__main__":
 
         data_dict[extn] = manager.dict()
         excel_dict[extn] = manager.dict()
+        
+        hierarchy_dict[extn] = manager.dict()
 
         save_dict[extn] = {}
         save_excel_dict[extn] = {}
-
+        # hierarchy_dict = {'buttons': [], "drop downs": [], "links": [], "login": []}
+        save_hierarchy_dict[extn] = {}
         # driver_class_dict[extn] = {}
         # driver_class_dict[extn] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, args.replay, data_dict, excel_dict)
 
@@ -84,11 +90,14 @@ if __name__ == "__main__":
 
             save_dict[extn][html] = {}
             save_excel_dict[extn][html] = {}
+            
+            hierarchy_dict[extn][html] = manager.dict()
+            save_hierarchy_dict[extn][html] = {}
 
             # driver_class_dict[extn][html] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, html, args.replay, data_dict, excel_dict)
 
     for extn in extn_lst:
-        driver_class_dict[extn] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, args.replay, data_dict, excel_dict)
+        driver_class_dict[extn] = Driver(attributes_dict[html]["attributes"], attributes_dict[html]["xpaths"], extn, args.replay, data_dict, excel_dict, hierarchy_dict)
              
     with open("../../break/adblock_detect/inner_pages_custom_break.json", "r") as f:
         allsite_dict = json.load(f)
@@ -105,12 +114,18 @@ if __name__ == "__main__":
         os.system('rm -rf logs/*')
 
     # testing for 10000 sites
-    websites = random.sample(websites, 10000)
+    websites = random.sample(websites, 1000)
+    
     # websites = websites[3500:4000]
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
+
+    if args.replay == 2:
+        with open("json/buttons_control.json", 'r') as f:
+            websites = list(json.load(f))
+
     f.close()
-    # websites = ['http://www.asahi.com', 'http://www.vecteezy.com', 'http://www.sfu.ca', 'http://www.themegrill.com']
+    websites = ['http://www.apsintl.org', 'http://www.avira.com', 'http://www.zju.edu.cn', 'http://www.mydown.com', 'http://www.warnerbros.com']
 
     # chunks_list = list(divide_chunks(websites, SIZE))
     chunks_list = list(divide_chunks(websites, SIZE))
@@ -118,7 +133,7 @@ if __name__ == "__main__":
 
     for extn in extn_lst:
         try: 
-            folder_path = f'/home/ritik/work/pes/measurements/break/html_elements/wpr_data/{extn}'
+            folder_path = f'/home/mitch/work/pes/measurements/break/html_elements/wpr_data/{extn}'
             if not os.path.exists(folder_path):
             # Create the folder
                 os.makedirs(folder_path)
@@ -130,14 +145,14 @@ if __name__ == "__main__":
             print(ports_list)
 
             for chunk in chunks_list:
-                while not check_if_ports_open(ports_list):
-                    # restart all servers
-                    start_port += 2*num_sites
-                    error('', '', inspect.currentframe().f_code.co_name, 'all ports not open; resetting the servers')
-                    ports_list = master_port_list[-1]
-                    master_port_list.pop(-1)
-                    processes, ports_list = start_servers(args.replay, num_sites, extn, 1, ports_list, start_port)
-                    master_port_list.append(ports_list)
+                # while not check_if_ports_open(ports_list):
+                #     # restart all servers
+                #     start_port += 2*num_sites
+                #     error('', '', inspect.currentframe().f_code.co_name, 'all ports not open; resetting the servers')
+                #     ports_list = master_port_list[-1]
+                #     master_port_list.pop(-1)
+                #     processes, ports_list = start_servers(args.replay, num_sites, extn, 1, ports_list, start_port)
+                #     master_port_list.append(ports_list)
 
                 xvfb_args = [
                     '-maxclients', '1024'
@@ -197,6 +212,18 @@ if __name__ == "__main__":
                             save_excel_dict[extn][html][site] = []
                             for elem in excel_dict[extn][html][site]:
                                 save_excel_dict[extn][html][site].append(elem)
+
+                # if args.replay == 2:
+                #     a = dict(hierarchy_dict[extn][html])
+                #     for site in a.keys():
+                #         save_hierarchy_dict[extn][html][site] = []
+                #         for elem in hierarchy_dict[extn][html][site]:
+                #             save_hierarchy_dict[extn][html][site].append(elem)
+
+                    # with open("hierarchy/final_hierarchy_results.json", 'w') as jsonfile:
+                    #     json.dump(save_hierarchy_dict, jsonfile)
+                    #     print("dumped json")
+                    # jsonfile.close()
                 
                 # closing open Xfvb server
                 print("-"*50)
@@ -210,24 +237,30 @@ if __name__ == "__main__":
                 time.sleep(5)
 
                 # cleanup process
-                cleanup_chrome()
-                cleanup_tmp()
-                cleanup_X()
+                # cleanup_chrome()
+                # cleanup_tmp()
+                # cleanup_X()
             
             # sleep to close the xvfb normally
             time.sleep(5)
 
             if args.replay == 0:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/json'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
-            if args.replay:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
+            if args.replay == 1:
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/xlsx'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
+
+            if args.replay == 2:
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/hierarchy'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/hierarchy')
+                for html in HTML_TEST:
+                    json.dump(save_excel_dict[extn][html], open(f"hierarchy/{html}_{extn}.json", 'w'))
 
             time.sleep(2) # time for port to be available again
 
@@ -254,16 +287,22 @@ if __name__ == "__main__":
                 print(f"Permission denied to send signal to process {pid1}.")
 
             if args.replay == 0:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/json'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
-            if args.replay:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
+            if args.replay == 1:
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/xlsx'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
+
+            if args.replay == 2:
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/hierarchy'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/hierarchy')
+                for html in HTML_TEST:
+                    json.dump(save_excel_dict[extn][html], open(f"hierarchy/{html}_{extn}.json", 'w'))
 
             pass
 
@@ -282,15 +321,21 @@ if __name__ == "__main__":
                 print(f"Permission denied to send signal to process {pid1}.")
 
             if args.replay == 0:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/json'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/json')
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/json'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/json')
                 for html in HTML_TEST:
                     json.dump(save_dict[extn][html], open(f"json/{html}_{extn}.json", 'w'))
 
-            if args.replay:
-                if not os.path.exists('/home/ritik/work/pes/measurements/break/html_elements/xlsx'):
-                    os.makedirs('/home/ritik/work/pes/measurements/break/html_elements/xlsx')
+            if args.replay == 1:
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/xlsx'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/xlsx')
                 for html in HTML_TEST:
                     json.dump(save_excel_dict[extn][html], open(f"xlsx/{html}_{extn}.json", 'w'))
+
+            if args.replay == 2:
+                if not os.path.exists('/home/mitch/work/pes/measurements/break/html_elements/hierarchy'):
+                    os.makedirs('/home/mitch/work/pes/measurements/break/html_elements/hierarchy')
+                for html in HTML_TEST:
+                    json.dump(save_excel_dict[extn][html], open(f"hierarchy/{html}_{extn}.json", 'w'))
 
         
