@@ -23,6 +23,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from Excel import *
 from functions import *
 
+import re
+
 # options = Options()
 # # options.headless = False
 # # options.add_argument("--headless=new")
@@ -240,7 +242,7 @@ class Driver:
     def replay_initialize(self):
         # during replay phase
         # if self.replay:
-        file_path = f"json/{self.html_obj}_{self.adBlocker_name}.json"
+        file_path = f"json/{self.html_obj}_control.json"
         # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
         # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
 
@@ -477,15 +479,22 @@ class Driver:
             for i in elements:
                 if i.get_attribute("outerHTML") == self.initial_outer_html:
                     return i
-            try:    # sometimes the structure is the same.
+            try:  # sometimes the structure is the same.
                 return self.driver.find_element(By.XPATH, xpath)
             except Exception:
-                xpath_list = xpath.split("[")
-                xpath_list.remove(max(xpath_list, key=len))
-                xpath = "[".join(xpath_list)
-            self.xpath_remover -= 1
-        self.xpath_remover = 3
-        return self.driver.find_element(By.XPATH, xpath)  # will error if none are found
+                button_part = xpath.split("[")[0]
+                xpath_list = re.findall(r'\[@.*?\]', xpath)
+                rem_candidate = max(xpath_list, key=len)
+                if "aria-label" in rem_candidate:
+                    rem_candidate = min(xpath_list, key=len)
+                xpath_list.remove(rem_candidate)
+                xpath = ''.join([button_part] + xpath_list)
+            counter -= 1
+        try:
+            return self.driver.find_element(By.XPATH, xpath)  # will error if none are found
+        except Exception as e:
+            print("Didn't find element")
+        return []  
 
     def check_opened(self, url, button, initial_tag):
         def check_HTML(initial, after):
@@ -561,7 +570,18 @@ class Driver:
             self.excel_list.append([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html, '',
                            self.initial_local_DOM, self.after_local_DOM, '', '', tries])
 
-        elif check == "False":
+         elif check == "False":
+            # FALSE POSITIVE CHECKSSS
+            if self.is_slideshow(self.initial_outer_html):
+                check = 'True? - slideshow'
+            elif self.is_required(self.initial_outer_html):
+                check = 'True? - input is required'
+            elif self.is_scrollpage(self.initial_outer_html):
+                check = 'True? - page was scrolled'
+            elif self.is_download_link(self.initial_outer_html):
+                check = 'True? - download link'
+            elif self.is_open_application(self.initial_outer_html):
+                check = 'True? - opened application'
             self.excel_list.append([check, "False", "False", self.initial_outer_html, '',
                            "", "", '', '', tries])
 
@@ -769,6 +789,61 @@ class Driver:
             except Exception as e:
                 error_message = [str(e).split('\n')[0], "Failed to scrape Site", "", "", ""]
                 self.excel_errors_list.append(error_message)
+
+    # ******************************************************
+    #         FALSE POSITIVE
+    # ******************************************************
+
+    def is_slideshow(self, html):
+        html = html.lower()
+        possible = ['active', 'aria-pressed="true"', 'aria-selected="true"']
+        for attribute in possible:
+            if attribute in html:
+                return True
+        return False
+
+    def is_required(self, html):
+        if 'aria-disabled="true"' in html.lower():
+            return True
+        return False
+
+    def is_scrollpage(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        # Find all <a> tags with href starting with "#"
+        scroll_links = soup.find_all('a', href=lambda href: href and href.startswith('#') and len(href) > 1)
+        if scroll_links:
+            return True
+
+        if 'scrollIntoView'.lower() in html.lower():
+            return True
+        return False
+
+    def is_download_link(self, html):
+        file_extensions = [
+            '.aac', '.aif', '.aifc', '.aiff', '.au', '.avi', '.bat', '.bin', '.bmp', '.bz2',
+            '.c', '.class', '.com', '.cpp', '.css', '.csv', '.dat', '.dmg', '.doc', '.docx',
+            '.dot', '.dotx', '.eps', '.exe', '.flac', '.flv', '.gif', '.gzip', '.h', '.htm',
+            '.html', '.ico', '.iso', '.java', '.jpeg', '.jpg', '.js', '.json', '.log', '.m4a',
+            '.m4v', '.mid', '.midi', '.mov', '.mp3', '.mp4', '.mpa', '.mpeg', '.mpg', '.odp',
+            '.ods', '.odt', '.ogg', '.otf', '.pdf', '.php', '.pl', '.png', '.ppt', '.pptx',
+            '.ps', '.psd', '.py', '.qt', '.rar', '.rb', '.rtf', '.s', '.sh', '.svg', '.swf',
+            '.tar', '.tar.gz', '.tex', '.tif', '.tiff', '.ttf', '.txt', '.wav', '.webm', '.wma',
+            '.wmv', '.woff', '.woff2', '.xls', '.xlsx', '.xml', '.yml', '.zip', '.apk'
+        ]
+        if any(html.endswith(ext) for ext in file_extensions):
+            return True
+
+        # Check if URL contains certain keywords
+        if 'download' in html.lower() or 'file' in html.lower():
+            return True
+        return False
+
+    def is_open_application(self, html):
+        potential = ['mailto', 'tel', 'sms']
+        for attribute in potential:
+            if attribute in html.lower():
+                return True
+        return False
 
 
 # self.driver = Driver()

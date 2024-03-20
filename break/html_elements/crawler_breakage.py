@@ -110,6 +110,10 @@ if __name__ == "__main__":
     with open('websites.json', 'w') as f:
         json.dump(websites, f)
     f.close()
+
+    if args.replay == 1:
+        with open("websites.json", 'r') as f:
+            websites = list(json.load(f))
     # websites = ['http://www.asahi.com', 'http://www.vecteezy.com', 'http://www.sfu.ca', 'http://www.themegrill.com']
 
     # chunks_list = list(divide_chunks(websites, SIZE))
