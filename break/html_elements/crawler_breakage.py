@@ -124,12 +124,15 @@ if __name__ == "__main__":
         with open("json/buttons_control.json", 'r') as f:
             websites = list(json.load(f))
 
-    f.close()
-    websites = ['http://www.apsintl.org', 'http://www.avira.com', 'http://www.zju.edu.cn', 'http://www.mydown.com', 'http://www.warnerbros.com']
+    if args.replay == 1:
+        with open("websites.json", 'r') as f:
+            websites = list(json.load(f))
 
+    f.close()
+    
     # chunks_list = list(divide_chunks(websites, SIZE))
     chunks_list = list(divide_chunks(websites, SIZE))
-    print(chunks_list)
+    # print(chunks_list)
 
     for extn in extn_lst:
         try: 
