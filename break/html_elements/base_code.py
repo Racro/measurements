@@ -956,7 +956,7 @@ class Driver:
         possible = ['active', 'aria-pressed="true"', 'aria-selected="true"']
         for attribute in possible:
             if attribute in html:
-                return True
+                return None
         return False
 
     def is_required(self, html):
