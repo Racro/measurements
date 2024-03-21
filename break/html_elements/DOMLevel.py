@@ -1,5 +1,6 @@
 import os
 import random
+import re
 import time
 import signal
 import functools
@@ -41,12 +42,20 @@ service = Service(executable_path='/home/mitch/work/pes/chromedriver_113/chromed
 driver = webdriver.Chrome(options=options, service=service)
 
 hierarchy_dict = {'buttons': [], "drop downs": [], "links": [], "login": []}
+
+xpath_remover = 4
 def generate_path(html_code):
     soup = BeautifulSoup(html_code, 'html.parser')
     tag = soup.find()
     tag_name = tag.name
     attributes = tag.attrs
     return tag_name, attributes
+
+
+def write_results():
+    with open(f"hierarchy/final_hierarchy_results.json", 'w') as json_file:
+        json.dump(hierarchy_dict, json_file)
+    json_file.close()
 
 def generate_xpath(html_string):
     def parse_html_string(string):
@@ -96,7 +105,7 @@ def get_local_DOM(self, elem):
     return elem.get_attribute('outerHTML')
 
 
-def write_results():
+def write_results_DOM(hierarchy_dict):
     with open(f"hierarchy/final_results.json", 'w') as json_file:
         json.dump(hierarchy_dict, json_file)
 
@@ -107,12 +116,58 @@ def get_comparison_elms(element):
     return outerHTML, DOM, URL
 
 
+def get_correct_elem(xpath, outerhtml):
+    counter = 3
+    while "[" in xpath and counter:
+        elements = driver.find_elements(By.XPATH, xpath)  # will return [] if none are found
+        for i in elements:
+            if i.get_attribute("outerHTML") == outerhtml:
+                return i
+        try:  # sometimes the structure is the same.
+            return driver.find_element(By.XPATH, xpath)
+        except Exception:
+            button_part = xpath.split("[")[0]
+            xpath_list = re.findall(r'\[@.*?\]', xpath)
+            rem_candidate = max(xpath_list, key=len)
+            if "aria-label" in rem_candidate:
+                rem_candidate = min(xpath_list, key=len)
+            xpath_list.remove(rem_candidate)
+            xpath = ''.join([button_part] + xpath_list)
+        counter -= 1
+    return driver.find_element(By.XPATH, xpath)  # will error if none are found
+
+
+def get_correct_elem2(xpath, outerHTML):
+    counter = 3
+    while "[" in xpath and counter:
+        elements = driver.find_elements(By.XPATH, xpath)  # will return [] if none are found
+        for i in elements:
+            if i.get_attribute("outerHTML") == outerHTML:
+                return i
+        try:  # sometimes the structure is the same.
+            return driver.find_element(By.XPATH, xpath)
+        except Exception:
+            button_part = xpath.split("[")[0]
+            xpath_list = re.findall(r'\[@.*?\]', xpath)
+            rem_candidate = max(xpath_list, key=len)
+            if "aria-label" in rem_candidate:
+                rem_candidate = min(xpath_list, key=len)
+            xpath_list.remove(rem_candidate)
+            xpath = ''.join([button_part] + xpath_list)
+        counter -= 1
+    try:
+        return driver.find_element(By.XPATH, xpath)  # will error if none are found
+    except Exception as e:
+        print("Didn't find element")
+    return []
+
+
 def hierarchy_change(html_obj, outerHTML, url):
     driver.get(url)
     time.sleep(5)
     xpath = generate_xpath(outerHTML)
     try:
-        element = driver.find_element(By.XPATH, xpath)
+        element = get_correct_elem2(xpath, outerHTML)
     except Exception as e:
         print("can't find element. skip", url)
         write_results()
