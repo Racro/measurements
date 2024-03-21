@@ -27,17 +27,13 @@ extn_lst = [
     # 'manual'
     'control'
     # ,
-     'adblock'
+    #  'adblock'
     #  , 
-    'ublock'
-    , 'privacy-badger'
+    # 'ublock'
+    # , 'privacy-badger'
     ]
 
-<<<<<<< HEAD
 SIZE = 25
-=======
-SIZE = 1
->>>>>>> 6fe63a5325e191285c40fd69ffd4d4ffae8d3374
 port = 9090
 start_port = 11001
 
