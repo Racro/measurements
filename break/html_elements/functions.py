@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoAlertPresentException
+from selenium.common import NoSuchElementException, StaleElementReferenceException, InvalidSelectorException, ElementNotSelectableException
 from selenium.common.exceptions import TimeoutException
 
 import time 
@@ -22,6 +23,7 @@ import inspect
 import shutil
 import logging
 from datetime import datetime
+import functools
 
 def cleanup_tmp():
     files_to_delete = []
@@ -51,6 +53,58 @@ def cleanup_chrome():
 def cleanup_X():
     os.system('pkill Xvfb')
     time.sleep(5)
+
+def error_catcher(e, driver, tries, url):
+    error = ''
+    if driver.tries != 3:
+        driver.reinitialize()
+        tries += 1
+        return tries
+
+    # if isinstance(e, ElementClickInterceptedException):
+    #     error = "N/A - Element Click Intercepted"
+    if isinstance(e, ElementNotSelectableException):
+        error = "N/A - Not Selectable"
+    elif isinstance(e, StaleElementReferenceException):
+        error = "StaleElementReferenceException"
+    elif isinstance(e, NoSuchElementException):
+        error = "N/A - No such Element"
+    elif isinstance(e, InvalidSelectorException):
+        error = "N/A - InvalidSelectorException"
+    elif isinstance(e, IndexError):
+        error = e
+    elif isinstance(e, TimeoutError):
+        print("Timeout")
+        # write_noscan_row(url)
+        tries = 1
+        driver.tries = 1
+        driver.curr_elem += 1
+        print("TIME OUT EERRORRR")
+        return tries
+    else:
+        error = str(e).split("\n")[0]
+    return error
+
+
+
+
+def timeout(seconds):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            def handler(signum, frame):
+                raise TimeoutError
+
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(seconds)
+
+            result = func(*args, **kwargs)
+            signal.alarm(0)
+            return result
+
+        return wrapper
+
+    return decorator
 
 def error(site, html, fname, err):
     f = open('error.txt', 'a')
@@ -234,13 +288,18 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
     os.chdir(target_directory)
 
     port = 0
-    for counter in range(num_servers):
+    counter = 0
+    # for counter in range(num_servers):
+    while True:
+        if counter == num_servers:
+            break
         temp_port1 = ports_list[port]
         temp_port2 = ports_list[port + 1]
         print(f'starting servers with ports: {temp_port1} {temp_port2}')
         try:
             if replay:
-                cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'{archive_path}/{extn}_{counter}.wprgo']
+                # cmd = ['go', 'run', 'src/wpr.go', 'replay', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'{archive_path}/{extn}_{counter}.wprgo']
+                cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'{archive_path}/{extn}_{counter}.wprgo']
             else:
                 cmd = ['go', 'run', 'src/wpr.go', 'record', '--http_port', str(temp_port1), '--https_port', str(temp_port2), f'{archive_path}/{extn}_{counter}.wprgo']
 
@@ -248,11 +307,16 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
             print('start servers', process, process.pid)
             processes.append(process)
             # os.system(" ".join(cmd))
-            while True:
+            for i in range(10):
                 print(f'Waiting for port {temp_port1} to be occupied')
                 time.sleep(2)
                 if check_port(temp_port1):
                     break
+
+            if not check_port(temp_port1):
+                process.kill()
+                processes = processes[:-1]
+                continue
 
         except subprocess.TimeoutExpired as t:
             print(f'Timeout for num_server: {index}')
@@ -268,6 +332,7 @@ def start_servers(replay, num_servers, extn, reset, ports_list, start_port):
             # sys.exit(1)
         
         port += 2
+        counter += 1
 
     os.chdir(original_directory)
     

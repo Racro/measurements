@@ -74,60 +74,8 @@ attributes_dict = {
 
 }
 
-def error_catcher(e, driver, tries, url):
-    error = ''
-    if driver.tries != 3:
-        driver.reinitialize()
-        tries += 1
-        return tries
-
-    # if isinstance(e, ElementClickInterceptedException):
-    #     error = "N/A - Element Click Intercepted"
-    if isinstance(e, ElementNotSelectableException):
-        error = "N/A - Not Selectable"
-    elif isinstance(e, StaleElementReferenceException):
-        error = "StaleElementReferenceException"
-    elif isinstance(e, NoSuchElementException):
-        error = "N/A - No such Element"
-    elif isinstance(e, InvalidSelectorException):
-        error = "N/A - InvalidSelectorException"
-    elif isinstance(e, IndexError):
-        error = e
-    elif isinstance(e, TimeoutError):
-        print("Timeout")
-        # write_noscan_row(url)
-        tries = 1
-        driver.tries = 1
-        driver.curr_elem += 1
-        print("TIME OUT EERRORRR")
-        return tries
-    else:
-        error = str(e).split("\n")[0]
-    return error
-
-
 class TimeoutError(Exception):
     pass
-
-
-def timeout(seconds):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            def handler(signum, frame):
-                raise TimeoutError
-
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(seconds)
-
-            result = func(*args, **kwargs)
-            signal.alarm(0)
-            return result
-
-        return wrapper
-
-    return decorator
-
 
 class Driver:
     def __init__(self, attributes, xPATH, adB, replay, data_dict, excel_dict):
@@ -494,7 +442,7 @@ class Driver:
             return self.driver.find_element(By.XPATH, xpath)  # will error if none are found
         except Exception as e:
             print("Didn't find element")
-        return []  
+        return None
 
     def check_opened(self, url, button, initial_tag):
         def check_HTML(initial, after):
@@ -548,6 +496,10 @@ class Driver:
         self.load_site(site)
         self.initial_outer_html = outerHTML
         element = self.get_correct_elem(xpath)
+        if element == None:
+            self.excel_errors_list.append(["Can't find element", '', '', self.initial_outer_html, '', '', '',
+                           self.url_key, self.driver.current_url, tries])
+            return
         self.initial_local_DOM = self.get_local_DOM(element)
 
         initial_tag = self.count_tags()
@@ -570,7 +522,7 @@ class Driver:
             self.excel_list.append([check, self.outer_HTML_changed, self.DOM_changed, self.initial_outer_html, '',
                            self.initial_local_DOM, self.after_local_DOM, '', '', tries])
 
-         elif check == "False":
+        elif check == "False":
             # FALSE POSITIVE CHECKSSS
             if self.is_slideshow(self.initial_outer_html):
                 check = 'True? - slideshow'
