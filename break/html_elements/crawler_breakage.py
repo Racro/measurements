@@ -25,7 +25,8 @@ from Excel import *
         
 extn_lst = [
     # 'manual'
-    'control',
+    'control'
+    ,
     # ,
      'adblock',
     #  , 
@@ -33,7 +34,7 @@ extn_lst = [
     , 'privacy-badger'
     ]
 
-SIZE = 10
+SIZE = 50
 port = 9090
 start_port = 11001
 
@@ -114,7 +115,7 @@ if __name__ == "__main__":
 
     if args.replay == 1:
         with open("websites.json", 'r') as f:
-            websites = list(json.load(f))[:10]
+            websites = list(json.load(f))
     # websites = ['http://www.asahi.com', 'http://www.vecteezy.com', 'http://www.sfu.ca', 'http://www.themegrill.com']
 
     # chunks_list = list(divide_chunks(websites, SIZE))
@@ -199,11 +200,12 @@ if __name__ == "__main__":
                                 save_dict[extn][html][site] = data_dict[extn][html][site]
 
                     if args.replay:
+                        # print(1111111111111111111111111111)
                         for html in HTML_TEST:
                             a = dict(excel_dict[extn][html])
                             for site in a.keys():
                                 save_excel_dict[extn][html][site] = []
-                                for elem in excel_dict[extn][html][site]:
+                                for elem in a[site]:
                                     save_excel_dict[extn][html][site].append(elem)
                     
                     # closing open Xfvb server

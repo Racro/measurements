@@ -188,6 +188,16 @@ class Driver:
         return 1
 
     def replay_initialize(self):
+        # print('replay_initialize', self.html_obj)
+        # used for testing
+        self.curr_site = 0
+        self.curr_elem = 0
+        self.initial_outer_html = ''
+        self.after_outer_html = ''
+        self.initial_local_DOM = ''
+        self.after_local_DOM = ''
+        self.DOM_changed = False
+        self.outer_HTML_changed = False
         # during replay phase
         # if self.replay:
         file_path = f"json/{self.html_obj}_control.json"
@@ -203,8 +213,10 @@ class Driver:
                     self.dictionary[self.adBlocker_name][self.html_obj][self.url_key] = json.load(json_file)[self.url_key] 
                     # self.dictionary[self.url_key] = json.load(json_file)[self.url_key]
                 json_file.close()
-            elems = self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]
+            # elems = self.dictionary[self.adBlocker_name][self.html_obj][self.url_key]
             self.all_sites = [self.url_key]
+
+            # print('self.dictionary', self.dictionary)
         except KeyError as k:
             print(f"site not found in json --- site:{self.url_key}, extn:{self.adBlocker_name}, html: {self.html_obj}")
             return 0
@@ -214,6 +226,9 @@ class Driver:
             return 0
     
     time.sleep(2)
+
+    def get_excel_dict(self):
+        return self.excel[self.adBlocker_name][self.html_obj]
 
     def set_html_obj(self, html_obj):
         self.html_obj = html_obj
@@ -314,6 +329,9 @@ class Driver:
 
     def close(self):
         print("closing driver...", self.adBlocker_name, self.html_obj, self.url)
+        # print('*'*25)
+        # print(self.html_obj)
+        # print(self.excel[self.adBlocker_name][self.html_obj])
         if self.driver != None:
             self.driver.quit()
         # self.vdisplay.stop()
