@@ -764,10 +764,17 @@ class Driver:
         # returns the final list of elms that go through the filter
         self.chosen_elms = [elem.get_attribute("outerHTML") for elem in potential]
         self.chosen_elms = list(set(self.chosen_elms))
-        if count_elems:
-            file_path = f"json/{self.html_obj}_{self.adBlocker_name}_ammt.txt"
-            with open(file_path, 'a+') as file:
-                file.write(self.url_key + " " + str(len(self.chosen_elms)) + "\n")
+
+        if self.html_obj != "login":
+            if count_elems:
+                file_path = f"json/{self.html_obj}_{self.adBlocker_name}_ammt.txt"
+                with open(file_path, 'a+') as file:
+                    file.write(self.url_key + " " + str(len(self.chosen_elms)) + "\n")
+        else:
+            if not count_elems:
+                file_path = f"json/{self.html_obj}_{self.adBlocker_name}_ammt.txt"
+                with open(file_path, 'a+') as file:
+                    file.write(self.url_key + " " + str(len(self.chosen_elms)) + "\n")
 
     def get_elements(self):
         # returns the contents (will be selenium objs)
