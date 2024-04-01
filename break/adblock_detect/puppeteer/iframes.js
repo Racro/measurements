@@ -18,30 +18,16 @@ var args = process.argv; // node iframes.js site extn
     let p_args;
     if (args[3] === 'control'){
         p_args = [
-            "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--no-sandbox",
-            '--disable-web-security',
-            '--disable-features=IsolateOrigins,site-per-process',
-            // `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
             '--display='+xvfb._display,
-            '--window-size=960, 1080',
-            '--disable-features=AudioServiceOutOfProcess'
+            '--window-size=1920, 1280'
         ];
     }
     else{
         p_args= [
-            "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--no-sandbox",
-            '--disable-web-security',
-            '--disable-features=IsolateOrigins,site-per-process',
-            //`--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
             `--disable-extensions-except=./../../../extensions/extn_src/${args[3]}`,
             `--load-extension=./../../../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
-            '--window-size=960, 1080',
-            '--disable-features=AudioServiceOutOfProcess'
+            '--window-size=1920, 1280',
         ];
     }
     const browser = await puppeteer.launch({ 
@@ -52,7 +38,7 @@ var args = process.argv; // node iframes.js site extn
         // executablePath: '/snap/bin/chromium' 
     });
     const page = await browser.newPage();
-    await page.setViewport({ width: 960, height: 1080 });
+    await page.setViewport({ width: 1920, height: 1280 });
     await page.setUserAgent(fakeUA);
     await page.waitForTimeout(10000);
     var sites = args[2].split(',');
@@ -73,15 +59,18 @@ var args = process.argv; // node iframes.js site extn
         let source = await page.content();
         source = source.toLowerCase();
         var match = "";
-        if (source.includes('ad-blocker')){
-            match = 'ad-blocker';
-        } else if (source.includes('ad blocker')){
-            match = 'ad blocker';
-        } else if (source.includes(' adblocker ')){
-            match = ' adblocker ';
-        } else if (source.includes('adblock.detect')){
-            match = 'adblock.detect';
-        }
+	
+	const allow_pattern = /allow.*\s(ad)/i;
+	const adblock_pattern = /adblocker|ad blocker|ad-blocker|adblock\.detect/i;
+	
+	const found1 = source.match(allow_pattern);
+	const found2 = source.match(adblock_pattern);
+	
+	if (found1){
+	    match = 'allow ads';
+	} else if (found2){
+	    match = 'adblocker';
+	} 
 
         if (match !== ""){
             const arr = source.split(match)
@@ -89,8 +78,10 @@ var args = process.argv; // node iframes.js site extn
             let pgsrc2 = arr[1].slice(0,30)
             let pgsrc = pgsrc1 + match + pgsrc2
 
-            // await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
-            console.log(`adblocker_detected: ${site} ${args[3]}  ${pgsrc}`);
+            await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
+            await page.waitForTimeout(5000);
+
+	    console.log(`adblocker_detected: ${site} ${args[3]}  ${pgsrc}`);
             break;
         }
         else{
@@ -104,16 +95,18 @@ var args = process.argv; // node iframes.js site extn
                 var pg_content = await frames[frame].content();
 
                 pg_content = pg_content.toLowerCase();
-                // var match = "";
-                if (pg_content.includes('ad-blocker')){
-                    match = 'ad-blocker';
-                } else if (pg_content.includes('ad blocker')){
-                    match = 'ad blocker';
-                } else if (pg_content.includes(' adblocker ')){
-                    match = ' adblocker ';
-                } else if (pg_content.includes('adblock.detect')){
-                    match = 'adblock.detect';
-                }
+                
+		match = "";
+	
+		const found1 = pg_content.match(allow_pattern);
+		const found2 = pg_content.match(adblock_pattern);
+	
+		if (found1){
+		    match = 'allow ads';
+		} else if (found2){
+		    match = 'adblocker';
+		}
+
                 if (match !== ""){
                     const arr = pg_content.split(match)
                     let pgsrc1 = arr[0].substr(arr[0].length - 30)
@@ -121,8 +114,10 @@ var args = process.argv; // node iframes.js site extn
                     let pgsrc = pgsrc1 + match + pgsrc2
                     
                     console.log(`adblocker_detected_in_frame: ${site} ${args[3]} ${pgsrc}`);
-                    // await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
-                    detect = 1;
+                    await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
+                    await page.waitForTimeout(5000);
+
+		    detect = 1;
                     break;
                 }
             }

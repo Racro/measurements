@@ -30,14 +30,9 @@ extn_lst = ['adblock', 'control', 'ublock', 'privacy-badger',
        "decentraleyes",
        "disconnect",
        "ghostery",
-       "https",
-       "noscript",
-       "scriptsafe",
-       "canvas-antifp",
-       "adguard",
-       "user-agent"]
+       "adguard"]
 # extn_lst = ['']
-SIZE = 15 # number of browser windows that will open
+SIZE = 20 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
@@ -109,7 +104,7 @@ if __name__ == "__main__":
         # #     'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4']
         # #     # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
         # }
-        latest_list = list(updated_dict.keys())
+        latest_list = list(updated_dict.keys())[:10]
         print(len(latest_list))
         chunks_list = list(divide_chunks(latest_list, SIZE))
         manager = multiprocessing.Manager()
@@ -118,6 +113,11 @@ if __name__ == "__main__":
         for extn in extn_lst:       
             return_dict[extn] = manager.list()
             result_dict[extn] = []
+            
+            # creating screenshot directories
+            if not os.path.exists(f'./ss/{extn}'):
+                os.makedirs(f'./ss/{extn}')
+            
             for i in range(len(chunks_list)):
                 jobs = []
                 for key in chunks_list[i]:
