@@ -23,24 +23,10 @@ from datetime import datetime
 import ast
 
 extensions_configurations = [
-    # No extensions
     "control",
-    #    # Extensions on their own
     "adblock",
-    # "decentraleyes",
-    # "disconnect",
-    # "ghostery",
-    # "https",
-    # "noscript",
     "privacy-badger",
     "ublock"
-    # ,
-    # "scriptsafe",
-    # "canvas-antifp",
-    # "adguard",
-    # "user-agent"
-    # Combinations
-    #    "decentraleyes,privacy_badger,ublock_origin"
 ]
 
 
