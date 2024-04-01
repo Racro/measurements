@@ -29,6 +29,7 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 start_time = time.time()
 
@@ -42,10 +43,15 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
     contacted_urls = []
    
     # display number
-    os.environ['DISPLAY'] = f":{display_num}"
+    # os.environ['DISPLAY'] = f":{display_num}"
     
     # proxy
     proxy = server.create_proxy(params={'port': port})
+
+    # Accept Insecure Certs
+    # capabilities = DesiredCapabilities.CHROME.copy()
+    # capabilities['acceptInsecureCerts'] = True
+
 
     # Initialize Selenium
     options = Options()
@@ -53,9 +59,14 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument("--proxy-server={0}".format(proxy.proxy))
+    options.set_capability('acceptInsecureCerts', True)
+    options.add_argument("--allow-running-insecure-content")
+    options.add_argument("--allow-insecure-localhost")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
+    # options.add_argument("--disable-web-security")
+    options.add_argument('--ignore-ssl-errors=yes')
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
@@ -80,28 +91,23 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
         try:
             # Launch Chrome and install our extension for getting HARs
             driver = webdriver.Chrome(options=options)
-            # time.sleep(5)
-
-            # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
-            # element.click()
+            time.sleep(500)
 
             # time.sleep(2)
 
             driver.set_page_load_timeout(args_lst[1])
             time.sleep(4)
 
-            # print('11111111111111111111111')
-
             if extn == 'adblock':
                 time.sleep(15)
             elif extn == 'ghostery':
-                windows = self.driver.window_handles
+                windows = driver.window_handles
                 for window in windows:
                     try:
-                        self.driver.switch_to.window(window)
-                        url_start = self.driver.current_url[:16]
+                        driver.switch_to.window(window)
+                        url_start = driver.current_url[:16]
                         if url_start == 'chrome-extension':
-                            element = self.driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                            element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
                             element.click()
                             time.sleep(2)
                             break
@@ -109,21 +115,10 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
                         print('ghostery', 1, e)
                         return 0
 
-            # driver.get('chrome-extension://mlomiejdfkolichcflejclcbmpeaniij/app/templates/onboarding.html')
-            # time.sleep(12)
-
-            # element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
-            # element.click()
-
-            # time.sleep(5)
-            # print(2222222222222222222222)
-
             # Create a new HAR with the following options
             proxy.new_har("example", options={'captureHeaders': True, 'captureContent': True})
 
             # Use Selenium to navigate to a webpage
-            # valid = 0
-            # i += 1
             website = args_lst[0]
 
             print("website: ", website)
@@ -131,7 +126,6 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
             wait_until_loaded(driver, args_lst[1])
             time.sleep(2)
 
-            # print(33333333333333333333333)
 
             curr_scroll_position = -1
             curr_time = time.time()
@@ -155,7 +149,6 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
                     break
             # valid += 1
 
-            # print(44444444444444444444444)
             time.sleep(5)
             # Collect HAR data
             result = proxy.har
@@ -197,44 +190,12 @@ if __name__ == '__main__':
     # websites = ast.literal_eval(args.website)
     # websites = [args.website]
 
-    website_dict = json.load(open('../../adblock_detect/inner_pages_custom_break.json', 'r'))
+    website_dict = json.load(open('../../../adblock_detect/inner_pages_custom_break.json', 'r'))
     websites = []
     for key in website_dict:
         websites.append(website_dict[key][0])
-    websites = random.sample(websites, 1500)
+    websites = random.sample(websites, 10)
     website_chunks = list(divide_chunks(websites, SIZE))
-    # websites = ['https://www.geeksforgeeks.org/graph-and-its-representations/']
-
-    # websites = [
-    #     "uxmatters.com",
-    #     "mrdonn.org",
-    #     "velocityhub.com",
-    #     'amazon.com/',
-    #     'en.wikipedia.org/wiki/Main_Page',
-    #     'microsoft.com/en-us',
-    #     'office.com',
-    #     'weather.com',
-    #     'openai.com',
-    #     'bing.com',
-    #     # 'duckgo.com',
-    #     # 'nytimes.com',
-    #     # 'twitch.tv',
-    #     # 'imdb.com',
-    #     # 'qq.com',
-    #     # 'globo.com',
-    #     # 'ebay.com',
-    #     # 'foxnews.com',
-    #     # 'instructure.com',
-    #     # 'walmart.com',
-    #     # 'indeed.com',
-    #     # 'paypal.com/us/home',
-    #     # 'accuweather.com',
-    #     # 'pinterest.com',
-    #     # 'bbc.com',
-    #     # 'homedepot.com',
-    #     # 'breitbart.com',
-    #     # 'github.com'
-    # ]
 
     print(f'data --- {websites}')
 
@@ -300,9 +261,9 @@ if __name__ == '__main__':
                 # website = "http://" + website
                 jobs = []
                 vdisplay = Display(visible=False, size=(1920, 1280))
-                vdisplay.start()
-                display = vdisplay.display
-
+                # vdisplay.start()
+                # display = vdisplay.display
+                display = 0
                 for i, website in enumerate(chunk):
                     try:
                         fname = './data/' + website.split('//')[1].split('/')[0]
@@ -349,7 +310,7 @@ if __name__ == '__main__':
                 time.sleep(2)
                 print("-"*50)
                 print("closing open xvfb processes")
-                vdisplay.stop()
+                # vdisplay.stop()
                 os.system('pkill Xvfb')
                 print(os.system("ps aux | grep Xvfb | wc -l"))
                 print("-"*50)
