@@ -10,6 +10,7 @@ import pathlib
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
 def check_for_extn_installation(driver, name):  #generates a screenshot to check for extension installation
@@ -35,7 +36,7 @@ def wait_until_loaded(webdriver, timeout=60, period=0.25, min_time=0):
     return False
 
 def find_all_iframes(driver):
-    iframes = driver.find_elements(By.XPATH, value="//iframe")
+    iframes = driver.find_elements(By.XPATH, value=".//iframe | .//frame")
     print(driver.current_url)
     print(len(iframes))
     i = 0
@@ -68,6 +69,10 @@ def initialize_driver(extn):
     # options.add_argument(f'--profile-directory={extn}')
     # Install other addons
     extensions_path = pathlib.Path("/home/ritik/work/pes/measurements/extensions/")
+    options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
+    options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
+
+    service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver')
 
     matches = list(extensions_path.glob("{}*.crx".format(extn)))
     print(matches)
@@ -75,65 +80,53 @@ def initialize_driver(extn):
         options.add_extension(str(matches[0]))
         # extn = extension
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options, service=service)
     driver.set_page_load_timeout(30)
     time.sleep(10)
     return driver
         
 def run(site_lst, extn, key, return_dict):
-    # vdisplay = Display(visible=False, size=(1920, 1080))
-    # vdisplay.start()
+    vdisplay = Display(visible=False, size=(1920, 1080))
+    vdisplay.start()
     driver = initialize_driver(extn)
     print(driver, site_lst)
 
     for site in site_lst:
-        num_tries = 3 
-        ret_val = 0
+        try:
+            num_tries = 1
+            ret_val = 0
 
-        while num_tries > 0:
-            # print(site)
-            # print(num_tries)
-            driver.get(site)
-            
-            wait_until_loaded(driver, 30)
-            time.sleep(3)
+            while num_tries > 0:
+                # print(site)
+                # print(num_tries)
+                driver.get('http://www.'+site)
+                
+                wait_until_loaded(driver, 30)
+                time.sleep(3)
 
-            ret_val = detect(driver)
-            num_tries -= 1
+                ret_val = find_all_iframes(driver)
+                num_tries -= 1
+
+                if ret_val:
+                    break
 
             if ret_val:
+                f = open("blocking_urls.txt", "a+")
+                f.write(driver.current_url)
+                f.write('\n')
+                f.close()
+
+                return_dict[extn].append(key)
                 break
-
-        if ret_val:
-            f = open("blocking_urls.txt", "a+")
-            f.write(driver.current_url)
-            f.write('\n')
-            f.close()
-
-            return_dict[extn].append(key)
-            break
+        except Exception as e:
+            print(e)
 
     driver.quit()
-    # vdisplay.stop()
-    # print(return_dict)
-# def start_detection(site_lst, extn, key, return_dict):
-# run(["http://insider.com"], 'adblock', 'adblock', {'adblock': []})
+    vdisplay.stop()
 
-# url1 = "http://businessinsider.com"
-# url2 = "http://geeksforgeeks.org/python-lists/"
-# url3 = "https://www.forbes.com/sites/kellyphillipserb/2023/04/09/swipe-right-on-your-1040ez-inside-the-tax-heaven-3000--dating-sim/?sh=d02b7a84cf28"
-# run("http://insider.com", 'adblock')
-# sys.exit(0)
+with open("../inner_pages_custom.json", "r") as f:
+    updated_dict = json.load(f)
+f.close()
 
-# extn_lst = ['ublock', 'adblock', 'privacy-badger']
-
-# threads = []
-
-# for extn in extn_lst:
-#     threads.append(threading.Thread(target=run, args=(site, extn,)))
-
-# for t in threads:
-#     t.start()
-
-# for t in threads:
-#     t.join()
+latest_list = list(updated_dict.keys())[145:155]
+run(latest_list, 'control', 0, [])

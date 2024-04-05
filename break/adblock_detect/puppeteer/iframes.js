@@ -12,14 +12,15 @@ var args = process.argv; // node iframes.js site extn
     var xvfb = new Xvfb({
         silent: true,
         reuse: true,
-        // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
+        xvfb_args: ["-screen", "0", '1920x1280x24', "-ac"],
     });
     xvfb.start((err)=>{if (err) console.error(err)});
     let p_args;
     if (args[3] === 'control'){
         p_args = [
             '--display='+xvfb._display,
-            '--window-size=1920, 1280'
+            '--start-fullscreen'
+            // '--window-size=1920, 1280'
         ];
     }
     else{
@@ -27,12 +28,14 @@ var args = process.argv; // node iframes.js site extn
             `--disable-extensions-except=./../../../extensions/extn_src/${args[3]}`,
             `--load-extension=./../../../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
-            '--window-size=1920, 1280',
+            '--start-fullscreen'
+            // '--window-size=1920, 1280',
         ];
     }
     const browser = await puppeteer.launch({ 
         headless: false,
         ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
+        defaultViewport: null,
         args: p_args,
         executablePath: '/usr/bin/google-chrome' 
         // executablePath: '/snap/bin/chromium' 
@@ -48,7 +51,7 @@ var args = process.argv; // node iframes.js site extn
         let site = sites[index];
         try{
             await page.goto(site, { waitUntil: 'networkidle2', timeout: 60000 });
-            await page.waitForTimeout(2000);
+            await page.waitForTimeout(5000);
         } catch (error){
             console.error(error);
             console.log(site);
@@ -60,24 +63,23 @@ var args = process.argv; // node iframes.js site extn
         source = source.toLowerCase();
         var match = "";
 	
-	const allow_pattern = /allow.*\s(ad)/i;
-	const adblock_pattern = /adblocker|ad blocker|ad-blocker|adblock\.detect/i;
-	
-	const found1 = source.match(allow_pattern);
-	const found2 = source.match(adblock_pattern);
-	
-	if (found1){
-	    match = 'allow ads';
-	} else if (found2){
-	    match = 'adblocker';
-	} 
+        const allow_pattern = /allow.{0,5}\s(ad)/i;
+        const adblock_pattern = /adblocker|ad blocker|ad-blocker|adblock\.detect/i;
+        
+        const found1 = source.match(allow_pattern);
+        const found2 = source.match(adblock_pattern);
+        
+        if (found1){
+            match = found1[0];
+        } else if (found2){
+            match = found2[0];
+        } 
 
         if (match !== ""){
             const arr = source.split(match)
             let pgsrc1 = arr[0].substr(arr[0].length - 30)
             let pgsrc2 = arr[1].slice(0,30)
             let pgsrc = pgsrc1 + match + pgsrc2
-
             await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
             await page.waitForTimeout(5000);
 
@@ -86,6 +88,9 @@ var args = process.argv; // node iframes.js site extn
         }
         else{
             var frames = page.frames();
+            console.log(frames.length)
+            console.log(site)
+
             let detect = 0
             // console.log(frames.length);
             for (let frame=0; frame<frames.length; frame++){
@@ -96,28 +101,29 @@ var args = process.argv; // node iframes.js site extn
 
                 pg_content = pg_content.toLowerCase();
                 
-		match = "";
-	
-		const found1 = pg_content.match(allow_pattern);
-		const found2 = pg_content.match(adblock_pattern);
-	
-		if (found1){
-		    match = 'allow ads';
-		} else if (found2){
-		    match = 'adblocker';
-		}
+                match = "";
+            
+                const found1 = pg_content.match(allow_pattern);
+                const found2 = pg_content.match(adblock_pattern);
+            
+                if (found1){
+                    match = found1[0];
+                } else if (found2){
+                    match = found2[0];
+                }
 
                 if (match !== ""){
-                    const arr = pg_content.split(match)
+		            const arr = pg_content.split(match)
                     let pgsrc1 = arr[0].substr(arr[0].length - 30)
                     let pgsrc2 = arr[1].slice(0,30)
                     let pgsrc = pgsrc1 + match + pgsrc2
+                    // let pgsrc = match
                     
                     console.log(`adblocker_detected_in_frame: ${site} ${args[3]} ${pgsrc}`);
                     await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
                     await page.waitForTimeout(5000);
 
-		    detect = 1;
+		            detect = 1;
                     break;
                 }
             }

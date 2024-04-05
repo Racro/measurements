@@ -26,13 +26,13 @@ import os
 # try_list = ["geeksforgeeks.org", "forbes.com", "insider.com"]
 # latest_list = try_list
 
-extn_lst = ['adblock', 'control', 'ublock', 'privacy-badger',
-       "decentraleyes",
-       "disconnect",
-       "ghostery",
-       "adguard"]
-# extn_lst = ['']
-SIZE = 20 # number of browser windows that will open
+# extn_lst = ['adblock', 'control', 'ublock', 'privacy-badger',
+#        "decentraleyes",
+#        "disconnect",
+#        "ghostery",
+#        "adguard"]
+extn_lst = ['control']
+SIZE = 10 # number of browser windows that will open
 
 def run(sites, extn, return_dict, l):
     input_str = ""
@@ -104,12 +104,14 @@ if __name__ == "__main__":
         # #     'insider.com': ['http://insider.com', 'https://www.insider.com/renee-rapp-too-well-sex-lives-mean-girls-interview-2023-4', 'https://www.insider.com/coachella-best-female-queer-performers-you-cant-miss-2023-4']
         # #     # 'amazon.com': ['http://amazon.com', 'https://www.amazon.com/Theory-Mens-CC-Dark-Black-Multi/dp/B08SF4MP8R/']
         # }
-        latest_list = list(updated_dict.keys())[:10]
+        latest_list = list(updated_dict.keys())[145:155]
         print(len(latest_list))
         chunks_list = list(divide_chunks(latest_list, SIZE))
         manager = multiprocessing.Manager()
         return_dict = manager.dict()
         result_dict = {}
+        lock = multiprocessing.Lock()
+
         for extn in extn_lst:       
             return_dict[extn] = manager.list()
             result_dict[extn] = []
@@ -121,7 +123,7 @@ if __name__ == "__main__":
             for i in range(len(chunks_list)):
                 jobs = []
                 for key in chunks_list[i]:
-                    p = multiprocessing.Process(target=run, args=(updated_dict[key], extn, return_dict, multiprocessing.Lock(),))
+                    p = multiprocessing.Process(target=run, args=(updated_dict[key], extn, return_dict, lock,))
                     jobs.append(p)
                 for job in jobs:
                     job.start()
