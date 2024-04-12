@@ -15,6 +15,10 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium_stealth import stealth
+from webdriver_manager.core.utils import read_version_from_cmd 
+from webdriver_manager.core.os_manager import PATTERN
+from webdriver_manager.chrome import ChromeDriverManager
 
 # def check_for_extn_installation(driver, name):  #generates a screenshot to check for extension installation
 #     driver.get("https://chrome.google.com/webstore/detail/adblock-plus-free-ad-bloc/cfhdojbkjhnklbpkdaibdccddilifddb")
@@ -47,8 +51,8 @@ def divide_chunks(l, n):
 def print_match_context(match, source):
     start, end = match.start(), match.end()
     # Calculate the start and end positions for the context, ensuring they are within bounds
-    context_start = max(start - 20, 0)
-    context_end = min(end + 20, len(source))
+    context_start = max(start - 40, 0)
+    context_end = min(end + 40, len(source))
     # Print the context
     return f"Context: '{source[context_start:context_end]}'"
 
@@ -79,15 +83,18 @@ def find_all_iframes(driver):
     iframes = driver.find_elements(By.XPATH, value=".//iframe | .//frame")
     # i = 0
     for iframe in iframes:
-        driver.switch_to.frame(iframe)  
-        time.sleep(2)
-        text = driver.page_source
-        text = text.lower()
+        try:
+            driver.switch_to.frame(iframe)  
+            time.sleep(2)
+            text = driver.page_source
+            text = text.lower()
 
-        if check_for_keywords(text):
-            print(f'adblock keyword detected for: {driver.current_url}')
-            return 1
-        driver.switch_to.default_content()
+            if check_for_keywords(text):
+                print(f'adblock keyword detected for: {driver.current_url}')
+                return 1
+            driver.switch_to.default_content()
+        except Exception as e:
+            print(e, iframe, "looping through iframes")
     return 0
 
 def detect(driver):
@@ -106,15 +113,17 @@ def initialize_driver(extn, num_tries):
             options = Options()
             extensions_path = pathlib.Path("/home/ritik/work/pes/measurements/extensions/")
             options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
-            options.binary_location = "/home/ritik/work/pes/chrome_113/chrome"
-            service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver')
+            options.binary_location = "/home/ritik/work/pes/chrome_120/chrome"
+            # service = Service(executable_path='/home/ritik/work/pes/chromedriver_113/chromedriver')
+            version = '120.0.6099.0'
+            service = Service(ChromeDriverManager(version).install())
 
             matches = list(extensions_path.glob("{}*.crx".format(extn)))
             if matches and len(matches) == 1:
                 options.add_extension(str(matches[0]))
 
             driver = webdriver.Chrome(options=options, service=service)
-            driver.set_page_load_timeout(45)
+            driver.set_page_load_timeout(120)
 
             if extn == 'adblock':
                 time.sleep(15)
@@ -137,6 +146,7 @@ def initialize_driver(extn, num_tries):
 
             break
         except Exception as e:
+            print(e)
             if num_tries == 1:
                 print(f"couldn't create browser session... not trying again")
                 print(2, e, driver.current_url)
@@ -153,6 +163,15 @@ def run(site_lst, extn, key, return_dict, lock, display):
     os.environ['DISPLAY'] = f":{display}"
 
     driver = initialize_driver(extn, 3)
+    
+    # stealth(driver,
+    #     # languages=["en-US", "en"],
+    #     # user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36',
+    #     vendor="Google Inc.",
+    #     webgl_vendor="Intel Inc.",
+    #     fix_hairline=True,
+    #     )
+
     for site in site_lst:
         try:
             num_tries = 3
@@ -237,8 +256,23 @@ if __name__ == "__main__":
                 for job in jobs:
                     job.start()
 
+                TIMEOUT = 1000
+                start = time.time()
                 for job in jobs:
-                    job.join()
+                    print(f"joining {job}")
+                    job.join(timeout = 60)
+
+                    while time.time() - start <= TIMEOUT:
+                        if job.is_alive():
+                            time.sleep(5)
+                        else:
+                            break
+                        
+                    if job.is_alive():
+                        print('timeout exceeded... terminating job')
+                        job.terminate()
+
+                time.sleep(2)
 
             for site in return_dict[extn]:
                 result_dict[extn].append(site)
