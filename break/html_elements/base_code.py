@@ -138,6 +138,7 @@ class Driver:
             Adjust the seconds parameter so that it will wait for the ad blocker to finish downloading.
         """
         self.url_key = url
+        print('check_this - ', url)
 
         key = ''
         if 'www' in url:
@@ -203,6 +204,8 @@ class Driver:
         file_path = f"json/{self.html_obj}_control.json"
         # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
         # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
+
+        print(f'Reading file_path: {file_path}')
 
         try:
             if os.path.isfile(file_path):

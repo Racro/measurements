@@ -81,7 +81,6 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
             driver.set_page_load_timeout(args_lst[1])
             time.sleep(4)
 
-
             if extn == 'adblock':
                 time.sleep(15)
             elif extn == 'ghostery':
