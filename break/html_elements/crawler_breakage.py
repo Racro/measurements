@@ -34,12 +34,12 @@ extn_lst = [
     , 'privacy-badger'
     ]
 
-SIZE = 50
+SIZE = 1
 port = 9090
 start_port = 11001
 
-HTML_TEST = {'buttons', "drop downs", "links", "login"}
-# HTML_TEST = {"drop downs"}#, "links", "login"}
+# HTML_TEST = {'buttons', "drop downs", "links", "login"}
+HTML_TEST = {"login"}
 # HTML_TEST = {'manual'}
 
 if __name__ == "__main__":
@@ -147,6 +147,8 @@ if __name__ == "__main__":
                         master_port_list.pop(-1)
                         processes, ports_list = start_servers(args.replay, num_sites, extn, 1, ports_list, start_port)
                         master_port_list.append(ports_list)
+                        
+                        print(ports_list)
 
                     xvfb_args = [
                         '-maxclients', '1024'

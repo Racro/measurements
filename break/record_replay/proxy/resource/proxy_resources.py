@@ -66,12 +66,8 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
-<<<<<<< HEAD
-    # options.add_argument("--disable-web-security")
     options.add_argument('--ignore-ssl-errors=yes')
-=======
     options.add_argument("--disable-web-security")
->>>>>>> 5d55518392664e60a04fab87ef18c431421a5d90
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
     options.add_argument("--disable-features=AudioServiceOutOfProcess")
@@ -91,20 +87,10 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
         try:
             # Launch Chrome and install our extension for getting HARs
             driver = webdriver.Chrome(options=options)
-<<<<<<< HEAD
-            time.sleep(500)
-
-            # time.sleep(2)
-=======
->>>>>>> 5d55518392664e60a04fab87ef18c431421a5d90
 
             driver.set_page_load_timeout(args_lst[1])
             time.sleep(4)
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 5d55518392664e60a04fab87ef18c431421a5d90
+            
             if extn == 'adblock':
                 time.sleep(15)
             elif extn == 'ghostery':
@@ -133,10 +119,6 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
             wait_until_loaded(driver, args_lst[1])
             time.sleep(2)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 5d55518392664e60a04fab87ef18c431421a5d90
             curr_scroll_position = -1
             curr_time = time.time()
             while True:
@@ -191,14 +173,7 @@ if __name__ == '__main__':
 
     manager = multiprocessing.Manager()
 
-<<<<<<< HEAD
-    # websites = ast.literal_eval(args.website)
-    # websites = [args.website]
-
-    website_dict = json.load(open('../../../adblock_detect/inner_pages_custom_break.json', 'r'))
-=======
     website_dict = json.load(open('../../adblock_detect/inner_pages_custom_break.json', 'r'))
->>>>>>> 5d55518392664e60a04fab87ef18c431421a5d90
     websites = []
     for key in website_dict:
         websites.append(website_dict[key][0])

@@ -139,6 +139,7 @@ class Driver:
         """
         print('check this - ', url)
         self.url_key = url
+        print('check_this - ', url)
 
         key = ''
         if 'www' in url:
@@ -204,6 +205,8 @@ class Driver:
         file_path = f"json/{self.html_obj}_control.json"
         # self.excel[self.adBlocker_name][self.html_obj][self.url_key] = []
         # self.excel['errors'][self.adBlocker_name][self.html_obj][self.url_key] = []
+
+        print(f'Reading file_path: {file_path}')
 
         try:
             if os.path.isfile(file_path):

@@ -233,7 +233,7 @@ def check_if_ports_open(ports_list):
         pid1 = get_pid_by_port(port)
         if pid1 == None:
             print(port)
-            time.sleep(100)
+            time.sleep(5)
             return False
     return True
 
@@ -380,6 +380,9 @@ def run(site, extn, replay, temp_port1, temp_port2, driver_dict, display_num, ht
     if not os.path.exists('./logs'):
         os.makedirs('./logs')
     logging.basicConfig(filename="logs/debug.log", filemode="w", format="%(name)s → %(levelname)s: %(message)s", level=logging.INFO)
+    
+    print(11111)
+
     # Prepare Chrome
     options = Options()
     options.set_capability('goog:logginPrefs', {'browser': 'ALL'})
