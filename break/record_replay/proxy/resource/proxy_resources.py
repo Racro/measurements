@@ -29,6 +29,7 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 start_time = time.time()
 
@@ -42,10 +43,15 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
     contacted_urls = []
    
     # display number
-    os.environ['DISPLAY'] = f":{display_num}"
+    # os.environ['DISPLAY'] = f":{display_num}"
     
     # proxy
     proxy = server.create_proxy(params={'port': port})
+
+    # Accept Insecure Certs
+    # capabilities = DesiredCapabilities.CHROME.copy()
+    # capabilities['acceptInsecureCerts'] = True
+
 
     # Initialize Selenium
     options = Options()
@@ -54,9 +60,13 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument('--ignore-certificate-errors')
     options.add_argument("--proxy-server={0}".format(proxy.proxy))
+    options.set_capability('acceptInsecureCerts', True)
+    options.add_argument("--allow-running-insecure-content")
+    options.add_argument("--allow-insecure-localhost")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-animations")
     options.add_argument("--disable-web-animations")
+    options.add_argument('--ignore-ssl-errors=yes')
     options.add_argument("--disable-web-security")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-features=IsolateOrigins,site-per-process")
@@ -80,17 +90,17 @@ def main(num_tries, args_lst, display_num, server, port, all_resources, blacklis
 
             driver.set_page_load_timeout(args_lst[1])
             time.sleep(4)
-
+            
             if extn == 'adblock':
                 time.sleep(15)
             elif extn == 'ghostery':
-                windows = self.driver.window_handles
+                windows = driver.window_handles
                 for window in windows:
                     try:
-                        self.driver.switch_to.window(window)
-                        url_start = self.driver.current_url[:16]
+                        driver.switch_to.window(window)
+                        url_start = driver.current_url[:16]
                         if url_start == 'chrome-extension':
-                            element = self.driver.find_element(By.XPATH, "//ui-button[@type='success']")
+                            element = driver.find_element(By.XPATH, "//ui-button[@type='success']")
                             element.click()
                             time.sleep(2)
                             break
@@ -224,9 +234,9 @@ if __name__ == '__main__':
                 # website = "http://" + website
                 jobs = []
                 vdisplay = Display(visible=False, size=(1920, 1280))
-                vdisplay.start()
-                display = vdisplay.display
-
+                # vdisplay.start()
+                # display = vdisplay.display
+                display = 0
                 for i, website in enumerate(chunk):
                     try:
                         fname = './data/' + website.split('//')[1].split('/')[0]
@@ -258,7 +268,7 @@ if __name__ == '__main__':
                 time.sleep(2)
                 print("-"*50)
                 print("closing open xvfb processes")
-                vdisplay.stop()
+                # vdisplay.stop()
                 os.system('pkill Xvfb')
                 print(os.system("ps aux | grep Xvfb | wc -l"))
                 print("-"*50)

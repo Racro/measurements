@@ -12,47 +12,36 @@ var args = process.argv; // node iframes.js site extn
     var xvfb = new Xvfb({
         silent: true,
         reuse: true,
-        // xvfb_args: ["-screen", "0", '1280x720x24', "-ac"],
+        xvfb_args: ["-screen", "0", '1920x1280x24', "-ac"],
     });
     xvfb.start((err)=>{if (err) console.error(err)});
     let p_args;
     if (args[3] === 'control'){
         p_args = [
-            "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--no-sandbox",
-            '--disable-web-security',
-            '--disable-features=IsolateOrigins,site-per-process',
-            // `--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
             '--display='+xvfb._display,
-            '--window-size=960, 1080',
-            '--disable-features=AudioServiceOutOfProcess'
+            '--start-fullscreen'
+            // '--window-size=1920, 1280'
         ];
     }
     else{
         p_args= [
-            "--disable-gpu",
-            "--disable-dev-shm-usage",
-            "--no-sandbox",
-            '--disable-web-security',
-            '--disable-features=IsolateOrigins,site-per-process',
-            //`--load-extension=/home/ritik/work/pes/extensions/privacy_extn/${args[3]}`,
             `--disable-extensions-except=./../../../extensions/extn_src/${args[3]}`,
             `--load-extension=./../../../extensions/extn_src/${args[3]}`,
             '--display='+xvfb._display,
-            '--window-size=960, 1080',
-            '--disable-features=AudioServiceOutOfProcess'
+            '--start-fullscreen'
+            // '--window-size=1920, 1280',
         ];
     }
     const browser = await puppeteer.launch({ 
         headless: false,
         ignoreDefaultArgs: ["--disable-extensions","--enable-automation"],
+        defaultViewport: null,
         args: p_args,
         executablePath: '/usr/bin/google-chrome' 
         // executablePath: '/snap/bin/chromium' 
     });
     const page = await browser.newPage();
-    await page.setViewport({ width: 960, height: 1080 });
+    await page.setViewport({ width: 1920, height: 1280 });
     await page.setUserAgent(fakeUA);
     await page.waitForTimeout(10000);
     var sites = args[2].split(',');
@@ -62,7 +51,7 @@ var args = process.argv; // node iframes.js site extn
         let site = sites[index];
         try{
             await page.goto(site, { waitUntil: 'networkidle2', timeout: 60000 });
-            await page.waitForTimeout(2000);
+            await page.waitForTimeout(5000);
         } catch (error){
             console.error(error);
             console.log(site);
@@ -73,28 +62,35 @@ var args = process.argv; // node iframes.js site extn
         let source = await page.content();
         source = source.toLowerCase();
         var match = "";
-        if (source.includes('ad-blocker')){
-            match = 'ad-blocker';
-        } else if (source.includes('ad blocker')){
-            match = 'ad blocker';
-        } else if (source.includes(' adblocker ')){
-            match = ' adblocker ';
-        } else if (source.includes('adblock.detect')){
-            match = 'adblock.detect';
-        }
+	
+        const allow_pattern = /allow.{0,5}\s(ad)/i;
+        const adblock_pattern = /adblocker|ad blocker|ad-blocker|adblock\.detect/i;
+        
+        const found1 = source.match(allow_pattern);
+        const found2 = source.match(adblock_pattern);
+        
+        if (found1){
+            match = found1[0];
+        } else if (found2){
+            match = found2[0];
+        } 
 
         if (match !== ""){
             const arr = source.split(match)
             let pgsrc1 = arr[0].substr(arr[0].length - 30)
             let pgsrc2 = arr[1].slice(0,30)
             let pgsrc = pgsrc1 + match + pgsrc2
+            await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
+            await page.waitForTimeout(5000);
 
-            // await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
-            console.log(`adblocker_detected: ${site} ${args[3]}  ${pgsrc}`);
+	    console.log(`adblocker_detected: ${site} ${args[3]}  ${pgsrc}`);
             break;
         }
         else{
             var frames = page.frames();
+            console.log(frames.length)
+            console.log(site)
+
             let detect = 0
             // console.log(frames.length);
             for (let frame=0; frame<frames.length; frame++){
@@ -104,25 +100,30 @@ var args = process.argv; // node iframes.js site extn
                 var pg_content = await frames[frame].content();
 
                 pg_content = pg_content.toLowerCase();
-                // var match = "";
-                if (pg_content.includes('ad-blocker')){
-                    match = 'ad-blocker';
-                } else if (pg_content.includes('ad blocker')){
-                    match = 'ad blocker';
-                } else if (pg_content.includes(' adblocker ')){
-                    match = ' adblocker ';
-                } else if (pg_content.includes('adblock.detect')){
-                    match = 'adblock.detect';
+                
+                match = "";
+            
+                const found1 = pg_content.match(allow_pattern);
+                const found2 = pg_content.match(adblock_pattern);
+            
+                if (found1){
+                    match = found1[0];
+                } else if (found2){
+                    match = found2[0];
                 }
+
                 if (match !== ""){
-                    const arr = pg_content.split(match)
+		            const arr = pg_content.split(match)
                     let pgsrc1 = arr[0].substr(arr[0].length - 30)
                     let pgsrc2 = arr[1].slice(0,30)
                     let pgsrc = pgsrc1 + match + pgsrc2
+                    // let pgsrc = match
                     
                     console.log(`adblocker_detected_in_frame: ${site} ${args[3]} ${pgsrc}`);
-                    // await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
-                    detect = 1;
+                    await page.screenshot({path: `ss/${args[3]}/${args[4]}.png`});
+                    await page.waitForTimeout(5000);
+
+		            detect = 1;
                     break;
                 }
             }
