@@ -4,7 +4,11 @@ import json
 import sys
 import matplotlib.patches as mpatches
 
-content = json.load(open('../performance/data_usage/plot_content_selenium_1000.json', 'r'))
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
+content = json.load(open('../performance/data_usage/plot_content_selenium_1000_scroll.json', 'r'))
 frames = json.load(open('../effective/ads/plot_frames.json', 'r'))
 performance = json.load(open('../performance/cpu_load/plot/plot_performance.json', 'r'))
 performance2 = json.load(open('../performance/cpu_load/plot/plot_performance2.json', 'r'))

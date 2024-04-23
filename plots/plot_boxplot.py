@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import json
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 # Define the number of extensions, metrics, and the width of each boxplot and the gap between groups of boxplots
 num_extensions = 7
@@ -54,7 +57,7 @@ metrics = ['CPU Usage (avg)\n(in percentage)', 'Data Usage\n(in MB)', 'RAM Usage
 # np.random.seed(0)  # for reproducibility
 # data = np.random.rand(num_metrics, num_extensions, 50)
 
-content = json.load(open('../performance/data_usage/plot_content_selenium_1000.json', 'r'))
+content = json.load(open('../performance/data_usage/plot_content_selenium_1000_scroll.json', 'r'))
 frames = json.load(open('../effective/ads/plot_frames.json', 'r'))
 performance = json.load(open('../performance/cpu_load/plot/plot_performance.json', 'r'))
 performance2 = json.load(open('../performance/cpu_load/plot/plot_performance2.json', 'r'))
@@ -233,5 +236,5 @@ fig.legend(handles=legend_elements, prop={'size': 10}, loc='lower right',bbox_to
 # fig.text(0.98, 0.2, '----- Effectiveness -----', rotation=270, weight='bold', style='italic', verticalalignment='center')
 
 # plt.tight_layout()
-plt.show()
-# plt.savefig('boxplot.pdf', bbox_inches='tight')
+# plt.show()
+plt.savefig('boxplot_new.pdf', bbox_inches='tight')

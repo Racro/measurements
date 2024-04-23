@@ -137,6 +137,7 @@ class Driver:
             This function will start a Chrome instance with the option of installing an ad blocker.
             Adjust the seconds parameter so that it will wait for the ad blocker to finish downloading.
         """
+        print('check this - ', url)
         self.url_key = url
 
         key = ''

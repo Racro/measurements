@@ -6,6 +6,10 @@ import matplotlib.dates as mdates
 import numpy as np
 import pickle
 
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
+
 df = pd.read_csv('./review_sentiment.csv')
 df2 = pd.read_csv('./release.csv')
 
